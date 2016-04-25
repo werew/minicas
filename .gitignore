@@ -4,6 +4,13 @@
 *.obj
 *.elf
 
+# Dependecies
+*.d
+
+# Directories
+bin/
+obj/
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -21,6 +28,7 @@
 *.dylib
 
 # Executables
+minicas # Main executable name
 *.exe
 *.out
 *.app
