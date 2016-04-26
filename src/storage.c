@@ -32,6 +32,7 @@ void drop_v_list(v_list l, bool unnamed_only){
 		drop_var(l->var_list[i]);
 	}
 	
+	free(l->var_list);
 	free(l);
 }
 
