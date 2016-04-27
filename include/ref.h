@@ -15,12 +15,12 @@ typedef struct {
 	} s_ref, *Ref;
 
 
-/* Vars list */
+/* Reference list */
 typedef struct {
-	Var* var_list; // List of the stored variables
-	unsigned int length; // Number of stored variables
-	unsigned int max; // Storage capacity
-	} s_v_list, *v_list;
+	Ref* list; 	     // List of the stored references
+	unsigned int length; // Number of stored references
+	unsigned int max;    // Storage capacity
+	} s_ref_list, *ref_list;
 
 
 /* Global storage buffer */
