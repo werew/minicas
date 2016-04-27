@@ -122,19 +122,19 @@ Ref push_ref(ref_list l, Ref r){
 	
 	
 /**
- * Replace the variable at the given position of the v_list with a new one
- * @param v The variable to insert
- * @param i The index representing a valid position of a variable to replace
- * @param l The list where to insert v
- * @return The newly inserted variable or NULL in case of error
+ * Replace the reference at the given position of the ref_list with a new one
+ * @param r The reference to insert
+ * @param i The index representing a valid position of a reference to replace
+ * @param l The list where to insert r
+ * @return The newly inserted reference or NULL in case of error
  * @note At the moment the function doesn't imply any possible return of NULL
  *	 howover this return value needs to be considered for compatibility
  *	 with future versions of this function
  */
-Var replace_var_at(v_list l, int i, const Var v){
-	drop_var(l->var_list[i]);
-	l->var_list[i] = v;
-	return v;
+Ref replace_ref_at(ref_list l, unsigned int i, Ref r){
+	drop_ref(l->list[i]);
+	l->list[i] = r;
+	return r;
 }
 
 /**
