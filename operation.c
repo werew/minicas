@@ -51,7 +51,7 @@ Matrix multiplication(Matrix a,Matrix b)
 {
 	Matrix c=newMatrix(a->nrows,b->ncols);
 	int i,j,k;
-	E total=0;
+	float total=0;
 
 	for(i=0;i<a->nrows;i++)
 	{
@@ -101,7 +101,7 @@ Matrix mult_Scal(float a,Matrix m)
 
 Matrix fusionMat(Matrix A,Matrix B)
 {
-	Matrix C=newMatrix(A->ncols+B->ncols,A->nrows);
+	Matrix C=newMatrix(A->nrows,A->ncols+B->ncols);
 	int i;
 	for(i=0;i<A->nrows;i++)
 	{
