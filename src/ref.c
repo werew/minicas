@@ -8,14 +8,23 @@
 ref_list ref_pool[N_RLIST];
 
 /**
- * Drop a stored variable structure
- * @param v Variable to drop
+ * Drop a stored reference
+ * @param r Reference to drop
  */
-void drop_var(Var v){
-	if (v == NULL) return;
-
+void drop_ref(Ref r){
+	if (r == NULL) return;
+	
+	switch (r->type) {
+		case VAR: drop_var(r->inst);
+			  break;
+	/* TODO add missing drop functions 
+		case FUN: drop_fun(r->inst);
+			  break;
+		case CMD: drop_cmd(r->inst);
+			  break;
+	*/
+	}
 	free(v->name);
-	free(v->val);
 	free(v);
 }
 
@@ -38,22 +47,22 @@ void drop_v_list(v_list l, bool unnamed_only){
 
 
 /**
- * Creates a new Var containing the given informations
- * @param name Name of the variable
- * @param val Address to the value of the variable
- * @param type Type of the variable (FLOAT or MATRIX)
- * @return A pointer to the newly created variable 
+ * Creates a new reference containing the given informations
+ * @param name Name of the reference
+ * @param inst Address to the instance of the reference
+ * @param type Type of the reference 
+ * @return A pointer to the newly created reference
  *	   or NULL in case of error
  */
-Var new_var(char* name, void* val, t_var type){
-	Var v = malloc( sizeof (s_var));
-	if (v == NULL) return NULL;
+Ref new_ref(char* name, void* inst, ref_t type);
+	Ref r = malloc( sizeof (s_ref));
+	if (r == NULL) return NULL;
 
-	v->name = name;
-	v->type = type;
-	v->val = val;
+	r->name = name;
+	r->type = type;
+	r->inst = inst;
 	
-	return v;
+	return r;
 }
 		
 /**

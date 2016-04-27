@@ -27,9 +27,9 @@ typedef struct {
 #define N_RLIST 32
 extern ref_list ref_pool[N_RLIST];
 
-/* Create/destroy variables */
-Var new_var(char* name, void* val, t_var type);
-void drop_var(Var v);
+/* Create/destroy references */
+Ref new_ref(char* name, void* inst, ref_t type);
+void drop_ref(Ref r);
 
 /* Set to and get from global storage */
 Var set_var(char* name, void* val, t_var type);
