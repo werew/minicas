@@ -29,19 +29,19 @@ void drop_ref(Ref r){
 }
 
 /**
- * Destroy a v_list all the variables that it constains.
- * @param l v_list to drop
- * @param unnamed_only If true only the unnamed variable will be dropped
+ * Destroy a ref_list and all the references that it constains.
+ * @param l ref_list to drop
+ * @param unnamed_only If true only the unnamed references will be dropped
  */
-void drop_v_list(v_list l, bool unnamed_only){
+void drop_ref_list(ref_list l, bool unnamed_only){
 
 	unsigned int i;
 	for ( i = 0; i < l->length; i++){
-		if (unnamed_only && l->var_list[i]->name != NULL) continue;
-		drop_var(l->var_list[i]);
+		if (unnamed_only && l->list[i]->name != NULL) continue;
+		drop_ref(l->list[i]);
 	}
 	
-	free(l->var_list);
+	free(l->list);
 	free(l);
 }
 
