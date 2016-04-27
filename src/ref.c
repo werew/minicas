@@ -78,11 +78,12 @@ v_list new_v_list(void){
 
 
 /**
- * Search a variable inside the given v_list
- * @param name The name of the variable to search
- * @param l The list where to search the variable
- * @return The index representing the position of the variable in relation
- *	   to l->var_list or -1 if the variable has not been found
+ * Search a reference inside the given ref_list
+ * @param l The list where to search the reference
+ * @param name The name of the reference to search
+ * @param type The type of the reference to search
+ * @return The index representing the position of the reference in relation
+ *	   to l->ref_list or -1 if the reference has not been found
  */
 int search_ref(const ref_list l, const char* name, ref_t type){
 	unsigned int i;
