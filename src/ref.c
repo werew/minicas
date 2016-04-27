@@ -138,19 +138,20 @@ Ref replace_ref_at(ref_list l, unsigned int i, Ref r){
 }
 
 /**
- * Find and get a stored variable
- * @param name The name of the variable to get
- * @return The variable or NULL if any variable having the
- *	   given name has been found
+ * Find and get a stored reference from the global pool
+ * @param name The name of the reference to get
+ * @param type The type of the reference to get
+ * @return The reference or NULL if any reference having the
+ *	   given name and type has been found
  */
-Var get_var(const char* name){
+Ref get_ref(const char* name, ref_t type){
 	unsigned int h = hash(name);
-	if (storage_buff[h] == NULL) return NULL;
+	if (ref_pool[h] == NULL) return NULL;
 	
-	int i = search_var(name, storage_buff[h]);
+	int i = search_ref(ref_pool[h], name, type);
 	if (i == -1) return NULL;
 
-	return storage_buff[h]->var_list[i];
+	return ref_pool[h]->list[i];
 }
 
 /**

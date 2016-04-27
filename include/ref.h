@@ -33,7 +33,7 @@ void drop_ref(Ref r);
 
 /* Set to and get references from global pool */
 Var set_ref(char* name, void* inst, ref_t type);
-Var get_ref(const char* name, ref_t type);
+Ref get_ref(const char* name, ref_t type);
 
 
 /* Vars list operations */
