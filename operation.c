@@ -152,8 +152,6 @@ void echangeLigne(Matrix m,int i,int j)
 
 float echelonnage(Matrix m,Matrix P)
 {
-	P=copyMatrix(m);
-
 	int i,j;
 	float c=1;
 	for(i=0;i<P->ncols-1;i++)
@@ -174,20 +172,20 @@ float echelonnage(Matrix m,Matrix P)
 
 Matrix triangulaire(Matrix m)
 {
-	Matrix P=newMatrix(m->nrows,m->ncols);
+	Matrix P=copyMatrix(m);
 	echelonnage(m,P);
 	return P;
 }
 
 float determinant (Matrix m)
 {
-	Matrix P=newMatrix(m->nrows,m->ncols);
+	Matrix P=copyMatrix(m);
 	float c=echelonnage(m,P);
 
 	int i;
 	for(i=0;i<P->ncols;i++)
 	{
-		c*=getElt(m,i,i);
+		c*=getElt(P,i,i);
 	}
 	return c;
 }

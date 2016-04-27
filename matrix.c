@@ -55,6 +55,7 @@ void displayMatrix(Matrix m)
 			printf("\n");
 		}
 	}
+	printf("\n");
 }
 
 Matrix identite(int nb_cote)
