@@ -155,40 +155,40 @@ Ref get_ref(const char* name, ref_t type){
 }
 
 /**
- * Create and store or update a variable 
- * @param name Name of the variable to store/update
- * @param val Pointer to the value of the variable
- * @param type Tge type of the data stored
- * @return The address of the newly stored/updated variable,
+ * Create and store or update a reference in to the global pool
+ * @param name Name of the reference to store/update
+ * @param inst Pointer to the instance of the reference
+ * @param type Tge type of the reference
+ * @return The address of the newly stored/updated reference,
  *	   or NULL in case of error
  */
-Var set_var(char* name, void* val, t_var type){
+Ref set_ref(char* name, void* inst, ref_t type);
 
 	unsigned int h = hash(name);
-	if (storage_buff[h] == NULL){
-		storage_buff[h] = new_v_list();
-		if (storage_buff[h] == NULL) return NULL;
+	if (ref_pool[h] == NULL){
+		ref_pool[h] = new_ref_list();
+		if (ref_pool[h] == NULL) return NULL;
 	}	
 		
-	Var v = new_var(name, val, type);
-	if (v == NULL) return NULL;
+	Ref r = new_ref(name, inst, type);
+	if (r == NULL) return NULL;
 
 	int i;	
-	if ( (i = search_var(name, storage_buff[h])) == -1){
+	if ( (i = search_ref(ref_pool[h], name, type)) == -1){
 
-		if (push_var(storage_buff[h], v) == NULL) 
-			goto e_v_lost;
+		if (push_ref(ref_pool[h], r) == NULL) 
+			goto e_r_lost;
 
 	} else {
 		
-		if (replace_var_at(storage_buff[h], i, v) == NULL) 
-			goto e_v_lost;
+		if (replace_ref_at(ref_pool[h], i, r) == NULL) 
+			goto e_r_lost;
 	}
 	
-	return v;
+	return r;
 
-e_v_lost:
-	drop_var(v);
+e_r_lost:
+	drop_ref(r);
 	return NULL;
 }
 	
