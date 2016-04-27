@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "xtypes.h"
-#include "storage.h"
+#include "ref.h"
 
 
 /* Global storage buffer */
