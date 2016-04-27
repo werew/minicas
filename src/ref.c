@@ -66,13 +66,13 @@ Ref new_ref(char* name, void* inst, ref_t type);
 }
 		
 /**
- * Creates a new empty (zero-initialized) v_list
- * @return The newly created v_list
+ * Creates a new empty (zero-initialized) ref_list
+ * @return The newly created ref_list
  */
-v_list new_v_list(void){
-	v_list l = malloc( sizeof (s_v_list));
+ref_list new_ref_list(void){
+	ref_list l = malloc( sizeof (s_ref_list));
 	if (l == NULL) return NULL;
-	memset(l, 0, sizeof (s_v_list));
+	memset(l, 0, sizeof (s_ref_list));
 	return l;
 }
 
