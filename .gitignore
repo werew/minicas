@@ -31,6 +31,9 @@ obj/
 minicas # Main executable name
 *.exe
 *.out
+
+# Swap files
+*.swp
 *.app
 *.i*86
 *.x86_64
