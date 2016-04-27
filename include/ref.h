@@ -4,15 +4,15 @@
 #include "xtypes.h"
 
 
-/* Types of value handled by minicas */
-typedef enum { FLOAT, MATRIX } t_var;
+/* Types of references handled by minicas */
+typedef enum { VAR, FUN, CMD } ref_t;
 
-/* Variable */
+/* Reference */
 typedef struct {
 	char* name; // Null terminated name
-	void* val;  // Pointer to the stored value
-	t_var type; // Type of variable
-	} s_var, *Var;
+	void* inst; // Pointer to the instance of this reference
+	ref_t type; // Type of reference
+	} s_ref, *Ref;
 
 
 /* Vars list */
