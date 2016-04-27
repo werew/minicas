@@ -84,10 +84,12 @@ v_list new_v_list(void){
  * @return The index representing the position of the variable in relation
  *	   to l->var_list or -1 if the variable has not been found
  */
-int search_var(const char* name, const v_list l){
+int search_ref(const ref_list l, const char* name, ref_t type){
 	unsigned int i;
 	for (i = 0; i < l->length; i++){
-		if ( strcmp( l->var_list[i]->name, name) == 0){
+		Ref r = l->list[i];
+		if ( r->type == type && 
+		     strcmp(r->name, name) == 0){
 			return i;
 		}
 	}

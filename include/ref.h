@@ -31,14 +31,16 @@ extern ref_list ref_pool[N_RLIST];
 Ref new_ref(char* name, void* inst, ref_t type);
 void drop_ref(Ref r);
 
-/* Set to and get from global storage */
-Var set_var(char* name, void* val, t_var type);
-Var get_var(const char* name);
+/* Set to and get references from global pool */
+Var set_ref(char* name, void* inst, ref_t type);
+Var get_ref(const char* name, ref_t type);
+
 
 /* Vars list operations */
 v_list new_v_list(void);
 void drop_v_list(v_list l, bool unnamed_only);
 Var push_var(v_list l, const Var v);
+int search_ref(const ref_list l, const char* name, ref_t type);
 
 /* Hash generation */
 unsigned int hash(const char* key);
