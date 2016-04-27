@@ -39,7 +39,7 @@ Var get_ref(const char* name, ref_t type);
 /* Vars list operations */
 v_list new_v_list(void);
 void drop_v_list(v_list l, bool unnamed_only);
-Var push_var(v_list l, const Var v);
+Ref push_ref(ref_list l, Ref r){
 int search_ref(const ref_list l, const char* name, ref_t type);
 
 /* Hash generation */

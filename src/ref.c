@@ -99,25 +99,25 @@ int search_ref(const ref_list l, const char* name, ref_t type){
 }
 
 /**
- * Insert the given variable at the end of the given v_list
- * @param v The variable to insert
- * @param l The list where to insert v
- * @return The newly pushed variable in case of success or
+ * Insert the given reference at the end of the given ref_list
+ * @param l The list where to insert r
+ * @param r The reference to insert
+ * @return The newly pushed reference in case of success or
  *	   NULL in case of error
  */
-Var push_var(v_list l, const Var v){
+Ref push_ref(ref_list l, Ref r){
 	#define ALLOC_UNIT 8
-	if (l->var_list == NULL || l->length >= l->max){
-		Var* tmp = realloc(l->var_list, 
-			l->max + ALLOC_UNIT * sizeof (Var));
+	if (l->list == NULL || l->length >= l->max){
+		Var* tmp = realloc(l->list,
+			l->max + ALLOC_UNIT * sizeof (Ref));
 		if (tmp == NULL) return NULL;
 	
-		l->var_list = tmp;
+		l->list = tmp;
 		l->max += ALLOC_UNIT;
 	}
 	
-	l->var_list[l->length++] = v;	
-	return v;
+	l->list[l->length++] = r;
+	return r;
 }
 	
 	
