@@ -6,18 +6,18 @@
 Matrix newMatrix(int nb_rows, int nb_columns)
 {
 	Matrix m=(Matrix)malloc(sizeof(struct s_matrix));
-	m->mat=(E*)malloc(nb_rows*nb_columns*sizeof(E));
+	m->mat=(float*)malloc(nb_rows*nb_columns*sizeof(float));
 	m->nrows=nb_rows;
 	m->ncols=nb_columns;
 	return m;
 }
 
-E getElt(Matrix m,int row,int column)
+float getElt(Matrix m,int row,int column)
 {
 	return (m->mat[column+row*m->ncols]);
 }
 
-void setElt(Matrix m,int row,int column,E val)
+void setElt(Matrix m,int row,int column,float val)
 {
 	m->mat[row*m->ncols+column]=val;
 }
