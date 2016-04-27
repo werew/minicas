@@ -198,7 +198,7 @@ unsigned int hash(const char* key){
 	while (*key != '\0') {
 		hash ^= *key++;
 		hash *= 16777619;
-		hash %= N_VLIST;
+		hash %= N_RLIST;
 	}
 	return hash;
 }
