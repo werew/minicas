@@ -24,8 +24,8 @@ typedef struct {
 
 
 /* Global storage buffer */
-#define N_VLIST 8
-extern v_list storage_buff[N_VLIST];
+#define N_RLIST 32
+extern ref_list ref_pool[N_RLIST];
 
 /* Create/destroy variables */
 Var new_var(char* name, void* val, t_var type);

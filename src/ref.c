@@ -5,7 +5,7 @@
 
 
 /* Global storage buffer */
-v_list storage_buff[N_VLIST];
+ref_list ref_pool[N_RLIST];
 
 /**
  * Drop a stored variable structure
