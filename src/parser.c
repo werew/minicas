@@ -289,21 +289,21 @@ int exec_instrution(void){
 
 	sym = jump_cclass(sym, SPACE);
 
-	Var ret = NULL;
+	Ref ret = NULL;
 	switch (*sym) {
 		case ':':
-			/* Line is a var declaration */
+			/* Line is a declaration */
 			sym++;
-			ret = declare_var(an_token); //Note: do not free an_token
+			ret = declare_ref(an_token); //Note: do not free an_token
 			if (ret == NULL) goto error;
-			puts("*TODO PRINT VAR DECLARATION*"); // TODO add result display
+			puts("*TODO PRINT DECLARATION*"); // TODO add result display
 			break;
 		case '(':
 			/* Line is a function call */
 			ret = eval_fun(an_token);
 			if (ret == NULL) goto error;
 			puts("TODO PRINT FUN EVALUATION"); // TODO add result display
-			free(an_token); drop_var(ret);
+			free(an_token); drop_ref(ret);
 			break;
 		default:;
 			/* Line is an internal command */
