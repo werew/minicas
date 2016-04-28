@@ -5,6 +5,7 @@
 #include "storage.h"
 
 void print_var(Var v);
+void print_ref(Ref r);
 
 
 #endif
