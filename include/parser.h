@@ -15,7 +15,7 @@ int eval_input(char* user_input);
 char* pop_word(void);
 char* jump_cclass(char* ptr, c_class class);
 Ref exec_fun(char* fun, ref_list args);
-Var eval_fun(char* fun);
+Ref eval_fun(char* fun);
 int exec_cmd(char* cmd);
 Var declare_var(char* name);
 Var eval_expression(void);

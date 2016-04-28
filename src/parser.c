@@ -81,14 +81,14 @@ Ref exec_fun(char* fun, ref_list args){
 	printf("* TODO HERE EXEC FUN: %s\nARGS:\n", fun);
 	unsigned int i;
 	for(i = 0; i < args->length; i++){
-		print_ref(args->var_list[i]);
+		print_ref(args->list[i]);
 	}
 	fflush(stdout);
 
 	/* TODO */
 	float* f = malloc(sizeof (float));
 	*f = 12345678;
-	return new_v(NULL, f, FLOAT);
+	return new_vref(NULL, f, FLOAT);
 }
 
 
@@ -104,19 +104,19 @@ Ref exec_fun(char* fun, ref_list args){
  *	fun1( a, b, c ) 	# a, b and c must be declared
  * 	fun1 ( fun2(b, 12), c, fun3(fun4(a)) );
  * @param fun Name of the called function
- * @return The Var as a result of the function being evaluated, 
+ * @return The reference result of the function being evaluated, 
  *	   of NULL in case of error
  */
-Var eval_fun(char* fun){
+Ref eval_fun(char* fun){
 
-	v_list args = new_v_list();
+	ref_list args = new_ref_list();
 	if (args == NULL) return NULL;
 
 	do {
 		sym++;
 
-		Var v = eval_expression();
-		if (v == NULL || push_var(args, v) == NULL) goto error;
+		Ref r = eval_expression();
+		if (r == NULL || push_ref(args, r) == NULL) goto error;
 
 		sym = jump_cclass(sym, SPACE);
 
@@ -132,13 +132,13 @@ Var eval_fun(char* fun){
 	   right next the expression */	
 	sym++;
 
-	Var ret = exec_fun(fun, args);	
-	drop_v_list(args, true);	
+	Ref ret = exec_fun(fun, args);	
+	drop_ref_list(args, true);	
 	
 	return ret;
 
 error:
-	drop_v_list(args, true);	
+	drop_ref_list(args, true);	
 	return NULL;
 }			
 
