@@ -7,7 +7,8 @@
 /* Command */
 typedef struct {
 	Ref (*fun) (ref_list);
-	ref_t type[];
+	int n_args;
+	ref_t* types[];
 	} s_cmd, *Cmd;
 
 
