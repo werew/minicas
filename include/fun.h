@@ -1,8 +1,8 @@
-#ifdef _FUN_H_
+#ifndef _FUN_H_
 #define _FUN_H_
 
 #include "xtypes.h"
-#include "ref."
+#include "ref.h"
 
 /* Function */
 typedef struct {
@@ -14,6 +14,7 @@ typedef struct {
 
 
 
+Fun new_fun(Ref (*fun) (ref_list), ref_list args);
 
 
 
