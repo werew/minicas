@@ -231,6 +231,10 @@ float determinant (Matrix m)
 
 Matrix solve(Matrix A, Matrix B)
 {
+	if(determinant(A)==0)
+	{
+		return NULL;
+	}
 	Matrix C=fusionMat(A,B);
 	Matrix D=echelonnage(C);
 	//remontee(D,X);
