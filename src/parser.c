@@ -5,7 +5,9 @@
 #include <errno.h>
 #include "parser.h"
 #include "error.h"
-#include "storage.h"
+//#include "storage.h"
+#include "var.h"
+#include "ref.h"
 #include "xtypes.h"
 #include "debug.h" //DBG
 
@@ -73,20 +75,20 @@ char* pop_word(void){
 
 
 /* FIXME DBG content */
-Var exec_fun(char* fun, v_list args){
+Ref exec_fun(char* fun, ref_list args){
 
 	/* TODO */
 	printf("* TODO HERE EXEC FUN: %s\nARGS:\n", fun);
 	unsigned int i;
 	for(i = 0; i < args->length; i++){
-		print_var(args->var_list[i]);
+		print_ref(args->var_list[i]);
 	}
 	fflush(stdout);
 
 	/* TODO */
 	float* f = malloc(sizeof (float));
 	*f = 12345678;
-	return new_var(NULL, f, FLOAT);
+	return new_v(NULL, f, FLOAT);
 }
 
 

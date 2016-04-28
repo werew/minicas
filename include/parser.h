@@ -14,7 +14,7 @@ int (*get_classtest(c_class class)) (int);
 int eval_input(char* user_input);
 char* pop_word(void);
 char* jump_cclass(char* ptr, c_class class);
-Var exec_fun(char* fun, v_list args);
+Ref exec_fun(char* fun, ref_list args);
 Var eval_fun(char* fun);
 int exec_cmd(char* cmd);
 Var declare_var(char* name);
