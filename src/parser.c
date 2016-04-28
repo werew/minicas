@@ -163,31 +163,31 @@ int exec_cmd(char* cmd){
 
 
 /**
- * Declare a new variable having a value equal to the expression
+ * Declare a new reference having a value equal to the expression
  * next to the global pointer sym.
- * @param name Key-name of the variable to declare
- * @return The address of the stored variable in case of success,
+ * @param name Key-name of the reference to declare
+ * @return The address of the stored reference in case of success,
  * 	   otherwise NULL (in this case the parameter name will not
  *	   be stored and must be freed by the user)
  */
-Var declare_var(char* name){
+Ref declare_ref(char* name){
 
 	/* Evaluate expression */
-	Var v_var = eval_expression();
-	if (v_var == NULL) return NULL;
-
-	/* Store a renamed copy of v_var */
-	Var var = set_var(name, v_var->val, v_var->type);
-	if (var == NULL){
+	Ref e_r = eval_expression();
+	if (e_r == NULL) return NULL;
+	
+	/* Store a renamed copy of e_r */
+	Ref r = set_ref(name, e_r->val, e_r->type);
+	if (r == NULL){
 		/* Free all the data */
-		drop_var(v_var);
+		drop_ref(e_r);
 		return NULL;
 	}
 
-	/* Free just the unnamed vars */
-	if (v_var->name == NULL) free(v_var);
+	/* Free just the unnamed references */
+	if (e_r->name == NULL) free(v_var);
 
-	return var;
+	return r;
 }			
 
 /**
