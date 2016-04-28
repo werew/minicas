@@ -2,7 +2,8 @@
 #define _PARSER_H_
 
 #include "xtypes.h"
-#include "storage.h"
+#include "var.h"
+#include "ref.h"
 
 /* 
  * FIXME temporary definitions 
