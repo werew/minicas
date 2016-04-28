@@ -18,11 +18,11 @@ void drop_ref(Ref r){
 	switch (r->type) {
 		case VAR: drop_var(r->inst);
 			  break;
-	/* TODO add missing drop functions */
-		case FUN: //drop_fun(r->inst);
+		case FUN: drop_fun(r->inst);
 			  break;
-		case CMD: //drop_cmd(r->inst);
+		case CMD: drop_cmd(r->inst);
 			  break;
+
 		default:  break;
 	}
 	free(r->name);
