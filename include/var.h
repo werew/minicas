@@ -18,8 +18,8 @@ Var new_var(void* val, var_t type);
 void drop_var(Var v);
 
 /* Set to and get from global storage */
-Var set_var(char* name, void* val, t_var type);
-Var get_var(const char* name);
+Ref set_var(char* name, void* val, var_t type);
+Ref get_var(const char* name);
 
 #endif
 

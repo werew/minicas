@@ -36,10 +36,10 @@ Var new_var(void* val, var_t type){
 /**
  * Find and get a stored variable
  * @param name The name of the variable to get
- * @return The variable or NULL if any variable having the
+ * @return The reference or NULL if any variable having the
  *	   given name has been found
  */
-Var get_var(const char* name){
+Ref get_var(const char* name){
 	Ref r = get_ref(name, VAR);
 	if (r == NULL) return NULL;
 
@@ -51,35 +51,20 @@ Var get_var(const char* name){
  * @param name Name of the variable to store/update
  * @param val Pointer to the value of the variable
  * @param type Tge type of the data stored
- * @return The address of the newly stored/updated variable,
+ * @return The reference of the newly stored/updated variable,
  *	   or NULL in case of error
  */
-Var set_var(char* name, void* val, t_var type){
+Ref set_var(char* name, void* val, var_t type){
 
-	unsigned int h = hash(name);
-	if (storage_buff[h] == NULL){
-		storage_buff[h] = new_v_list();
-		if (storage_buff[h] == NULL) return NULL;
-	}	
-		
-	Var v = new_var(name, val, type);
+	Var v = new_var(val, type);
 	if (v == NULL) return NULL;
 
-	int i;	
-	if ( (i = search_var(name, storage_buff[h])) == -1){
-
-		if (push_var(storage_buff[h], v) == NULL) 
-			goto e_v_lost;
-
-	} else {
-		
-		if (replace_var_at(storage_buff[h], i, v) == NULL) 
-			goto e_v_lost;
+	Ref r = set_ref(name, v, VAR);
+	if (r == NULL) {
+		drop_var(v);
+		return NULL;
 	}
 	
-	return v;
+	return r;
 
-e_v_lost:
-	drop_var(v);
-	return NULL;
 }
