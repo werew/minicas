@@ -31,3 +31,24 @@ void drop_fun(Fun f){
 	free(f);
 }
 
+/**
+ * Creates a function and a reference pointing to it
+ * @param name Name of the reference
+ * @param fun Pointer to the handler
+ * @param args List of predefined arguments
+ * @return A pointer to the new reference or NULL in case 
+ *	   of error
+ */
+Ref new_fref(char* name,Ref (*fun) (ref_list), ref_list args){
+	
+	Fun f = new_fun(fun, args);
+	if (f == NULL) return NULL;
+
+	Ref r = new_ref(name, f, FUN);
+	if (r == NULL){
+		drop_fun(f);
+		return NULL;
+	}
+	
+	return r;
+}	
