@@ -4,6 +4,13 @@
 #include "cmd.h"
 #include "error.h"
 
+/* Argument types */
+ref_t A_FLOAT [] = { VAR, FLOAT, ALL };
+ref_t A_MATRIX[] = { VAR, MATRIX, ALL };
+ref_t A_FUN[] = { FUN, ALL };
+ref_t A_CMD[] = { CMD, ALL };
+ref_t A_ALL[] = { ALL };
+
 /**
  * Creates a new command structure
  * @param fun Pointer to the handler

@@ -1,16 +1,17 @@
-#ifndef _FUN_H_
-#define _FUN_H_
+#ifndef _CMD_H_
+#define _CMD_H_
 
 #include <stdarg.h>
 #include "xtypes.h"
 #include "ref.h"
 
+
 /* Argument types */
-ref_t A_FLOAT [] = { VAR, FLOAT, ALL };
-ref_t A_MATRIX[] = { VAR, MATRIX, ALL };
-ref_t A_FUN[] = { FUN, ALL };
-ref_t A_CMD[] = { CMD, ALL };
-ref_t A_ALL[] = { ALL };
+extern ref_t A_FLOAT [];
+extern ref_t A_MATRIX[];
+extern ref_t A_FUN[];
+extern ref_t A_CMD[];
+extern ref_t A_ALL[];
 
 /* Command */
 typedef struct {
