@@ -18,17 +18,15 @@ void drop_var(Var v){
 
 /**
  * Creates a new Var containing the given informations
- * @param name Name of the variable
  * @param val Address to the value of the variable
  * @param type Type of the variable (FLOAT or MATRIX)
  * @return A pointer to the newly created variable 
  *	   or NULL in case of error
  */
-Var new_var(char* name, void* val, t_var type){
+Var new_var(void* val, var_t type){
 	Var v = malloc( sizeof (s_var));
 	if (v == NULL) return NULL;
 
-	v->name = name;
 	v->type = type;
 	v->val = val;
 	

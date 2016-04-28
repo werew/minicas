@@ -5,16 +5,16 @@
 
 
 /* Types of variables handled by minicas */
-typedef enum { FLOAT, MATRIX } t_var;
+typedef enum { FLOAT, MATRIX } var_t;
 
 /* Variable */
 typedef struct {
 	void* val;  // Pointer to the stored value
-	t_var type; // Type of variable
+	var_t type; // Type of variable
 	} s_var, *Var;
 
 /* Create/destroy variables */
-Var new_var(char* name, void* val, t_var type);
+Var new_var(void* val, var_t type);
 void drop_var(Var v);
 
 /* Set to and get from global storage */
