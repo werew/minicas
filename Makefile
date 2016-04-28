@@ -19,7 +19,6 @@ SOURCES := $(wildcard $(SRCDIR)/*.c)
 INCLUDES := $(INCDIR)/*.h
 OBJECTS := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o) 
 DEP = $(OBJECTS:%.o=%.d)
-DEPLIB = $(addprefix $(OBJDIR)/, grille.o jeu.o )
 EXECUTABLE := $(BINDIR)/$(TARGET)
 README = README.md
 
