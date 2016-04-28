@@ -40,13 +40,10 @@ Var new_var(void* val, var_t type){
  *	   given name has been found
  */
 Var get_var(const char* name){
-	unsigned int h = hash(name);
-	if (storage_buff[h] == NULL) return NULL;
-	
-	int i = search_var(name, storage_buff[h]);
-	if (i == -1) return NULL;
+	Ref r = get_ref(name, VAR);
+	if (r == NULL) return NULL;
 
-	return storage_buff[h]->var_list[i];
+	return r->inst;
 }
 
 /**
