@@ -18,7 +18,7 @@ Ref exec_fun(char* fun, ref_list args);
 Ref eval_fun(char* fun);
 int exec_cmd(char* cmd);
 Ref declare_ref(char* name);
-Var eval_expression(void);
+Ref eval_expression(void);
 Matrix eval_vector(char* vect);
 int exec_instrution(void);
 

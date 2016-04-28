@@ -177,7 +177,7 @@ Ref declare_ref(char* name){
 	if (e_r == NULL) return NULL;
 	
 	/* Store a renamed copy of e_r */
-	Ref r = set_ref(name, e_r->val, e_r->type);
+	Ref r = set_ref(name, e_r->inst, e_r->type);
 	if (r == NULL){
 		/* Free all the data */
 		drop_ref(e_r);
@@ -197,13 +197,9 @@ Ref declare_ref(char* name){
  *	- variable
  *	- numeric value
  *
- * ntil one of the end_symbols, and stops there 
  * An expression could be a variable, a function, a numerical value or a vector
- *
- * @param end_symbols Cannot be alphanumerical, [()] or any kind of space
  */
-//Var eval_expression(char* end_symbols, int n_sym){
-Var eval_expression(void){
+Ref eval_expression(void){
 	
 
 	/* Jump all the blank characters */	
@@ -211,7 +207,7 @@ Var eval_expression(void){
 
 	/* Evaluate next token */
 	void* value = NULL;	
-	Var var_result = NULL;	
+	Ref r_result = NULL;	
 
 	if (isalpha(*sym)) {  	   /* Variable or function */		
 
@@ -222,11 +218,11 @@ Var eval_expression(void){
 
 		if (*sym == '('){ 
 
-			var_result = eval_fun(word);
+			r_result = eval_fun(word);
 		} else {
 
-			var_result = get_var(word);
-			if (var_result == NULL) set_err(ENOTAVAR, word);
+			r_result = get_var(word);
+			if (r_result == NULL) set_err(ENOTAVAR, word);
 		}
 
 		free(word);
@@ -240,12 +236,12 @@ Var eval_expression(void){
 		(*(float*)value) = strtof(sym, &tmp); //TODO what happens if we dont use tmp?
 		sym = tmp;
 
-		var_result = new_var(NULL, value, FLOAT);
+		r_result = new_vref(NULL, value, FLOAT);
 
 	} else if (*sym == '[') {   /* Vector */
 
 		value = eval_vector(sym);
-		var_result = new_var(NULL, value, MATRIX);
+		r_result = new_vref(NULL, value, MATRIX);
 
 	} else {
 		set_err(ESYNTAX,sym);
@@ -253,12 +249,12 @@ Var eval_expression(void){
 	}
 
 	/* Error check */
-	if (var_result == NULL) {
+	if (r_result == NULL) {
 		free(value);
 		return NULL;
 	}
 
-	return var_result;
+	return r_result;
 }
 
 /**
