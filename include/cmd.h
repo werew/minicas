@@ -20,6 +20,8 @@ typedef struct {
 	} s_cmd, *Cmd;
 
 
+/* Create/destroy command */
+Cmd new_cmd(Ref (*fun) (ref_list), int n_args, ref_t** types);
 
 
 #endif
