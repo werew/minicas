@@ -126,7 +126,7 @@ int PivotPartiel(Matrix m,int i)
 			v=tmp;
 		}
 	}
-	return p;	//TODO valeur par defaut
+	return p==i?-1:p;	//TODO valeur par defaut
 }
 
 void addmultiple(Matrix A,int i,int j,float c)
@@ -158,6 +158,10 @@ Matrix echelonnage(Matrix m)
 	for(i=0;i<P->nrows;i++)
 	{
 		j=PivotPartiel(P,i);
+		if(j==-1)
+		{
+			continue;
+		}
 		if(j!=i)
 		{
 			echangeLigne(P,i,j);
@@ -180,6 +184,10 @@ float triangulaire(Matrix m,Matrix P)
 	for(i=0;i<P->ncols-1;i++)
 	{
 		j=PivotPartiel(P,i);
+		if(j==-1)
+		{
+			continue;
+		}
 		if(j!=i)
 		{
 			echangeLigne(P,i,j);
@@ -206,28 +214,28 @@ float determinant (Matrix m)
 	return c;
 }
 
-void remontee(Matrix A,Matrix X)
+/*void remontee(Matrix A,Matrix X)
 {
 	int i,j;
 	for(i=A->ncols-1;i>=0;i--)	//TODO -1 ou -2
 	{
 		setElt(X,i,0,getElt(A,i,A->ncols-1));
-		for(j=i+1;A->ncols;i++)
+		for(j=i+1;j<A->ncols;j++)
 		{
 			float new_elt=getElt(X,i,0)-getElt(A,i,j)*getElt(X,j,0);
 			setElt(X,i,0,new_elt);
 		}
 		setElt(X,i,0,(getElt(X,i,0)/getElt(A,i,i)));
 	}
-}
+}*/
 
 Matrix solve(Matrix A, Matrix B)
 {
-	Matrix X=newMatrix(B->nrows,1);
 	Matrix C=fusionMat(A,B);
 	Matrix D=echelonnage(C);
-	remontee(D,X);
-	return X;
+	//remontee(D,X);
+	Matrix E=bienEchelonner(D);
+	return sliceMatrix(E,A->ncols);
 }
 
 Matrix expo(Matrix m,int p)
