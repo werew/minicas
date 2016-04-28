@@ -24,6 +24,7 @@ void print_ref(Ref r){
 		case VAR: type = "VAR";
 			print_var(r->inst);
 			break;
+		default: return;
 	}
 
 	printf("Ref: %s, type: %s\n", r->name, type);

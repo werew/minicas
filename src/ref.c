@@ -23,6 +23,7 @@ void drop_ref(Ref r){
 			  break;
 		case CMD: //drop_cmd(r->inst);
 			  break;
+		default:  break;
 	}
 	free(r->name);
 	free(r);
