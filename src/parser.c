@@ -184,7 +184,7 @@ Ref declare_ref(char* name){
 	}
 
 	/* Free just the unnamed references */
-	if (e_r->name == NULL) free(v_var);
+	if (e_r->name == NULL) free(e_r);
 
 	return r;
 }			

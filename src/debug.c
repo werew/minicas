@@ -8,12 +8,12 @@
 
 
 void print_ref(Ref r){
-	if (v == NULL) {
+	if (r == NULL) {
 		puts("Invalid reference");
 		return;
 	}
 	
-	printf("-------------REF 0x%p-----------\n", v);
+	printf("-------------REF 0x%p-----------\n", r);
 
 	char* type;
 	switch (r->type) {
@@ -26,7 +26,7 @@ void print_ref(Ref r){
 			break;
 	}
 
-	printf("Ref: %s, type: %s\n", v->name, type);
+	printf("Ref: %s, type: %s\n", r->name, type);
 }
 
 void print_var(Var v){
@@ -46,5 +46,5 @@ void print_var(Var v){
 		default: type = "UNDEFINED";
 	}
 
-	printf("Var value: %f, type: %s\n\n", v->name, (*(float*) v->val), type);
+	printf("Var value: %f, type: %s\n\n", (*(float*) v->val), type);
 }
