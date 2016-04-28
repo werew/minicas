@@ -5,7 +5,7 @@
 
 
 /* Types of references handled by minicas */
-typedef enum { VAR, FUN, CMD } ref_t;
+typedef enum { VAR, FUN, CMD, ALL } ref_t;
 
 /* Reference */
 typedef struct {
