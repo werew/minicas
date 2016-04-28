@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "xtypes.h"
+#include "ref.h"
 #include "var.h"
 
 
