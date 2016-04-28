@@ -1,11 +1,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "xtypes.h"
-#include "storage.h"
+#include "var.h"
 
-
-/* Global storage buffer */
-v_list storage_buff[N_VLIST];
 
 /**
  * Drop a stored variable structure
@@ -14,26 +11,8 @@ v_list storage_buff[N_VLIST];
 void drop_var(Var v){
 	if (v == NULL) return;
 
-	free(v->name);
 	free(v->val);
 	free(v);
-}
-
-/**
- * Destroy a v_list all the variables that it constains.
- * @param l v_list to drop
- * @param unnamed_only If true only the unnamed variable will be dropped
- */
-void drop_v_list(v_list l, bool unnamed_only){
-
-	unsigned int i;
-	for ( i = 0; i < l->length; i++){
-		if (unnamed_only && l->var_list[i]->name != NULL) continue;
-		drop_var(l->var_list[i]);
-	}
-	
-	free(l->var_list);
-	free(l);
 }
 
 
@@ -56,75 +35,6 @@ Var new_var(char* name, void* val, t_var type){
 	return v;
 }
 		
-/**
- * Creates a new empty (zero-initialized) v_list
- * @return The newly created v_list
- */
-v_list new_v_list(void){
-	v_list l = malloc( sizeof (s_v_list));
-	if (l == NULL) return NULL;
-	memset(l, 0, sizeof (s_v_list));
-	return l;
-}
-
-
-/**
- * Search a variable inside the given v_list
- * @param name The name of the variable to search
- * @param l The list where to search the variable
- * @return The index representing the position of the variable in relation
- *	   to l->var_list or -1 if the variable has not been found
- */
-int search_var(const char* name, const v_list l){
-	unsigned int i;
-	for (i = 0; i < l->length; i++){
-		if ( strcmp( l->var_list[i]->name, name) == 0){
-			return i;
-		}
-	}
-	
-	return -1;
-}
-
-/**
- * Insert the given variable at the end of the given v_list
- * @param v The variable to insert
- * @param l The list where to insert v
- * @return The newly pushed variable in case of success or
- *	   NULL in case of error
- */
-Var push_var(v_list l, const Var v){
-	#define ALLOC_UNIT 8
-	if (l->var_list == NULL || l->length >= l->max){
-		Var* tmp = realloc(l->var_list, 
-			l->max + ALLOC_UNIT * sizeof (Var));
-		if (tmp == NULL) return NULL;
-	
-		l->var_list = tmp;
-		l->max += ALLOC_UNIT;
-	}
-	
-	l->var_list[l->length++] = v;	
-	return v;
-}
-	
-	
-/**
- * Replace the variable at the given position of the v_list with a new one
- * @param v The variable to insert
- * @param i The index representing a valid position of a variable to replace
- * @param l The list where to insert v
- * @return The newly inserted variable or NULL in case of error
- * @note At the moment the function doesn't imply any possible return of NULL
- *	 howover this return value needs to be considered for compatibility
- *	 with future versions of this function
- */
-Var replace_var_at(v_list l, int i, const Var v){
-	drop_var(l->var_list[i]);
-	l->var_list[i] = v;
-	return v;
-}
-
 /**
  * Find and get a stored variable
  * @param name The name of the variable to get
@@ -177,15 +87,4 @@ Var set_var(char* name, void* val, t_var type){
 e_v_lost:
 	drop_var(v);
 	return NULL;
-}
-	
-/* FNV-1a hash */
-unsigned int hash(const char* key){
-	unsigned int hash = 2166136261;
-	while (*key != '\0') {
-		hash ^= *key++;
-		hash *= 16777619;
-		hash %= N_VLIST;
-	}
-	return hash;
 }
