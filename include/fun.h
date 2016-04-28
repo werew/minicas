@@ -15,6 +15,7 @@ typedef struct {
 
 
 Fun new_fun(Ref (*fun) (ref_list), ref_list args);
+void drop_fun(Fun f);
 
 
 

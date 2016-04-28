@@ -18,3 +18,16 @@ Fun new_fun(Ref (*fun) (ref_list), ref_list args){
 
 	return f;
 }
+
+/**
+ * Drop a stored Fun structure
+ * @param f Fun to drop
+ */
+void drop_fun(Fun f){
+	
+	if (f == NULL) return;
+
+	free(f->args);
+	free(f);
+}
+
