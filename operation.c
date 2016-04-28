@@ -150,7 +150,30 @@ void echangeLigne(Matrix m,int i,int j)
 	}
 }
 
-float echelonnage(Matrix m,Matrix P)
+Matrix echelonnage(Matrix m)
+{
+	Matrix P=copyMatrix(m);
+	int i,j;
+	float c=1;
+	for(i=0;i<P->nrows-1;i++)
+	{
+		j=PivotPartiel(P,i);
+		if(j!=i)
+		{
+			echangeLigne(P,i,j);
+			c=-c;
+		}
+		diviseLigne(P,i,getElt(P,i,i));	//TODO coordonée de getElt juste?
+
+		for(j=i+1;j<P->nrows;j++)
+		{
+			addmultiple(P,j,i,(-getElt(P,j,i)/getElt(P,i,i)));
+		}
+	}
+	return P;
+}
+
+float triangulaire(Matrix m,Matrix P)
 {
 	int i,j;
 	float c=1;
@@ -170,17 +193,10 @@ float echelonnage(Matrix m,Matrix P)
 	return c;
 }
 
-Matrix triangulaire(Matrix m)
-{
-	Matrix P=copyMatrix(m);
-	echelonnage(m,P);
-	return P;
-}
-
 float determinant (Matrix m)
 {
 	Matrix P=copyMatrix(m);
-	float c=echelonnage(m,P);
+	float c=triangulaire(m,P);
 
 	int i;
 	for(i=0;i<P->ncols;i++)
@@ -208,8 +224,8 @@ void remontee(Matrix A,Matrix X)
 void solve(Matrix A, Matrix B, Matrix X)
 {
 	Matrix C=fusionMat(A,B);
-	triangulaire(C);
-	remontee(C,X);
+	Matrix D=echelonnage(C);
+	remontee(D,X);
 }
 
 Matrix expo(Matrix m,int p)
@@ -223,7 +239,7 @@ Matrix expo(Matrix m,int p)
 	return A;
 }
 
-void diviseLigne(Matrix A,int i,int c)
+void diviseLigne(Matrix A,int i,float c)
 {
 	int j;
 	for(j=0;j<A->ncols;j++)
@@ -232,12 +248,12 @@ void diviseLigne(Matrix A,int i,int c)
 	}
 }
 
-Matrix bienEchelonner(Matrix A,int r)
+Matrix bienEchelonner(Matrix A)
 {
 	Matrix B=copyMatrix(A);
 
 	int i,j;
-	for(i=r-1;r>=0;i--)
+	for(i=A->nrows-1;r>0;i--)
 	{
 		diviseLigne(B,i,getElt(B,i,i));
 		for(j=0;j<i;j++)
@@ -270,8 +286,8 @@ Matrix invert(Matrix m)
 	{
 		Matrix Id=identite(m->ncols);
 		Matrix A=fusionMat(m,Id);
-		Matrix B=triangulaire(A);
-		Matrix C=bienEchelonner(B,m->nrows);
+		Matrix B=echelonnage(A);
+		Matrix C=bienEchelonner(B);
 		Matrix D=sliceMatrix(C,m->ncols);
 		return D;
 	}

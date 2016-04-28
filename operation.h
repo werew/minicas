@@ -13,13 +13,13 @@ Matrix fusionMat(Matrix A,Matrix B);
 int PivotPartiel(Matrix m,int col);
 void addmultiple(Matrix A,int i,int j,float c);
 void echangeLigne(Matrix m,int i,int j);
-void diviseLigne(Matrix A,int i,int c);
-float echelonnage(Matrix m,Matrix P);
-Matrix triangulaire(Matrix m);
+void diviseLigne(Matrix A,int i,float c);
+Matrix echelonnage(Matrix m);
+float triangulaire(Matrix m,Matrix P);
 float determinant(Matrix m);
 void remontee(Matrix A,Matrix X);
 void solve(Matrix A,Matrix B,Matrix X);
-Matrix bienEchelonner(Matrix A,int r);
+Matrix bienEchelonner(Matrix A);
 Matrix sliceMatrix(Matrix A,int i);
 Matrix invert(Matrix m);
 
