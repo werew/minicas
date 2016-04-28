@@ -18,15 +18,14 @@ void drop_ref(Ref r){
 	switch (r->type) {
 		case VAR: drop_var(r->inst);
 			  break;
-	/* TODO add missing drop functions 
-		case FUN: drop_fun(r->inst);
+	/* TODO add missing drop functions */
+		case FUN: //drop_fun(r->inst);
 			  break;
-		case CMD: drop_cmd(r->inst);
+		case CMD: //drop_cmd(r->inst);
 			  break;
-	*/
 	}
-	free(v->name);
-	free(v);
+	free(r->name);
+	free(r);
 }
 
 /**
@@ -55,7 +54,7 @@ void drop_ref_list(ref_list l, bool unnamed_only){
  * @return A pointer to the newly created reference
  *	   or NULL in case of error
  */
-Ref new_ref(char* name, void* inst, ref_t type);
+Ref new_ref(char* name, void* inst, ref_t type){
 	Ref r = malloc( sizeof (s_ref));
 	if (r == NULL) return NULL;
 
@@ -109,7 +108,7 @@ int search_ref(const ref_list l, const char* name, ref_t type){
 Ref push_ref(ref_list l, Ref r){
 	#define ALLOC_UNIT 8
 	if (l->list == NULL || l->length >= l->max){
-		Var* tmp = realloc(l->list,
+		Ref* tmp = realloc(l->list,
 			l->max + ALLOC_UNIT * sizeof (Ref));
 		if (tmp == NULL) return NULL;
 	
@@ -163,7 +162,7 @@ Ref get_ref(const char* name, ref_t type){
  * @return The address of the newly stored/updated reference,
  *	   or NULL in case of error
  */
-Ref set_ref(char* name, void* inst, ref_t type);
+Ref set_ref(char* name, void* inst, ref_t type){
 
 	unsigned int h = hash(name);
 	if (ref_pool[h] == NULL){
