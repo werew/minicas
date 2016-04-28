@@ -65,7 +65,7 @@ Ref get_var(const char* name){
 	Ref r = get_ref(name, VAR);
 	if (r == NULL) return NULL;
 
-	return r->inst;
+	return r;
 }
 
 /**
