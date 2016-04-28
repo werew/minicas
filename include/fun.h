@@ -12,7 +12,6 @@ typedef struct {
 
 
 
-
 /* Create/destroy variables */
 Fun new_fun(Ref (*fun) (ref_list), ref_list args);
 void drop_fun(Fun f);
@@ -20,6 +19,7 @@ Ref new_fref(char* name,Ref (*fun) (ref_list), ref_list args);
 
 /* Set to and get from global storage */
 Ref set_fun(char* name, Ref (*fun) (ref_list), ref_list args);
+Ref get_fun(const char* name);
 
 
 

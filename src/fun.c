@@ -76,3 +76,16 @@ Ref set_fun(char* name, Ref (*fun) (ref_list), ref_list args){
 	return r;
 
 }
+
+/**
+ * Find and get a stored function
+ * @param name The name of the function to get
+ * @return The reference or NULL if any function having the
+ *	   given name has been found
+ */
+Ref get_fun(const char* name){
+	Ref r = get_ref(name, FUN);
+	if (r == NULL) return NULL;
+
+	return r;
+}
