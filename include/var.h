@@ -1,8 +1,8 @@
 #ifndef _VAR_H_
 #define _VAR_H_
 
-#include "ref.h"
 #include "xtypes.h"
+#include "ref.h"
 
 
 /* Types of variables handled by minicas */
@@ -17,6 +17,7 @@ typedef struct {
 /* Create/destroy variables */
 Var new_var(void* val, var_t type);
 void drop_var(Var v);
+Ref new_vref(char* name, void* val, var_t type);
 
 /* Set to and get from global storage */
 Ref set_var(char* name, void* val, var_t type);

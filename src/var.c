@@ -33,6 +33,27 @@ Var new_var(void* val, var_t type){
 	
 	return v;
 }
+
+/**
+ * Creates a variable and a reference pointing to it
+ * @param name Name of the reference
+ * @param val Pointer to the content of the variable
+ * @param type Type of the variable
+ * @return A pointer to the new reference or NULL in case 
+ *	   of error
+ */
+Ref new_vref(char* name, void* val, var_t type){
+	Var v = new_var(val, type);
+	if (v == NULL) return NULL;
+
+	Ref r = new_ref(name, v, VAR);
+	if (r == NULL){
+		drop_var(v);
+		return NULL;
+	}
+	
+	return r;
+}	
 		
 /**
  * Find and get a stored variable

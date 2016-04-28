@@ -2,7 +2,9 @@
 
 #ifndef _DEBUG_
 #define _DEBUG_
-#include "storage.h"
+
+#include "var.h"
+#include "ref.h"
 
 void print_var(Var v);
 void print_ref(Ref r);
