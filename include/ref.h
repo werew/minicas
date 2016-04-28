@@ -1,5 +1,5 @@
-#ifndef _STORAGE_H_
-#define _STORAGE_H_
+#ifndef _REF_H_
+#define _REF_H_
 
 #include "xtypes.h"
 
@@ -38,7 +38,7 @@ Ref get_ref(const char* name, ref_t type);
 
 /* Vars list operations */
 ref_list new_ref_list(void);
-void drop_ref_list(v_list l, bool unnamed_only);
+void drop_ref_list(ref_list l, bool unnamed_only);
 Ref push_ref(ref_list l, Ref r);
 Ref replace_ref_at(ref_list l, unsigned int i, Ref r);
 int search_ref(const ref_list l, const char* name, ref_t type);

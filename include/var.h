@@ -1,5 +1,5 @@
-#ifndef _STORAGE_H_
-#define _STORAGE_H_
+#ifndef _VAR_H_
+#define _VAR_H_
 
 #include "ref.h"
 #include "xtypes.h"
