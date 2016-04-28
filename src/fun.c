@@ -52,3 +52,27 @@ Ref new_fref(char* name,Ref (*fun) (ref_list), ref_list args){
 	
 	return r;
 }	
+
+
+/**
+ * Create and store or update a Funciton
+ * @param name Name of the function to store/update
+ * @param fun Pointer to the handler
+ * @param args List of predefined arguments
+ * @return The reference of the newly stored/updated function,
+ *	   or NULL in case of error
+ */
+Ref set_fun(char* name, Ref (*fun) (ref_list), ref_list args){
+
+	Fun f = new_fun(fun, args);
+	if (f == NULL) return NULL;
+
+	Ref r = set_ref(name, f, FUN);
+	if (r == NULL) {
+		drop_fun(f);
+		return NULL;
+	}
+	
+	return r;
+
+}
