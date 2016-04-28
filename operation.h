@@ -18,7 +18,7 @@ Matrix echelonnage(Matrix m);
 float triangulaire(Matrix m,Matrix P);
 float determinant(Matrix m);
 void remontee(Matrix A,Matrix X);
-void solve(Matrix A,Matrix B,Matrix X);
+Matrix solve(Matrix A,Matrix B);
 Matrix bienEchelonner(Matrix A);
 Matrix sliceMatrix(Matrix A,int i);
 Matrix invert(Matrix m);

@@ -155,7 +155,7 @@ Matrix echelonnage(Matrix m)
 	Matrix P=copyMatrix(m);
 	int i,j;
 	float c=1;
-	for(i=0;i<P->nrows-1;i++)
+	for(i=0;i<P->nrows;i++)
 	{
 		j=PivotPartiel(P,i);
 		if(j!=i)
@@ -221,11 +221,13 @@ void remontee(Matrix A,Matrix X)
 	}
 }
 
-void solve(Matrix A, Matrix B, Matrix X)
+Matrix solve(Matrix A, Matrix B)
 {
+	Matrix X=newMatrix(B->nrows,1);
 	Matrix C=fusionMat(A,B);
 	Matrix D=echelonnage(C);
 	remontee(D,X);
+	return X;
 }
 
 Matrix expo(Matrix m,int p)
@@ -253,12 +255,12 @@ Matrix bienEchelonner(Matrix A)
 	Matrix B=copyMatrix(A);
 
 	int i,j;
-	for(i=A->nrows-1;r>0;i--)
+	for(i=A->nrows-1;i>0;i--)
 	{
-		diviseLigne(B,i,getElt(B,i,i));
+		//diviseLigne(B,i,getElt(B,i,i));
 		for(j=0;j<i;j++)
 		{
-			addmultiple(B,j,i,getElt(B,j,i));
+			addmultiple(B,j,i,-getElt(B,j,i));
 		}
 	}
 	return B;
