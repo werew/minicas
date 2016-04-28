@@ -20,8 +20,7 @@ ref_t A_ALL[] = { ALL };
  */
 Cmd new_cmd(Ref (*fun) (ref_list), int n_args, ref_t** types){
 	Cmd c = malloc(sizeof (s_cmd));
-	if (c == NULL) return NULL;
-
+	if (c == NULL) return NULL; 
 	c->fun = fun;
 	c->n_args = n_args;
 	c->types = types;

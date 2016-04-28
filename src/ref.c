@@ -1,8 +1,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include "xtypes.h"
-#include "var.h"
 #include "ref.h"
+#include "var.h"
+#include "fun.h"
+#include "cmd.h"
 
 
 /* Global storage buffer */
