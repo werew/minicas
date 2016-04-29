@@ -265,6 +265,28 @@ Ref declare_ref(char* name){
 	return r;
 }			
 
+
+/**
+ * Parse and evaluates a float. When eval_float is
+ * called, the global pointer 'sym' must point to beginning
+ * of the float number . 
+ * @return The reference result of the Float being evaluated, 
+ *	   of NULL in case of error
+ */
+Ref eval_float(){
+	float* value = malloc(sizeof (float));
+	if (value == NULL) return NULL;
+
+	char* tmp;
+	*value = strtof(sym, &tmp); //TODO what happens if we dont use tmp?
+	sym = tmp;
+
+	Ref r = new_vref(NULL, value, FLOAT);
+	if (r == NULL) free(value);
+
+	return r;
+}
+
 /**
  * Evaluates one of the following kind of expression:
  *	- function
@@ -281,7 +303,6 @@ Ref eval_expression(void){
 	sym = jump_cclass(sym, SPACE);
 
 	/* Evaluate next token */
-	void* value = NULL;	
 	Ref r_result = NULL;	
 
 	if (isalpha(*sym)) {  	   /* Variable or function */		
@@ -304,14 +325,7 @@ Ref eval_expression(void){
 		
 	} else if (isdigit(*sym)) { /* Num value */
 
-		value = malloc(sizeof (float));
-		if (value == NULL) return NULL;
-
-		char* tmp;
-		(*(float*)value) = strtof(sym, &tmp); //TODO what happens if we dont use tmp?
-		sym = tmp;
-
-		r_result = new_vref(NULL, value, FLOAT);
+		r_result = eval_float();
 
 	} else if (*sym == '[') {   /* Vector */
 
@@ -319,12 +333,6 @@ Ref eval_expression(void){
 
 	} else {
 		set_err(ESYNTAX,sym);
-		return NULL;
-	}
-
-	/* Error check */
-	if (r_result == NULL) {
-		free(value);
 		return NULL;
 	}
 
