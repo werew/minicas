@@ -34,7 +34,7 @@ Ref matrix_call(ref_list args){
 		var = (Var) args->list[i]->inst;
 		vect = (Matrix) var->val;
 
-		for (j = 0; i < m->ncols; j++){
+		for (j = 0; j < m->ncols; j++){
 			float el = getElt(vect,0,j);
 			setElt(m,i,j,el);
 		}
