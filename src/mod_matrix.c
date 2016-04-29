@@ -1,7 +1,19 @@
 #include <stdlib.h>
 #include "matrix.h"
+#include "mod_matrix.h"
 #include "ref_all.h"
 
+
+/** Module loader  **/
+void load_mod_matrix(void){	
+
+	/* Load env variables */
+
+	/* Load module functions */
+	set_fun("matrix",matrix_call,NULL);
+	
+	
+}
 
 /**
  * Creates a Matrix from a list of vectors
