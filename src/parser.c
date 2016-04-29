@@ -3,17 +3,19 @@
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
-#include "parser.h"
 #include "error.h"
-#include "var.h"
-#include "ref.h"
 #include "xtypes.h"
 #include "debug.h" //DBG
-#include "matrix.h"
+
+#include "ref_all.h"
+#include "parser.h"
 
 /* Current symbol pointer */
 static char* sym;
 static char* line;
+
+
+/***************************** PARSE-HELPERS **********************************/
 
 /**
  * Get test function for a given c_class 
@@ -72,169 +74,7 @@ char* pop_word(void){
 }
 
 
-
-
-/* FIXME DBG content */
-Ref exec_fun(char* fun, ref_list args){
-
-	/* TODO */
-	printf("* TODO HERE EXEC FUN: %s\nARGS:\n", fun);
-	unsigned int i;
-	for(i = 0; i < args->length; i++){
-		print_ref(args->list[i]);
-	}
-	fflush(stdout);
-
-	/* TODO */
-	float* f = malloc(sizeof (float));
-	*f = 12345678;
-	return new_vref(NULL, f, FLOAT);
-}
-
-
-
-/**
- * Parse and evaluates a function call. When eval_fun is
- * called, the global pointer 'sym' must point to the
- * left parenthesis immediatly (exept spaces) following the
- * function name. Examples of valid syntax for a function 
- * call are:
-
- * 	fun1 ( 29, 7, 12);
- *	fun1( a, b, c ) 	# a, b and c must be declared
- * 	fun1 ( fun2(b, 12), c, fun3(fun4(a)) );
- * @param fun Name of the called function
- * @return The reference result of the function being evaluated, 
- *	   of NULL in case of error
- */
-Ref eval_fun(char* fun){
-
-	ref_list args = new_ref_list();
-	if (args == NULL) return NULL;
-
-	do {
-		sym++;
-
-		Ref r = eval_expression();
-		if (r == NULL || push_ref(args, r) == NULL) goto error;
-
-		sym = jump_cclass(sym, SPACE);
-
-	} while ( *sym == ',');
-
-	/* Check for a valid end-of-function */
-	if (*sym != ')'){
-		set_err(ESYNTAX,sym);
-		goto error;
-	} 
-
-	/* By convention move to the char 
-	   right next the expression */	
-	sym++;
-
-	Ref ret = exec_fun(fun, args);	
-	drop_ref_list(args, true);	
-	
-	return ret;
-
-error:
-	drop_ref_list(args, true);	
-	return NULL;
-}			
-
-
-
-/**
- * Parse and evaluates a vactor. When eval_vect is
- * called, the global pointer 'sym' must point to beginning
- * of the vector: '[' . 
- * Examples of valid syntax for a vector:
- * 	[ 12, 22, 66];
- *	[ a, b, c ] 	# a, b and c must be declared
- * 	[ fun(b, 12), c, fun2(fun3(a)) ];
- *
- * @return The reference result of the vector being evaluated, 
- *	   of NULL in case of error
- */
-Ref eval_vector(void){
-
-	ref_list elts = new_ref_list();
-	if (elts == NULL) return NULL;
-	
-	do {
-		sym++;
-
-		Ref r = eval_expression();
-		if (r == NULL || push_ref(elts, r) == NULL) goto error;
-
-		if (r->type != VAR || ((Var)r->inst)->type == MATRIX) {
-			set_err(ETYPE, "only Float allowed inside a Matrix");
-			goto error;
-		}
-
-		sym = jump_cclass(sym, SPACE);
-
-	} while ( *sym == ',');
-
-	/* Check for a valid end-of-vector */
-	if (*sym != ']'){
-		set_err(ESYNTAX,sym);
-		goto error;
-	} 
-
-	/* By convention move to the char 
-	   right next the expression */	
-	sym++;
-
-	/* Craft a Matrix from the ref_list */
-	Matrix m = ref_list2vect(elts);		
-	if ( m == NULL ) goto error;
-	displayMatrix(m);//DBG
-
-	drop_ref_list(elts, true);	
-
-	/* Return a reference */
-	Ref r = new_vref(NULL, m, MATRIX);
-	if (r == NULL) free(m);
-	
-	return r;
-
-error:
-	drop_ref_list(elts, true);	
-	return NULL;
-}
-
-
-/**
- * Creates a Matrix from a ref_list of float
- * @param l A ref_list containing references to Float values
- * @prec The ref_list must contain only Float references
- */
-Matrix ref_list2vect(ref_list l){
-	Matrix m = newMatrix(1, l->length);
-	if (m == NULL) return NULL;
-
-	unsigned int i;
-	for (i = 0; i < l->length; i++){
-
-		Var v = (Var) l->list[i]->inst;
-		float* val = v->val;
-
-		setElt(m, 0, i, *val);
-	}
-	
-	return m;
-}
-
-
-
-
-/* sym = args */	
-int exec_cmd(char* cmd){
-	/*TODO*/
-	printf("* TODO HERE EXECUTE CMD:  %s *\n",cmd);
-	return 0;
-}			
+/***************************** INTERNAL CALLS **********************************/
 
 
 /**
@@ -265,79 +105,32 @@ Ref declare_ref(char* name){
 	return r;
 }			
 
+/* FIXME DBG content */
+Ref exec_fun(char* fun, ref_list args){
 
-/**
- * Parse and evaluates a float. When eval_float is
- * called, the global pointer 'sym' must point to beginning
- * of the float number . 
- * @return The reference result of the Float being evaluated, 
- *	   of NULL in case of error
- */
-Ref eval_float(){
-	float* value = malloc(sizeof (float));
-	if (value == NULL) return NULL;
-
-	char* tmp;
-	*value = strtof(sym, &tmp); //TODO what happens if we dont use tmp?
-	sym = tmp;
-
-	Ref r = new_vref(NULL, value, FLOAT);
-	if (r == NULL) free(value);
-
-	return r;
-}
-
-/**
- * Evaluates one of the following kind of expression:
- *	- function
- *	- vector
- *	- variable
- *	- numeric value
- *
- * An expression could be a variable, a function, a numerical value or a vector
- */
-Ref eval_expression(void){
-	
-
-	/* Jump all the blank characters */	
-	sym = jump_cclass(sym, SPACE);
-
-	/* Evaluate next token */
-	Ref r_result = NULL;	
-
-	if (isalpha(*sym)) {  	   /* Variable or function */		
-
-		char* word = pop_word();
-		if (word == NULL) return NULL;
-
-		sym = jump_cclass(sym, SPACE);
-
-		if (*sym == '('){ 
-
-			r_result = eval_fun(word);
-		} else {
-
-			r_result = get_var(word);
-			if (r_result == NULL) set_err(ENOTAVAR, word);
-		}
-
-		free(word);
-		
-	} else if (isdigit(*sym)) { /* Num value */
-
-		r_result = eval_float();
-
-	} else if (*sym == '[') {   /* Vector */
-
-		r_result = eval_vector();
-
-	} else {
-		set_err(ESYNTAX,sym);
-		return NULL;
+	/* TODO */
+	printf("* TODO HERE EXEC FUN: %s\nARGS:\n", fun);
+	unsigned int i;
+	for(i = 0; i < args->length; i++){
+		print_ref(args->list[i]);
 	}
+	fflush(stdout);
 
-	return r_result;
+	/* TODO */
+	float* f = malloc(sizeof (float));
+	*f = 12345678;
+	return new_vref(NULL, f, FLOAT);
 }
+
+
+/* sym = args */	
+int exec_cmd(char* cmd){
+	/*TODO*/
+	printf("* TODO HERE EXECUTE CMD:  %s *\n",cmd);
+	return 0;
+}			
+
+/***************************** EVALUATORS   **********************************/
 
 /**
  * Evaluates one single instruction. The beginning of the instruction
@@ -405,6 +198,218 @@ error:
 }
 
 
+
+
+
+
+
+
+/**
+ * Parse and evaluates a function call. When eval_fun is
+ * called, the global pointer 'sym' must point to the
+ * left parenthesis immediatly (exept spaces) following the
+ * function name. Examples of valid syntax for a function 
+ * call are:
+
+ * 	fun1 ( 29, 7, 12);
+ *	fun1( a, b, c ) 	# a, b and c must be declared
+ * 	fun1 ( fun2(b, 12), c, fun3(fun4(a)) );
+ * @param fun Name of the called function
+ * @return The reference result of the function being evaluated, 
+ *	   of NULL in case of error
+ */
+Ref eval_fun(char* fun){
+
+	ref_list args = new_ref_list();
+	if (args == NULL) return NULL;
+
+	do {
+		sym++;
+
+		Ref r = eval_expression();
+		if (r == NULL || push_ref(args, r) == NULL) goto error;
+
+		sym = jump_cclass(sym, SPACE);
+
+	} while ( *sym == ',');
+
+	/* Check for a valid end-of-function */
+	if (*sym != ')'){
+		set_err(ESYNTAX,sym);
+		goto error;
+	} 
+
+	/* By convention move to the char 
+	   right next the expression */	
+	sym++;
+
+	Ref ret = exec_fun(fun, args);	
+	drop_ref_list(args, true);	
+	
+	return ret;
+
+error:
+	drop_ref_list(args, true);	
+	return NULL;
+}			
+
+
+
+
+
+
+
+
+
+
+/**
+ * Parse and evaluates a vactor. When eval_vect is
+ * called, the global pointer 'sym' must point to beginning
+ * of the vector: '[' . 
+ * Examples of valid syntax for a vector:
+ * 	[ 12, 22, 66];
+ *	[ a, b, c ] 	# a, b and c must be declared
+ * 	[ fun(b, 12), c, fun2(fun3(a)) ];
+ *
+ * @return The reference result of the vector being evaluated, 
+ *	   of NULL in case of error
+ */
+Ref eval_vector(void){
+
+	ref_list elts = new_ref_list();
+	if (elts == NULL) return NULL;
+	
+	do {
+		sym++;
+
+		Ref r = eval_expression();
+		if (r == NULL || push_ref(elts, r) == NULL) goto error;
+
+		if (r->type != VAR || ((Var)r->inst)->type == MATRIX) {
+			set_err(ETYPE, "only Float allowed inside a Matrix");
+			goto error;
+		}
+
+		sym = jump_cclass(sym, SPACE);
+
+	} while ( *sym == ',');
+
+	/* Check for a valid end-of-vector */
+	if (*sym != ']'){
+		set_err(ESYNTAX,sym);
+		goto error;
+	} 
+
+	/* By convention move to the char 
+	   right next the expression */	
+	sym++;
+
+	/* Craft a Matrix from the ref_list */
+	Matrix m = ref_list2vect(elts);		
+	if ( m == NULL ) goto error;
+	displayMatrix(m);//DBG
+
+	drop_ref_list(elts, true);	
+
+	/* Return a reference */
+	Ref r = new_vref(NULL, m, MATRIX);
+	if (r == NULL) free(m);
+	
+	return r;
+
+error:
+	drop_ref_list(elts, true);	
+	return NULL;
+}
+
+
+
+
+
+
+
+
+/**
+ * Parse and evaluates a float. When eval_float is
+ * called, the global pointer 'sym' must point to beginning
+ * of the float number . 
+ * @return The reference result of the Float being evaluated, 
+ *	   of NULL in case of error
+ */
+Ref eval_float(){
+	float* value = malloc(sizeof (float));
+	if (value == NULL) return NULL;
+
+	char* tmp;
+	*value = strtof(sym, &tmp);
+	sym = tmp;
+
+	Ref r = new_vref(NULL, value, FLOAT);
+	if (r == NULL) free(value);
+
+	return r;
+}
+
+
+
+
+
+
+
+
+/**
+ * Evaluates one of the following kind of expression:
+ *	- function
+ *	- vector
+ *	- variable
+ *	- numeric value
+ *
+ * An expression could be a variable, a function, a numerical value or a vector
+ */
+Ref eval_expression(void){
+	
+
+	/* Jump all the blank characters */	
+	sym = jump_cclass(sym, SPACE);
+
+	/* Evaluate next token */
+	Ref r_result = NULL;	
+
+	if (isalpha(*sym)) {  	   
+		/* Variable or function */		
+		char* word = pop_word();
+		if (word == NULL) return NULL;
+
+		sym = jump_cclass(sym, SPACE);
+
+		if (*sym == '('){ 
+			r_result = eval_fun(word);
+
+		} else {
+			r_result = get_var(word);
+			if (r_result == NULL) set_err(ENOTAVAR, word);
+		}
+
+		free(word);
+		
+	} else if (isdigit(*sym)) { 
+		/* Num value */
+		r_result = eval_float();
+
+	} else if (*sym == '[') {   
+		/* Vector */
+		r_result = eval_vector();
+
+	} else {
+		set_err(ESYNTAX,sym);
+		return NULL;
+	}
+
+	return r_result;
+}
+
+
+
 /**
  * Evaluate and execute user input.
  *
@@ -449,3 +454,39 @@ int eval_input(char* user_input){
 	
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Creates a Matrix from a ref_list of float
+ * @param l A ref_list containing references to Float values
+ * @prec The ref_list must contain only Float references
+ */
+Matrix ref_list2vect(ref_list l){
+	Matrix m = newMatrix(1, l->length);
+	if (m == NULL) return NULL;
+
+	unsigned int i;
+	for (i = 0; i < l->length; i++){
+
+		Var v = (Var) l->list[i]->inst;
+		float* val = v->val;
+
+		setElt(m, 0, i, *val);
+	}
+	
+	return m;
+}
+
