@@ -35,6 +35,13 @@ Ref matrix_call(ref_list args){
 	for (i = 0; i < m->nrows; i++){
 
 		var = (Var) args->list[i]->inst;
+		if ( var->type != MATRIX ) {
+			set_err(ETYPE, "the arguments of \"matrix\""
+				       " must be of type Matrix" );
+			free(m); //FIX
+			return NULL;
+		}
+	
 		vect = (Matrix) var->val;
 
 		for (j = 0; j < m->ncols; j++){
