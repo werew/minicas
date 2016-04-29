@@ -2,15 +2,17 @@
 #include "matrix.h"
 #include "mod_matrix.h"
 #include "ref_all.h"
+#include "error.h"
 
 
 /** Module loader  **/
 void load_mod_matrix(void){	
-
+	Ref load = NULL;
 	/* Load env variables */
 
 	/* Load module functions */
-	set_fun("matrix",matrix_call,NULL);
+	load = set_fun("matrix",matrix_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function matrix");
 	
 	
 }
