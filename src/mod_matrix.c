@@ -20,6 +20,9 @@ void load_mod_matrix(void){
 	
 	load = set_fun("mult",mult_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function mult");
+
+	load = set_fun("addition",addition_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function addition");
 }
 
 /* Check if reference is a matrix */
@@ -135,3 +138,47 @@ error:
 	free(mult); //TODO
 	return NULL;
 }
+
+
+
+
+Ref addition_call(ref_list args){
+
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+		
+	Var var = (Var) args->list[0]->inst;
+	Matrix m = (Matrix) var->val;
+
+	Matrix sum = copyMatrix(m);
+	if (sum == NULL) return NULL;
+
+	unsigned int i;
+	for (i = 1; i < args->length; i++){
+		
+		
+		if (expect_Matrix(args->list[i]) == false) goto error;
+
+		var = (Var) args->list[i]->inst;
+		m = (Matrix) var->val;
+		if (m->nrows != sum->nrows || m->ncols != sum->ncols) {
+			set_err(EMXDIM,"dimensions don't match");
+			goto error;
+		}
+
+		Matrix tmp = addition(sum, m);
+		if (tmp == NULL ) goto error;
+
+		free(sum); //FIXME
+		sum = tmp;
+	}
+    
+	/* Return a reference */
+	Ref r = new_vref(NULL, sum, MATRIX);
+	if (r == NULL) free(sum); //TODO FIX
+
+	return r;
+error:
+	free(sum); //TODO
+	return NULL;
+}
+

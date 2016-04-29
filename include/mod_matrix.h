@@ -10,6 +10,7 @@ void load_mod_matrix(void);
 Ref matrix_call(ref_list args);
 Ref transpose_call(ref_list args);
 Ref mult_call(ref_list args);
+Ref addition_call(ref_list args);
 
 
 #endif 
