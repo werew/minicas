@@ -144,7 +144,18 @@ error:
 
 
 
-/* sym = '[' */	
+/**
+ * Parse and evaluates a vactor. When eval_vect is
+ * called, the global pointer 'sym' must point to beginning
+ * of the vector: '[' . 
+ * Examples of valid syntax for a vector:
+ * 	[ 12, 22, 66];
+ *	[ a, b, c ] 	# a, b and c must be declared
+ * 	[ fun(b, 12), c, fun2(fun3(a)) ];
+ *
+ * @return The reference result of the vector being evaluated, 
+ *	   of NULL in case of error
+ */
 Ref eval_vector(void){
 
 	ref_list elts = new_ref_list();
@@ -193,6 +204,12 @@ error:
 	return NULL;
 }
 
+
+/**
+ * Creates a Matrix from a ref_list of float
+ * @param l A ref_list containing references to Float values
+ * @prec The ref_list must contain only Float references
+ */
 Matrix ref_list2vect(ref_list l){
 	Matrix m = newMatrix(1, l->length);
 	if (m == NULL) return NULL;
