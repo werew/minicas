@@ -8,6 +8,7 @@
 void load_mod_matrix(void);
 
 Ref matrix_call(ref_list args);
+Ref transpose_call(ref_list args);
 
 
 #endif 
