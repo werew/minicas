@@ -1,8 +1,11 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "xtypes.h"
-#include "ref.h"
-#include "var.h"
+#include "ref_all.h"
+#include "matrix.h"
+
+
 
 
 /**
@@ -89,4 +92,26 @@ Ref set_var(char* name, void* val, var_t type){
 	
 	return r;
 
+}
+
+
+
+
+
+/**
+ * Print a Var
+ */
+void print_var(Var v){
+	printf("Var ");
+	switch (v->type){
+
+		case MATRIX: 
+			printf("Matrix :\n");
+			displayMatrix(v->val);
+			break;
+
+		case FLOAT:
+			printf("float : %f\n",(*(float*) v->val));
+			break;
+	}
 }
