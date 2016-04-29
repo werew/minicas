@@ -14,6 +14,8 @@ int main(void){
    char *line;
    size_t n=0;
 
+   init_env();
+
    if (!fstat(0, &buf) && S_ISREG(buf.st_mode)) {
 
        line=NULL;
