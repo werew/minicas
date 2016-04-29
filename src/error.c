@@ -43,6 +43,9 @@ void print_error(void){
 		case ENOTAVAR:
 			fprintf(stderr,"Not a valid variable: %s\n", err_arg);
 			break;
+		case ETYPE:
+			fprintf(stderr,"Type error: %s\n", err_arg);
+			break;
 		default: /* Not an error */
 			return;
 	}

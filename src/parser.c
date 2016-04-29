@@ -9,6 +9,7 @@
 #include "ref.h"
 #include "xtypes.h"
 #include "debug.h" //DBG
+#include "matrix.h"
 
 /* Current symbol pointer */
 static char* sym;
@@ -144,10 +145,68 @@ error:
 
 
 /* sym = '[' */	
-Matrix eval_vector(char* vect){
-	/* TODO */
-	printf("* TODO EVAL VECT %s\n",vect);
+Ref eval_vector(void){
+
+	ref_list elts = new_ref_list();
+	if (elts == NULL) return NULL;
+	
+	do {
+		sym++;
+
+		Ref r = eval_expression();
+		if (r == NULL || push_ref(elts, r) == NULL) goto error;
+
+		if (r->type != VAR || ((Var)r->inst)->type == MATRIX) {
+			set_err(ETYPE, "only Float allowed inside a Matrix");
+			goto error;
+		}
+
+		sym = jump_cclass(sym, SPACE);
+
+	} while ( *sym == ',');
+
+	/* Check for a valid end-of-vector */
+	if (*sym != ']'){
+		set_err(ESYNTAX,sym);
+		goto error;
+	} 
+
+	/* By convention move to the char 
+	   right next the expression */	
+	sym++;
+
+	/* Craft a Matrix from the ref_list */
+	Matrix m = ref_list2vect(elts);		
+	if ( m == NULL ) goto error;
+	displayMatrix(m);//DBG
+
+	drop_ref_list(elts, true);	
+
+	/* Return a reference */
+	Ref r = new_vref(NULL, m, MATRIX);
+	if (r == NULL) free(m);
+	
+	return r;
+
+error:
+	drop_ref_list(elts, true);	
 	return NULL;
+}
+
+Matrix ref_list2vect(ref_list l){
+	Matrix m = newMatrix(1, l->length);
+	if (m == NULL) return NULL;
+
+	unsigned int i;
+	for (i = 0; i < l->length; i++){
+
+		Var v = (Var) l->list[i]->inst;
+		float* val = v->val;
+
+		setElt(m, 0, i, *val);
+	}
+	
+	return m;
 }
 
 
@@ -239,8 +298,7 @@ Ref eval_expression(void){
 
 	} else if (*sym == '[') {   /* Vector */
 
-		value = eval_vector(sym);
-		r_result = new_vref(NULL, value, MATRIX);
+		r_result = eval_vector();
 
 	} else {
 		set_err(ESYNTAX,sym);

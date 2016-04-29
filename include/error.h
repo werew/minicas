@@ -6,7 +6,8 @@ typedef enum {
 	ESYNTAX, 
 	ENOTAFUN,
 	ENOTACMD,
-	ENOTAVAR
+	ENOTAVAR,
+	ETYPE
 	} Error;
 
 #define MAX_EMSG 100
