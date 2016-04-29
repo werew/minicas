@@ -74,20 +74,13 @@ Ref transpose_call(ref_list args){
 		set_err(ETYPE, "to many arguments");
 		return NULL;	
 	}
-
-	if ( args->list[0]->type != VAR) {
-		set_err(ETYPE, "only Var accepted in \"transpose\"");
-		return NULL;
-	}
-
-	Var vm = (Var) args->list[0]->inst;
-	if (vm->type != MATRIX) {
-		set_err(ETYPE, "only Matrix accepted in \"transpose\"");
-		return NULL;
-	} 
 	
-	Matrix m = (Matrix) vm->val;
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+	
+	Var var = (Var) args->list[0]->inst;
+	Matrix m = (Matrix) var->val;
 	Matrix t = transpose(m);
+
 	if (t == NULL) return NULL;
 
 	Ref r = new_vref(NULL, t, MATRIX);
