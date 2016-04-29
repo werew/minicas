@@ -325,7 +325,7 @@ Matrix invert(Matrix m)
 int ligneZero(Matrix A,int l)
 {
 	int i;
-	for(i=0;i<ncols;i++)
+	for(i=0;i<A->ncols;i++)
 	{
 		if(getElt(A,l,i)!=0)
 		{
