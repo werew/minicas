@@ -43,8 +43,9 @@ Ref push_ref(ref_list l, Ref r);
 Ref replace_ref_at(ref_list l, unsigned int i, Ref r);
 int search_ref(const ref_list l, const char* name, ref_t type);
 
-/* Hash generation */
+/* Various */
 unsigned int hash(const char* key);
+void print_ref(Ref r);
 
 #endif
 

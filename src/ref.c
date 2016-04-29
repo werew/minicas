@@ -1,14 +1,15 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "xtypes.h"
-#include "ref.h"
-#include "var.h"
-#include "fun.h"
-#include "cmd.h"
+#include "ref_all.h"
 
 
 /* Global storage buffer */
 ref_list ref_pool[N_RLIST];
+
+
+
 
 /**
  * Drop a stored reference
@@ -195,6 +196,37 @@ e_r_lost:
 	drop_ref(r);
 	return NULL;
 }
+
+
+
+/**
+ * Print a refererence
+ */
+void print_ref(Ref r){
+
+	if (r == NULL) {
+		puts("\t@_ (Empty)");
+		return;
+	}
+
+	printf("\t@%s -> ",(r->name == NULL)? "toto" : r->name);
+		
+	switch (r->type) {
+		case VAR: print_var(r->inst);
+			  break;
+		case FUN: print_fun(r->inst);
+			  break;
+		case CMD: print_cmd(r->inst);
+			  break;
+
+		default:  break;
+	}
+	
+	fflush(stdout);
+}
+
+
+
 	
 /* FNV-1a hash */
 unsigned int hash(const char* key){
