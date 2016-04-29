@@ -1,7 +1,19 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "ref.h"
 #include "fun.h"
 #include "error.h"
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Creates a new function structure
@@ -88,4 +100,19 @@ Ref get_fun(const char* name){
 	if (r == NULL) return NULL;
 
 	return r;
+}
+
+/**
+ * Print a function and his predefined arguments 
+ */
+void print_fun(Fun f){
+	printf("function");
+	if (f->args == NULL) return;
+
+	unsigned int i;
+	for (i = 0; i < f->args->length; i++){
+		printf("\t-- Arg %d --\n",i);
+		print_ref(f->args->list[i]);	
+		printf("\n");
+	}
 }
