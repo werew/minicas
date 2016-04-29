@@ -7,7 +7,8 @@ typedef enum {
 	ENOTAFUN,
 	ENOTACMD,
 	ENOTAVAR,
-	ETYPE
+	ETYPE,
+	ELOAD
 	} Error;
 
 #define MAX_EMSG 100
@@ -16,6 +17,7 @@ extern Error local_err;
 
 void set_err(Error e, char* arg);
 void print_error(void);
+void inst_err(Error e, char* arg);
 
 
 #endif

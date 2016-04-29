@@ -7,6 +7,11 @@
 char err_arg[MAX_EMSG];
 Error local_err = SUCCESS;
 
+void inst_err(Error e, char* arg){
+	set_err(e, arg);
+	print_error();
+}
+
 /**
  * Set custom error 
  * @param e Error
@@ -45,6 +50,9 @@ void print_error(void){
 			break;
 		case ETYPE:
 			fprintf(stderr,"Type error: %s\n", err_arg);
+			break;
+		case ELOAD:
+			fprintf(stderr,"Cannot load: %s\n", err_arg);
 			break;
 		default: /* Not an error */
 			return;
