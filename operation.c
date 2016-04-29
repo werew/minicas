@@ -322,3 +322,26 @@ Matrix invert(Matrix m)
 }*/
 
 
+int ligneZero(Matrix A,int l)
+{
+	int i;
+	for(i=0;i<ncols;i++)
+	{
+		if(getElt(A,l,i)!=0)
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int rank(Matrix A)
+{
+	int lz=0;
+	int i;
+	for(i=0;i<A->nrows;i++)
+	{
+		lz+=ligneZero(A,i);
+	}
+	return A->nrows-lz;
+}
