@@ -1,9 +1,8 @@
 #ifndef _CMD_H_
 #define _CMD_H_
 
-#include <stdarg.h>
 #include "xtypes.h"
-#include "ref.h"
+#include "ref_all.h"
 
 
 /* Argument types */
@@ -27,5 +26,8 @@ void drop_cmd(Cmd c);
 Ref new_cref(char* name,Ref (*fun) (ref_list), int n_args, ref_t** types);
 Ref set_cref(char* name,Ref (*fun) (ref_list), int n_args, ref_t** types);
 Ref get_cmd(const char* name);
+
+
+void print_cmd(Cmd c);
 
 #endif

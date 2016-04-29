@@ -1,7 +1,6 @@
 #include <stdlib.h>
-#include "ref.h"
-#include "var.h"
-#include "cmd.h"
+#include <stdio.h>
+#include "ref_all.h"
 #include "error.h"
 
 /* Argument types */
@@ -10,6 +9,7 @@ ref_t A_MATRIX[] = { VAR, MATRIX, ALL };
 ref_t A_FUN[] = { FUN, ALL };
 ref_t A_CMD[] = { CMD, ALL };
 ref_t A_ALL[] = { ALL };
+
 
 /**
  * Creates a new command structure
@@ -99,4 +99,10 @@ Ref get_cmd(const char* name){
 }
 
 
-
+/**
+ * Print a command
+ */
+void print_cmd(Cmd c){
+	// TODO
+	c++; // Avoid warning
+}
