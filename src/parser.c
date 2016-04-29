@@ -105,24 +105,80 @@ Ref declare_ref(char* name){
 	return r;
 }			
 
-/* FIXME DBG content */
-Ref exec_fun(char* fun, ref_list args){
+/**
+ * Try to execute a function named 'name' if the combination 
+ * of the given arg list and the predefined arguments doesn't 
+ * contain any empty argument (NULL Ref ) in this case return
+ * a new function with a new set of functions
+ * 
+ * @param name Name of the function
+ * @param args List of arguments
+ * @return A reference to the result of the function being 
+ * 	   evaluated or a reference to a new function 
+ * 	   with a new set of predefined arguments
+ */
+Ref exec_fun(char* name, ref_list args){
 
-	/* TODO */
-	printf("* TODO HERE EXEC FUN: %s\nARGS:\n", fun);
-	unsigned int i;
-	for(i = 0; i < args->length; i++){
-		print_ref(args->list[i]);
+	Ref f_ref = get_fun(name);
+	if (f_ref == NULL) {
+		set_err(ENOTAFUN, name);
+		return NULL;
 	}
-	fflush(stdout);
 
-	/* TODO */
-	float* f = malloc(sizeof (float));
-	*f = 12345678;
-	return new_vref(NULL, f, FLOAT);
+	Fun f = (Fun) f_ref->inst;
+	
+	unsigned int i_args = 0;
+	unsigned int i_preargs = 0;
+	bool eval = true;
+	Ref call_arg , pre_arg;
+
+	ref_list comp_args = new_ref_list();
+
+	if (f->args != NULL){
+
+
+		for (; i_preargs < f->args->length; i_preargs++){
+
+			pre_arg = f->args->list[i_preargs];
+
+			if (pre_arg == NULL && i_args < args->length){
+
+				call_arg = args->list[i_args++];
+				eval = (call_arg == NULL)? false : true;
+				push_ref(comp_args,call_arg);
+
+			} else {
+				eval = (pre_arg == NULL)? false : true;
+				push_ref(comp_args, pre_arg );
+
+			}
+		}
+	}
+		
+	for (; i_args < args->length; i_args++){
+
+		call_arg = args->list[i_args];
+		eval = (call_arg == NULL)? false : true;
+		push_ref(comp_args,call_arg);
+	}
+
+
+	Ref ret;	
+	if (eval == true ){
+		/* Evaluate function */	
+		ret = f->fun(comp_args);
+		drop_ref_list(comp_args, true);
+
+	} else {
+		/* Create new function */
+		ret = new_fref(NULL, f->fun, comp_args);
+		if (ret == NULL) drop_ref_list(comp_args, true);
+	}
+	
+	return ret;
 }
-
-
+	
+		
 /* sym = args */	
 int exec_cmd(char* cmd){
 	/*TODO*/
