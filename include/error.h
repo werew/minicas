@@ -8,7 +8,8 @@ typedef enum {
 	ENOTACMD,
 	ENOTAVAR,
 	ETYPE,
-	ELOAD
+	ELOAD,
+	EMXDIM
 	} Error;
 
 #define MAX_EMSG 100

@@ -54,6 +54,9 @@ void print_error(void){
 		case ELOAD:
 			fprintf(stderr,"Cannot load: %s\n", err_arg);
 			break;
+		case EMXDIM:
+			fprintf(stderr,"Bad dimensions: %s\n", err_arg);
+			break;
 		default: /* Not an error */
 			return;
 	}
