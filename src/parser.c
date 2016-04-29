@@ -3,12 +3,10 @@
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
-#include "error.h"
 #include "xtypes.h"
-#include "debug.h" //DBG
-
 #include "ref_all.h"
 #include "parser.h"
+#include "error.h"
 
 /* Current symbol pointer */
 static char* sym;
@@ -227,20 +225,24 @@ int exec_instrution(void){
 			sym++;
 			ret = declare_ref(an_token); //Note: do not free an_token
 			if (ret == NULL) goto error;
-			puts("*TODO PRINT DECLARATION*"); // TODO add result display
 			break;
 		case '(':
 			/* Line is a function call */
 			ret = eval_fun(an_token);
 			if (ret == NULL) goto error;
-			puts("TODO PRINT FUN EVALUATION"); // TODO add result display
-			free(an_token); drop_ref(ret);
+			free(an_token);
 			break;
 		default:;
 			/* Line is an internal command */
 			int ret_cmd = exec_cmd(an_token);
 			if (ret_cmd == -1) goto error;
 			free(an_token);
+	}
+	
+	/* Print instruction output */
+	if (ret != NULL){
+		print_ref(ret);
+		if (ret->name == NULL) drop_ref(ret);
 	}
 
 	/* Move to the end of the instruction */
@@ -363,7 +365,6 @@ Ref eval_vector(void){
 	/* Craft a Matrix from the ref_list */
 	Matrix m = ref_list2vect(elts);		
 	if ( m == NULL ) goto error;
-	displayMatrix(m);//DBG
 
 	drop_ref_list(elts, true);	
 
