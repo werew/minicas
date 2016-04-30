@@ -44,7 +44,8 @@ void displayMatrix(Matrix m)
 {
 	if(m==NULL)
 	{
-		printf("Erreur Matrice");
+		printf("Erreur Matrice\n");
+		return;
 	}
 	int i;
 	for(i=0;i<m->nrows*m->ncols;i++)

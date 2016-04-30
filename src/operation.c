@@ -116,7 +116,7 @@ Matrix fusionMat(Matrix A,Matrix B)
 int PivotPartiel(Matrix m,int i)
 {
 	int p=i;
-	int v=fabs(getElt(m,i,i));
+	float v=fabs(getElt(m,i,i));
 	int j;
 	float tmp;
 	for(j=i+1;j<m->nrows;j++)
@@ -127,7 +127,7 @@ int PivotPartiel(Matrix m,int i)
 			v=tmp;
 		}
 	}
-	return p;	//TODO valeur par defaut
+	return v==0?-1:p;	//TODO valeur par defaut
 }
 
 void addmultiple(Matrix A,int i,int j,float c)
@@ -159,6 +159,10 @@ Matrix echelonnage(Matrix m)
 	for(i=0;i<P->nrows;i++)
 	{
 		j=PivotPartiel(P,i);
+		if(j==-1)
+		{
+			continue;
+		}
 		if(j!=i)
 		{
 			echangeLigne(P,i,j);
@@ -182,6 +186,10 @@ float triangulaire(Matrix m,Matrix P)
 	for(i=0;i<P->ncols-1;i++)
 	{
 		j=PivotPartiel(P,i);
+		if(j==-1)
+		{
+			continue;
+		}
 		if(j!=i)
 		{
 			echangeLigne(P,i,j);
@@ -208,28 +216,32 @@ float determinant (Matrix m)
 	return c;
 }
 
-void remontee(Matrix A,Matrix X)
+/*void remontee(Matrix A,Matrix X)
 {
 	int i,j;
 	for(i=A->ncols-1;i>=0;i--)	//TODO -1 ou -2
 	{
 		setElt(X,i,0,getElt(A,i,A->ncols-1));
-		for(j=i+1;A->ncols;i++)
+		for(j=i+1;j<A->ncols;j++)
 		{
 			float new_elt=getElt(X,i,0)-getElt(A,i,j)*getElt(X,j,0);
 			setElt(X,i,0,new_elt);
 		}
 		setElt(X,i,0,(getElt(X,i,0)/getElt(A,i,i)));
 	}
-}
+}*/
 
 Matrix solve(Matrix A, Matrix B)
 {
-	Matrix X=newMatrix(B->nrows,1);
+	if(determinant(A)==0)
+	{
+		return NULL;
+	}
 	Matrix C=fusionMat(A,B);
 	Matrix D=echelonnage(C);
-	remontee(D,X);
-	return X;
+	//remontee(D,X);
+	Matrix E=bienEchelonner(D);
+	return sliceMatrix(E,A->ncols);
 }
 
 Matrix expo(Matrix m,int p)
@@ -296,4 +308,43 @@ Matrix invert(Matrix m)
 		Matrix D=sliceMatrix(C,m->ncols);
 		return D;
 	}
+}
+
+
+/*Matrix chercheMatrixMult(Matrix A,Matrix B,int i,int j)
+{
+	Matrix C=identite(a->nrows);
+	int a;
+	float total=0;
+	for(a=0;i<a->nrows;i++)
+	{
+		total+=getElt(A,a,i)*getElt(C,j,a);
+	}
+	float nv_coef=(total-getElt(B,j,i))/getElt(A,);
+	setElt(C,j,i,nv_coef);
+}*/
+
+
+int ligneZero(Matrix A,int l)
+{
+	int i;
+	for(i=0;i<A->ncols;i++)
+	{
+		if(getElt(A,l,i)!=0)
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int rank(Matrix A)
+{
+	int lz=0;
+	int i;
+	for(i=0;i<A->nrows;i++)
+	{
+		lz+=ligneZero(A,i);
+	}
+	return A->nrows-lz;
 }

@@ -22,5 +22,6 @@ Matrix solve(Matrix A,Matrix B);
 Matrix bienEchelonner(Matrix A);
 Matrix sliceMatrix(Matrix A,int i);
 Matrix invert(Matrix m);
+int rank(Matrix A);
 
 #endif
