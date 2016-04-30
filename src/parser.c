@@ -24,6 +24,13 @@ int isalnum_extended(int c){
 }
 
 /**
+ * Allow '-' char in the name of a cmd/fun/var
+ */
+int isdigit_extended(int c){
+	return isdigit(c) || c == '-';
+}
+
+/**
  * Get test function for a given c_class 
  * @param class Characters class
  * @return A pointer to a function testing the belonging
@@ -34,7 +41,7 @@ int (*get_classtest(c_class class)) (int) {
 	switch (class) {
 		case ALPHA: test_class = isalpha;
 			break;
-		case DIGIT: test_class = isdigit;
+		case DIGIT: test_class = isdigit_extended;
 			break;
 		case ALPHANUM: test_class = isalnum;
 			break;
@@ -459,7 +466,7 @@ Ref eval_expression(void){
 
 		free(word);
 		
-	} else if (isdigit(*sym)) { 
+	} else if (isdigit_extended(*sym)) { 
 		/* Num value */
 		r_result = eval_float();
 
