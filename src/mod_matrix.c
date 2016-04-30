@@ -35,6 +35,9 @@ void load_mod_matrix(void){
 
 	load = set_fun("determinant",determinant_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function determinant");
+
+	load = set_fun("invert",invert_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function invert");
 }
 
 
@@ -404,6 +407,40 @@ Ref determinant_call(ref_list args){
 
 	Ref r = new_vref(NULL, d, FLOAT);
 	if (r == NULL) free(d);
+
+	return r;
+		
+} 
+
+
+
+
+
+
+/* Invert one matrix */
+Ref invert_call(ref_list args){
+	
+	if (args->length != 1){
+		set_err(ETYPE, "to many arguments");
+		return NULL;	
+	}
+	
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+	
+	Var var = (Var) args->list[0]->inst;
+	Matrix m = (Matrix) var->val;
+
+	if (m->nrows != m->ncols) {
+		set_err(ETYPE, "not a square Matrix");
+		return NULL;
+	}
+
+	Matrix inv = invert(m);
+	if (inv == NULL) return NULL;
+
+
+	Ref r = new_vref(NULL, inv, MATRIX);
+	if (r == NULL) free(inv); //TODO
 
 	return r;
 		

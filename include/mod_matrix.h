@@ -15,6 +15,7 @@ Ref sub_call(ref_list args);
 Ref mult_scal_call(ref_list args);
 Ref expo_call(ref_list args);
 Ref determinant_call(ref_list args);
+Ref invert_call(ref_list args);
 
 
 #endif 
