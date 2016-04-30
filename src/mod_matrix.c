@@ -23,7 +23,17 @@ void load_mod_matrix(void){
 
 	load = set_fun("addition",addition_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function addition");
+
+	load = set_fun("sub",sub_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function sub");
+
+	load = set_fun("mult_scal",mult_scal_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function mult_scal");
 }
+
+
+
+
 
 /* Check if reference is a matrix */
 bool expect_Matrix(Ref r){
@@ -33,10 +43,11 @@ bool expect_Matrix(Ref r){
 	return false;
 }
 
-/**
- * Creates a Matrix from a list of vectors
- * of the same size
- */
+
+
+
+
+/*  Creates a Matrix from a list of vectors of the same size */
 Ref matrix_call(ref_list args){
 	Var var = (Var) args->list[0]->inst;
 	Matrix vect = (Matrix) var->val;
@@ -70,7 +81,7 @@ Ref matrix_call(ref_list args){
 	return r;
 }
 
-
+/* Transpose one matrix */
 Ref transpose_call(ref_list args){
 	
 	if (args->length != 1){
@@ -96,9 +107,7 @@ Ref transpose_call(ref_list args){
 
 
 
-/**
- * Multiplies all the given matrices consecutively
- */	
+/* Multiplies all the given matrices consecutively */	
 Ref mult_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
@@ -141,7 +150,7 @@ error:
 
 
 
-
+/* Addition of any number of matrices */
 Ref addition_call(ref_list args){
 
 	if (expect_Matrix(args->list[0]) == false) return NULL;
@@ -181,4 +190,143 @@ error:
 	free(sum); //TODO
 	return NULL;
 }
+
+
+
+
+/* Subtraction of any number of matrices */
+Ref sub_call(ref_list args){
+	
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+		
+	Var var = (Var) args->list[0]->inst;
+	Matrix m = (Matrix) var->val;
+
+	Matrix sub = copyMatrix(m);
+	if (sub == NULL) return NULL;
+
+	unsigned int i;
+	for (i = 1; i < args->length; i++){
+		
+		
+		if (expect_Matrix(args->list[i]) == false) goto error;
+
+		var = (Var) args->list[i]->inst;
+		m = (Matrix) var->val;
+		if (m->nrows != sub->nrows || m->ncols != sub->ncols) {
+			set_err(EMXDIM,"dimensions don't match");
+			goto error;
+		}
+
+		Matrix tmp = soustraction(sub, m);
+		if (tmp == NULL ) goto error;
+
+		free(sub); //FIXME
+		sub = tmp;
+	}
+    
+	/* Return a reference */
+	Ref r = new_vref(NULL, sub, MATRIX);
+	if (r == NULL) free(sub); //TODO FIX
+
+	return r;
+error:
+	free(sub); //TODO
+	return NULL;
+}
+
+
+/* Multiplicate any number of matrices and/or floats */
+Ref mult_scal_call(ref_list args){
+	
+	bool ret_matrix = false;
+
+	float* ret_flt = malloc(sizeof (float));
+	if (ret_flt == NULL) return NULL;
+	*ret_flt = 1;
+
+	Matrix ret_mat= NULL;
+
+	unsigned int i;
+	for (i = 0; i < args->length; i++){
+	
+		Var var = (Var) args->list[i]->inst;
+		
+		Matrix tmp;
+		float* arg_f = (float*) var->val;
+		Matrix arg_m = (Matrix) var->val;
+
+		switch (var->type) {
+
+			case FLOAT:
+				if (ret_matrix){
+					// Mat x Float
+					tmp = multScal(*arg_f, ret_mat);
+					if (tmp == NULL) goto error;
+
+					free(ret_mat); //FIXME
+					ret_mat = tmp;	
+
+				} else {
+					// Float x Float
+					*ret_flt *= *arg_f;
+				}
+				break;
+
+			case MATRIX:
+				if (ret_matrix){
+					// Mat x Mat
+					if (arg_m->nrows != ret_mat->ncols) {
+						set_err(EMXDIM,
+						"dimensions don't match");
+						goto error;
+					}
+
+					tmp = multiplication(ret_mat, arg_m);
+					if (tmp == NULL ) goto error;
+
+					free(ret_mat); //FIXME
+					ret_mat = tmp;	
+
+				} else {
+					// Float x Mat
+					tmp = multScal(*ret_flt, arg_m);
+					if (tmp == NULL) goto error;
+
+					ret_mat = tmp;
+					ret_matrix = true;
+					free(ret_flt);
+					
+				}	
+				break;
+			default:
+				set_err(ETYPE, "argument was expected to"
+						" be a Matrix of a Float");
+				goto error;
+		}
+	}
+
+	/* Return a reference */
+
+	Ref r = NULL;
+
+	if (ret_matrix) {
+		r = new_vref(NULL, ret_mat, MATRIX);
+		if (r == NULL) free(ret_mat); //TODO FIX
+	} else {
+		r = new_vref(NULL, ret_flt, FLOAT);
+		if (r == NULL) free(ret_flt);
+	}
+
+	return r;
+
+error:
+	if (ret_matrix)	free(ret_mat); //TODO
+	else free(ret_flt); 
+	return NULL;
+}
+
+
+
+
 
