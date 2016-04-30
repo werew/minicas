@@ -57,6 +57,9 @@ void print_error(void){
 		case EMXDIM:
 			fprintf(stderr,"Bad dimensions: %s\n", err_arg);
 			break;
+		case ENOVAL:
+			fprintf(stderr,"No such a value: %s\n", err_arg);
+			break;
 		default: /* Not an error */
 			return;
 	}

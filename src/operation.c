@@ -4,6 +4,7 @@
 #include <math.h>
 #include "operation.h"
 #include "matrix.h"
+#include "error.h"
 
 Matrix addition(Matrix a, Matrix b)
 {
@@ -282,7 +283,8 @@ Matrix sliceMatrix(Matrix A,int i)
 Matrix invert(Matrix m)
 {
 	if(determinant(m)==0)
-	{
+	{	
+		set_err(ENOVAL, "matrix doesn't admit inverse");
 		return NULL;
 	}
 	else

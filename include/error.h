@@ -9,6 +9,7 @@ typedef enum {
 	ENOTAVAR,
 	ETYPE,
 	ELOAD,
+	ENOVAL,
 	EMXDIM
 	} Error;
 
