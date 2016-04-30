@@ -32,6 +32,9 @@ void load_mod_matrix(void){
 
 	load = set_fun("expo",expo_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function expo");
+
+	load = set_fun("determinant",determinant_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function determinant");
 }
 
 
@@ -369,6 +372,38 @@ Ref expo_call(ref_list args){
 
 	Ref r = new_vref(NULL, e, MATRIX);
 	if (r == NULL) free(e); //TODO FIX
+
+	return r;
+		
+} 
+
+
+
+/* Determinant of one matrix */
+Ref determinant_call(ref_list args){
+	
+	if (args->length != 1){
+		set_err(ETYPE, "to many arguments");
+		return NULL;	
+	}
+	
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+	
+	Var var = (Var) args->list[0]->inst;
+	Matrix m = (Matrix) var->val;
+
+	if (m->nrows != m->ncols) {
+		set_err(ETYPE, "not a square Matrix");
+		return NULL;
+	}
+	
+	float* d = malloc(sizeof (float));	
+	if (d == NULL) return NULL;
+	*d = determinant(m);
+
+
+	Ref r = new_vref(NULL, d, FLOAT);
+	if (r == NULL) free(d);
 
 	return r;
 		
