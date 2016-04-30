@@ -41,6 +41,9 @@ void load_mod_matrix(void){
 
 	load = set_fun("solve",solve_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function solve");
+
+	load = set_fun("rank",rank_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function rank");
 }
 
 
@@ -481,4 +484,30 @@ Ref solve_call(ref_list args){
 	if (r == NULL) free(s); //TODO FIX
 
 	return r;
+} 
+
+
+/* Determinant of one matrix */
+Ref rank_call(ref_list args){
+	
+	if (args->length != 1){
+		set_err(ETYPE, "too many arguments");
+		return NULL;	
+	}
+	
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+	
+	Var var = (Var) args->list[0]->inst;
+	Matrix m = (Matrix) var->val;
+
+	float* d = malloc(sizeof (float));	
+	if (d == NULL) return NULL;
+	*d = rank(m);
+
+
+	Ref r = new_vref(NULL, d, FLOAT);
+	if (r == NULL) free(d);
+
+	return r;
+		
 } 
