@@ -83,7 +83,7 @@ Matrix transpose(Matrix m)
 }
 
 
-Matrix mult_Scal(float a,Matrix m)
+Matrix multScal(float a,Matrix m)
 {
 	Matrix P=newMatrix(m->nrows,m->ncols);
 	int i,j;
