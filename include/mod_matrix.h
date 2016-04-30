@@ -13,6 +13,7 @@ Ref mult_call(ref_list args);
 Ref addition_call(ref_list args);
 Ref sub_call(ref_list args);
 Ref mult_scal_call(ref_list args);
+Ref expo_call(ref_list args);
 
 
 #endif 

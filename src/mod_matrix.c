@@ -29,6 +29,9 @@ void load_mod_matrix(void){
 
 	load = set_fun("mult_scal",mult_scal_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function mult_scal");
+
+	load = set_fun("expo",expo_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function expo");
 }
 
 
@@ -330,3 +333,43 @@ error:
 
 
 
+/*  Power of a matrix */
+Ref expo_call(ref_list args){
+	
+	if (args->length != 2){
+		set_err(ETYPE, "\"expo\" needs 2 arguments");
+		return NULL;	
+	}
+	
+	Var arg1 = (Var) args->list[0]->inst;
+	Var arg2 = (Var) args->list[1]->inst;
+
+	Matrix m; float p;
+
+	if (v_isa(args->list[0], FLOAT) && 
+	    v_isa(args->list[1], MATRIX)) {
+
+		p = (*(float*) arg1->val);	
+		m = (Matrix) arg2->val;
+
+	} else if (v_isa(args->list[0], MATRIX) && 
+	     v_isa(args->list[1], FLOAT)) {
+
+		p = (*(float*) arg2->val);	
+		m = (Matrix) arg1->val;
+
+	} else {
+
+		set_err(ETYPE,"couple Matrix-float expected");
+		return NULL;
+	}
+	
+	Matrix e = expo(m, p);
+	if (e == NULL) return NULL;
+
+	Ref r = new_vref(NULL, e, MATRIX);
+	if (r == NULL) free(e); //TODO FIX
+
+	return r;
+		
+} 
