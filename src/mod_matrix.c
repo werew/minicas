@@ -38,6 +38,9 @@ void load_mod_matrix(void){
 
 	load = set_fun("invert",invert_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function invert");
+
+	load = set_fun("solve",solve_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function solve");
 }
 
 
@@ -444,4 +447,38 @@ Ref invert_call(ref_list args){
 
 	return r;
 		
+} 
+
+
+
+/*  Solve a system */
+Ref solve_call(ref_list args){
+	
+	if (args->length != 2){
+		set_err(ETYPE, "\"solve\" needs 2 arguments");
+		return NULL;	
+	}
+
+	if (expect_Matrix(args->list[0]) == false ||
+	    expect_Matrix(args->list[1]) == false ) return NULL;
+
+	Var arg1 = (Var) args->list[0]->inst;
+	Var arg2 = (Var) args->list[1]->inst;
+
+	Matrix m1 = (Matrix) arg1->val;
+	Matrix m2 = (Matrix) arg2->val;
+	
+	if (m1->nrows != m2->nrows ||
+	    m2->ncols > 1) {
+		set_err(EMXDIM, "not a valid system");
+		return NULL;
+	}
+	
+	Matrix s = solve(m1, m2);
+	if (s == NULL) return NULL;
+
+	Ref r = new_vref(NULL, s, MATRIX);
+	if (r == NULL) free(s); //TODO FIX
+
+	return r;
 } 
