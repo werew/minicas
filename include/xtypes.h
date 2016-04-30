@@ -13,6 +13,7 @@ typedef enum {
 	ALPHA, 
 	DIGIT, 
 	ALPHANUM, 
+	ALPHANUMEX, 
 	SPACE	
 	} c_class;
 

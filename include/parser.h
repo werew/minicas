@@ -14,6 +14,7 @@ Ref exec_fun(char* fun, ref_list args);
 
 /* Parse-helpers */
 int (*get_classtest(c_class class)) (int);
+int isalnum_extended(int c);
 char* pop_word(void);
 char* jump_cclass(char* ptr, c_class class);
 

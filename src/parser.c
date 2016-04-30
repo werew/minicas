@@ -15,6 +15,14 @@ static char* line;
 
 /***************************** PARSE-HELPERS **********************************/
 
+
+/**
+ * Allow '_' char in the name of a cmd/fun/var
+ */
+int isalnum_extended(int c){
+	return isalnum(c) || c == '_';
+}
+
 /**
  * Get test function for a given c_class 
  * @param class Characters class
@@ -29,6 +37,8 @@ int (*get_classtest(c_class class)) (int) {
 		case DIGIT: test_class = isdigit;
 			break;
 		case ALPHANUM: test_class = isalnum;
+			break;
+		case ALPHANUMEX: test_class = isalnum_extended;
 			break;
 		case SPACE: test_class = isspace;
 			break;
@@ -58,7 +68,7 @@ char* jump_cclass(char* ptr, c_class class){
  *	   of the word, or NULL in case of error
  */
 char* pop_word(void){
-	char* w_end = jump_cclass(sym, ALPHANUM);
+	char* w_end = jump_cclass(sym, ALPHANUMEX);
 	size_t length = w_end - sym;
 
 	char* word = malloc(length + 1);
