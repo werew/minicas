@@ -86,7 +86,7 @@ Ref set_cref
  *	   given name has been found
  */
 Ref get_cmd(const char* name){
-	Ref r = get_ref(name, CMD);
+	Ref r = get_reft(name, CMD);
 	if (r == NULL) return NULL;
 
 	return r;

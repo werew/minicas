@@ -44,6 +44,12 @@ void load_mod_matrix(void){
 
 	load = set_fun("rank",rank_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function rank");
+
+	/* Load commands */
+	ref_t args_cmd[4] = { FUN, FLOAT, FLOAT, FLOAT };
+	load = set_cref("speedtest",speedtest_cmd,0,args_cmd);
+	if (load == NULL) inst_err(ELOAD,"command speedtest");
+	
 }
 
 
@@ -511,3 +517,11 @@ Ref rank_call(ref_list args){
 	return r;
 		
 } 
+
+
+#include <stdio.h>
+Ref speedtest_cmd(ref_list args){
+	args++;
+	printf("Speedtest!\n");
+	return NULL;
+}

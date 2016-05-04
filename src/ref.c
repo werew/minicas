@@ -16,7 +16,7 @@ ref_list ref_pool[N_RLIST];
  * @param r Reference to drop
  */
 void drop_ref(Ref r){
-	if (r == NULL) return;
+	if (r == NULL || r == NO_REF) return;
 	
 	switch (r->type) {
 		case VAR: drop_var(r->inst);
@@ -25,7 +25,6 @@ void drop_ref(Ref r){
 			  break;
 		case CMD: drop_cmd(r->inst);
 			  break;
-
 		default:  break;
 	}
 	free(r->name);
@@ -41,7 +40,11 @@ void drop_ref_list(ref_list l, bool unnamed_only){
 
 	unsigned int i;
 	for ( i = 0; i < l->length; i++){
-		if (unnamed_only && l->list[i]->name != NULL) continue;
+		if (unnamed_only) {
+			if ( l->list[i] != NO_REF && 
+			l->list[i]->name != NULL) continue;
+		}
+
 		drop_ref(l->list[i]);
 	}
 	
@@ -90,13 +93,11 @@ ref_list new_ref_list(void){
  * @return The index representing the position of the reference in relation
  *	   to l->ref_list or -1 if the reference has not been found
  */
-int search_ref(const ref_list l, const char* name, ref_t type){
+int search_ref(const ref_list l, const char* name){
 	unsigned int i;
 	for (i = 0; i < l->length; i++){
 		Ref r = l->list[i];
-		if ( r->type == type || type == ALL ){
-			if  (strcmp(r->name, name) == 0) return i;
-		}
+		if  (strcmp(r->name, name) == 0) return i;
 	}
 	
 	return -1;
@@ -148,16 +149,29 @@ Ref replace_ref_at(ref_list l, unsigned int i, Ref r){
  * @return The reference or NULL if any reference having the
  *	   given name and type has been found
  */
-Ref get_ref(const char* name, ref_t type){
+Ref get_ref(const char* name){
 	unsigned int h = hash(name);
 	if (ref_pool[h] == NULL) return NULL;
 	
-	int i = search_ref(ref_pool[h], name, type);
+	int i = search_ref(ref_pool[h], name);
 	if (i == -1) return NULL;
 
 	return ref_pool[h]->list[i];
 }
 
+
+Ref get_reft(const char* name, ref_t type){
+	unsigned int h = hash(name);
+	if (ref_pool[h] == NULL) return NULL;
+	
+	int i = search_ref(ref_pool[h], name);
+
+	Ref ret = ref_pool[h]->list[i];
+
+	if (i == -1 || ret->type != type) return NULL;
+
+	return ret;
+}
 /**
  * Create and store or update a reference in to the global pool
  * @param name Name of the reference to store/update
@@ -178,7 +192,7 @@ Ref set_ref(char* name, void* inst, ref_t type){
 	if (r == NULL) return NULL;
 
 	int i;	
-	if ( (i = search_ref(ref_pool[h], name, type)) == -1){
+	if ( (i = search_ref(ref_pool[h], name)) == -1){
 
 		if (push_ref(ref_pool[h], r) == NULL) 
 			goto e_r_lost;
@@ -202,13 +216,18 @@ e_r_lost:
  * Print a refererence
  */
 void print_ref(Ref r){
+	
+	if (r == NULL ) {
+		puts("NULL REF");
+		return;
+	}
 
-	if (r == NULL) {
+	if (r == NO_REF) {
 		puts("\t@_ (Empty)");
 		return;
 	}
 
-	printf("\t@%s -> ",(r->name == NULL)? "toto" : r->name);
+	printf("\t@%s -> ",(r->name == NULL)? "_anon_" : r->name);
 		
 	switch (r->type) {
 		case VAR: print_var(r->inst);

@@ -96,7 +96,7 @@ Ref set_fun(char* name, Ref (*fun) (ref_list), ref_list args){
  *	   given name has been found
  */
 Ref get_fun(const char* name){
-	Ref r = get_ref(name, FUN);
+	Ref r = get_reft(name, FUN);
 	if (r == NULL) return NULL;
 
 	return r;
@@ -106,7 +106,7 @@ Ref get_fun(const char* name){
  * Print a function and his predefined arguments 
  */
 void print_fun(Fun f){
-	printf("function");
+	printf("function\n");
 	if (f->args == NULL) return;
 
 	unsigned int i;

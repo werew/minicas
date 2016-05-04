@@ -65,7 +65,7 @@ Ref new_vref(char* name, void* val, var_t type){
  *	   given name has been found
  */
 Ref get_var(const char* name){
-	Ref r = get_ref(name, VAR);
+	Ref r = get_reft(name, VAR);
 	if (r == NULL) return NULL;
 
 	return r;

@@ -157,14 +157,14 @@ Ref exec_fun(char* name, ref_list args){
 
 			pre_arg = f->args->list[i_preargs];
 
-			if (pre_arg == NULL && i_args < args->length){
+			if (pre_arg == NO_REF && i_args < args->length){
 
 				call_arg = args->list[i_args++];
-				eval = (call_arg == NULL)? false : eval;
+				eval = (call_arg == NO_REF)? false : eval;
 				push_ref(comp_args,call_arg);
 
 			} else {
-				eval = (pre_arg == NULL)? false : eval;
+				eval = (pre_arg == NO_REF)? false : eval;
 				push_ref(comp_args, pre_arg );
 
 			}
@@ -174,7 +174,7 @@ Ref exec_fun(char* name, ref_list args){
 	for (; i_args < args->length; i_args++){
 
 		call_arg = args->list[i_args];
-		eval = (call_arg == NULL)? false : eval;
+		eval = (call_arg == NO_REF)? false : eval;
 		push_ref(comp_args,call_arg);
 	}
 
@@ -213,12 +213,13 @@ bool cmptype_arg(unsigned int type, const Ref arg){
 Ref exec_cmd(char* cmd, ref_list args){	
 
 	Ref r = get_cmd(cmd);
-	Cmd c = (Cmd) r->inst;
 
-	if (c == NULL) {
+	if (r == NULL || r->type != CMD) {
 		set_err(ENOTACMD, cmd);
 		return NULL;
 	}
+
+	Cmd c = (Cmd) r->inst;
 	
 	if ( c->n_args > args->length ){
 		set_err(EMISSARG, cmd );
@@ -321,14 +322,16 @@ Ref eval_cmd(char* cmd){
 	ref_list args = new_ref_list();
 	if (args == NULL) return NULL;
 
-	do {
+	sym = jump_cclass(sym, SPACE);
+
+	while ( *sym != ';' && *sym != '\0'){
 
 		Ref r = eval_expression();
 		if (r == NULL || push_ref(args, r) == NULL) goto error;
 
 		sym = jump_cclass(sym, SPACE);
+	}
 
-	} while ( *sym != ';' && *sym != '\0');
 
 	
 	Ref ret = exec_cmd(cmd, args);	
@@ -368,8 +371,6 @@ Ref eval_fun(char* fun){
 
 		Ref r = eval_expression();
 		if (r == NULL || push_ref(args, r) == NULL) goto error;
-
-		sym = jump_cclass(sym, SPACE);
 
 	} while ( *sym == ',');
 
@@ -525,7 +526,7 @@ Ref eval_expression(void){
 			r_result = eval_fun(word);
 
 		} else {
-			r_result = get_var(word);
+			r_result = get_ref(word);
 			if (r_result == NULL) set_err(ENOTAVAR, word);
 		}
 
@@ -539,9 +540,10 @@ Ref eval_expression(void){
 		/* Vector */
 		r_result = eval_vector();
 
-	} else if (*sym == '\0' || *sym == ';'){
+	} else if (*sym == '_' ){
+		sym++;
+		return NO_REF; 
 
-		return NO_REF;
 	} else {
 		set_err(ESYNTAX,sym);
 		return NULL;
@@ -631,4 +633,3 @@ Matrix ref_list2vect(ref_list l){
 	
 	return m;
 }
-

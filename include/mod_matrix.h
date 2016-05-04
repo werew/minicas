@@ -20,4 +20,5 @@ Ref solve_call(ref_list args);
 Ref rank_call(ref_list args);
 
 
+Ref speedtest_cmd(ref_list args);
 #endif 
