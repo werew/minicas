@@ -142,11 +142,12 @@ Ref exec_fun(char* name, ref_list args){
 
 	Fun f = (Fun) f_ref->inst;
 	
-	unsigned int i_args = 0;
-	unsigned int i_preargs = 0;
+	unsigned int i_args = 0; // Index user args
+	unsigned int i_preargs = 0; // Index predefined args
 	bool eval = true;
 	Ref call_arg , pre_arg;
 
+	// COmposition args (user+predefined)
 	ref_list comp_args = new_ref_list();
 
 	if (f->args != NULL){
@@ -159,11 +160,11 @@ Ref exec_fun(char* name, ref_list args){
 			if (pre_arg == NULL && i_args < args->length){
 
 				call_arg = args->list[i_args++];
-				eval = (call_arg == NULL)? false : true;
+				eval = (call_arg == NULL)? false : eval;
 				push_ref(comp_args,call_arg);
 
 			} else {
-				eval = (pre_arg == NULL)? false : true;
+				eval = (pre_arg == NULL)? false : eval;
 				push_ref(comp_args, pre_arg );
 
 			}
@@ -173,7 +174,7 @@ Ref exec_fun(char* name, ref_list args){
 	for (; i_args < args->length; i_args++){
 
 		call_arg = args->list[i_args];
-		eval = (call_arg == NULL)? false : true;
+		eval = (call_arg == NULL)? false : eval;
 		push_ref(comp_args,call_arg);
 	}
 
@@ -321,7 +322,6 @@ Ref eval_cmd(char* cmd){
 	if (args == NULL) return NULL;
 
 	do {
-		sym++;
 
 		Ref r = eval_expression();
 		if (r == NULL || push_ref(args, r) == NULL) goto error;
