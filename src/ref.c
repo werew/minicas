@@ -24,7 +24,6 @@ void drop_ref(Ref r){
 		case FUN: drop_fun(r->inst);
 			  break;
 		case CMD: drop_cmd(r->inst);
-			  break;
 		default:  break;
 	}
 	free(r->name);
@@ -65,7 +64,17 @@ Ref new_ref(char* name, void* inst, ref_t type){
 	Ref r = malloc( sizeof (s_ref));
 	if (r == NULL) return NULL;
 
-	r->name = name;
+	if (name == NULL) {
+		r->name = NULL;
+	} else {
+		r->name = malloc( strlen(name));
+		if (r->name == NULL) {
+			free(r);
+			return NULL;
+		}
+		strcpy(r->name,name);
+	}
+
 	r->type = type;
 	r->inst = inst;
 	
