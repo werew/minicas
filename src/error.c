@@ -60,6 +60,9 @@ void print_error(void){
 		case ENOVAL:
 			fprintf(stderr,"No such a value: %s\n", err_arg);
 			break;
+		case EMISSARG:
+			fprintf(stderr,"Argument missing for: %s\n", err_arg);
+			break;
 		default: /* Not an error */
 			return;
 	}
