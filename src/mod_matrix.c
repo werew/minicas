@@ -270,7 +270,13 @@ Ref mult_scal_call(ref_list args){
 
 	unsigned int i;
 	for (i = 0; i < args->length; i++){
-	
+		
+		if (args->list[i]->type != VAR){
+			set_err(ETYPE, "argument was expected to"
+					" be a Matrix of a Float");
+			goto error;
+		}	
+
 		Var var = (Var) args->list[i]->inst;
 		
 		Matrix tmp;

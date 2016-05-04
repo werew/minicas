@@ -17,7 +17,20 @@ ref_list ref_pool[N_RLIST];
  */
 void drop_ref(Ref r){
 	if (r == NULL || r == NO_REF) return;
+
+	int* inst = r->inst;
+
+	free(r->name);
+	free(r);
+	*inst -= 1;
+	printf("-1 to %p, %d\n",inst, *inst);
+	fflush(stdout);
+
+	if (*inst > 0 ) return;
 	
+	printf("Drop %p\n",inst);
+	fflush(stdout);
+
 	switch (r->type) {
 		case VAR: drop_var(r->inst);
 			  break;
@@ -26,8 +39,6 @@ void drop_ref(Ref r){
 		case CMD: drop_cmd(r->inst);
 		default:  break;
 	}
-	free(r->name);
-	free(r);
 }
 
 /**
@@ -76,7 +87,7 @@ Ref new_ref(char* name, void* inst, ref_t type){
 	}
 
 	r->type = type;
-	r->inst = inst;
+	link_ref(r, inst);
 	
 	return r;
 }
@@ -181,6 +192,14 @@ Ref get_reft(const char* name, ref_t type){
 
 	return ret;
 }
+
+void link_ref(Ref r, void* inst){
+	r->inst = inst;
+	(*(int*) inst)++;
+	printf("+1 to %p, %d\n",inst, (*(int*)inst));
+	fflush(stdout);
+}
+
 /**
  * Create and store or update a reference in to the global pool
  * @param name Name of the reference to store/update
@@ -197,6 +216,11 @@ Ref set_ref(char* name, void* inst, ref_t type){
 		if (ref_pool[h] == NULL) return NULL;
 	}	
 		
+	/**
+ 	 * FIXME TODO when replacing a reference do not change the address
+  	 * allocating a new reference, rather change the contents 
+ 	 * of the old one 
+	 */
 	Ref r = new_ref(name, inst, type);
 	if (r == NULL) return NULL;
 
@@ -208,7 +232,7 @@ Ref set_ref(char* name, void* inst, ref_t type){
 
 	} else {
 		
-		if (replace_ref_at(ref_pool[h], i, r) == NULL) 
+		if (replace_ref_at(ref_pool[h], i, r) == NULL)  /* XXX HERE */
 			goto e_r_lost;
 	}
 	

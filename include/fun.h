@@ -6,6 +6,7 @@
 
 /* Function */
 typedef struct {
+	int _ptrs;
 	Ref (*fun) (ref_list);
 	ref_list args;
 	} s_fun, *Fun;

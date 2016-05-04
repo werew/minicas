@@ -33,6 +33,7 @@ extern ref_list ref_pool[N_RLIST];
 /* Create/destroy references */
 Ref new_ref(char* name, void* inst, ref_t type);
 void drop_ref(Ref r);
+void link_ref(Ref r, void* inst);
 
 /* Set to and get references from global pool */
 Ref set_ref(char* name, void* inst, ref_t type);

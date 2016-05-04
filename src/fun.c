@@ -27,6 +27,7 @@ Fun new_fun(Ref (*fun) (ref_list), ref_list args){
 
 	f->fun = fun;
 	f->args = args;
+	f->_ptrs = 0;
 
 	return f;
 }

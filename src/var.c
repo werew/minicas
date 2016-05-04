@@ -30,9 +30,10 @@ void drop_var(Var v){
 Var new_var(void* val, var_t type){
 	Var v = malloc( sizeof (s_var));
 	if (v == NULL) return NULL;
-
+	
 	v->type = type;
 	v->val = val;
+	v->_ptrs = 0;
 	
 	return v;
 }
@@ -54,7 +55,7 @@ Ref new_vref(char* name, void* val, var_t type){
 		drop_var(v);
 		return NULL;
 	}
-	
+
 	return r;
 }	
 		

@@ -11,6 +11,7 @@ typedef enum { FLOAT = 10,  // Range < 10 reserved
 
 /* Variable */
 typedef struct {
+	int _ptrs;
 	void* val;  // Pointer to the stored value
 	var_t type; // Type of variable
 	} s_var, *Var;

@@ -7,6 +7,7 @@
 
 /* Command */
 typedef struct {
+	int _ptrs;
 	Ref (*fun) (ref_list);
 	unsigned int n_args;
 	ref_t* types;

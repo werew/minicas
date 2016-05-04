@@ -104,18 +104,18 @@ Ref declare_ref(char* name){
 
 	/* Evaluate expression */
 	Ref e_r = eval_expression();
-	if (e_r == NULL) return NULL;
+	if (e_r == NULL || e_r == NO_REF) return e_r;
 	
 	/* Store a renamed copy of e_r */
 	Ref r = set_ref(name, e_r->inst, e_r->type);
 	if (r == NULL){
 		/* Free all the data */
-		drop_ref(e_r);
+		if (e_r->name == NULL) drop_ref(e_r);
 		return NULL;
 	}
 
 	/* Free just the unnamed references */
-	if (e_r->name == NULL) free(e_r);
+	if (e_r->name == NULL) drop_ref(e_r);
 
 	return r;
 }			
@@ -183,8 +183,7 @@ Ref exec_fun(char* name, ref_list args){
 	if (eval == true ){
 		/* Evaluate function */	
 		ret = f->fun(comp_args);
-		drop_ref_list(comp_args, true);
-
+		free(comp_args->list); free(comp_args);
 	} else {
 		/* Create new function */
 		ret = new_fref(NULL, f->fun, comp_args);
@@ -297,9 +296,10 @@ int exec_instrution(void){
 	}
 	
 	/* Print instruction output */
-	if (ret != NULL && ret != NO_REF){
+	if (ret != NULL){
 		print_ref(ret);
-		if (ret->name == NULL) drop_ref(ret);
+		if (ret != NO_REF && 
+		    ret->name == NULL) drop_ref(ret);
 	}
 
 	/* Move to the end of the instruction */
@@ -385,7 +385,9 @@ Ref eval_fun(char* fun){
 	sym++;
 
 	Ref ret = exec_fun(fun, args);	
-	drop_ref_list(args, true);	
+	if (ret == NULL) goto error;
+
+	if (ret->type != FUN) drop_ref_list(args, true);	
 	
 	return ret;
 
@@ -426,7 +428,8 @@ Ref eval_vector(void){
 		Ref r = eval_expression();
 		if (r == NULL || push_ref(elts, r) == NULL) goto error;
 
-		if (r->type != VAR || ((Var)r->inst)->type == MATRIX) {
+		if (r == NO_REF || r->type != VAR || 
+		    ((Var)r->inst)->type != FLOAT) {
 			set_err(ETYPE, "only Float allowed inside a Matrix");
 			goto error;
 		}

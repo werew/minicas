@@ -17,6 +17,7 @@ Cmd new_cmd(Ref (*fun) (ref_list), unsigned int n_args, ref_t* types){
 	c->fun = fun;
 	c->n_args = n_args;
 	c->types = types;
+	c->_ptrs = 0;
 	
 
 	return c;
