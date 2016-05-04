@@ -94,9 +94,8 @@ int search_ref(const ref_list l, const char* name, ref_t type){
 	unsigned int i;
 	for (i = 0; i < l->length; i++){
 		Ref r = l->list[i];
-		if ( r->type == type && 
-		     strcmp(r->name, name) == 0){
-			return i;
+		if ( r->type == type || type == ALL ){
+			if  (strcmp(r->name, name) == 0) return i;
 		}
 	}
 	
