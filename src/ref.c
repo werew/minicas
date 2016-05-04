@@ -114,7 +114,7 @@ Ref push_ref(ref_list l, Ref r){
 	#define ALLOC_UNIT 8
 	if (l->list == NULL || l->length >= l->max){
 		Ref* tmp = realloc(l->list,
-			l->max + ALLOC_UNIT * sizeof (Ref));
+			(l->max + ALLOC_UNIT) * sizeof (Ref));
 		if (tmp == NULL) return NULL;
 	
 		l->list = tmp;
