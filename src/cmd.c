@@ -3,13 +3,6 @@
 #include "ref_all.h"
 #include "error.h"
 
-/* Argument types */
-ref_t A_FLOAT [] = { VAR, FLOAT, ALL };
-ref_t A_MATRIX[] = { VAR, MATRIX, ALL };
-ref_t A_FUN[] = { FUN, ALL };
-ref_t A_CMD[] = { CMD, ALL };
-ref_t A_ALL[] = { ALL };
-
 
 /**
  * Creates a new command structure
@@ -18,7 +11,7 @@ ref_t A_ALL[] = { ALL };
  * @param types Array representing the types of the arguments
  * @return The newly crafted command structure or NULL in case of error
  */
-Cmd new_cmd(Ref (*fun) (ref_list), int n_args, ref_t** types){
+Cmd new_cmd(Ref (*fun) (ref_list), unsigned int n_args, ref_t* types){
 	Cmd c = malloc(sizeof (s_cmd));
 	if (c == NULL) return NULL; 
 	c->fun = fun;
@@ -46,7 +39,7 @@ void drop_cmd(Cmd c){
  * @return A pointer to the new reference or NULL in case 
  *	   of error
  */
-Ref new_cref(char* name,Ref (*fun) (ref_list), int n_args, ref_t** types){
+Ref new_cref(char* name,Ref (*fun) (ref_list), unsigned int n_args, ref_t* types){
 	
 	Cmd c = new_cmd(fun, n_args, types);
 	if (c == NULL) return NULL;
@@ -70,7 +63,8 @@ Ref new_cref(char* name,Ref (*fun) (ref_list), int n_args, ref_t** types){
  * @return The reference of the newly stored/updated command,
  *	   or NULL in case of error
  */
-Ref set_cref(char* name,Ref (*fun) (ref_list), int n_args, ref_t** types){
+Ref set_cref
+(char* name,Ref (*fun) (ref_list), unsigned int n_args, ref_t* types){
 
 	Cmd c = new_cmd(fun, n_args, types);
 	if (c == NULL) return NULL;

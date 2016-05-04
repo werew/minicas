@@ -2,7 +2,11 @@
 #define _INTERNALS_H_
 
 
-void init_env(void);
+
+void load_commands(void);
+
+/* Commands */
+Ref quit_cmd(ref_list args);
 
 #endif
 

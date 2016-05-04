@@ -10,7 +10,8 @@ typedef enum {
 	ETYPE,
 	ELOAD,
 	ENOVAL,
-	EMXDIM
+	EMXDIM,
+	EMISSARG
 	} Error;
 
 #define MAX_EMSG 100

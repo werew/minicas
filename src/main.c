@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "parser.h"
-#include "internals.h"
+#include "init.h"
 
 //int main(int argc, char **argv) { //TODO add -f option
 int main(void){

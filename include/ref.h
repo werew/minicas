@@ -4,6 +4,9 @@
 #include "xtypes.h"
 
 
+/* Empty reference */
+#define NO_REF ((Ref) 0x1)
+
 /* Types of references handled by minicas */
 typedef enum { VAR, FUN, CMD, ALL } ref_t;
 

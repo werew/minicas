@@ -6,10 +6,11 @@
 
 
 Matrix ref_list2vect(ref_list l); // Should this stay here?
+bool cmptype_arg(unsigned int type, const Ref arg);
 
 /* Internal calls */
 Ref declare_ref(char* name);
-int exec_cmd(char* cmd);
+Ref exec_cmd(char* cmd, ref_list args);
 Ref exec_fun(char* fun, ref_list args);
 
 /* Parse-helpers */
@@ -26,6 +27,7 @@ Ref eval_expression(void);
 Ref eval_float(void);
 Ref eval_vector(void);
 Ref eval_fun(char* fun);
+Ref eval_cmd(char* cmd);
 
 #endif
 

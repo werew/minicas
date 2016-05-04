@@ -192,14 +192,52 @@ Ref exec_fun(char* name, ref_list args){
 	
 	return ret;
 }
+
+bool cmptype_arg(unsigned int type, const Ref arg){
+
+	switch (type) {
+		case ALL: return true;
+		case FUN: 
+		case VAR:
+		case CMD: return arg->type == type;
+		case FLOAT: 
+		case MATRIX: return arg->type == VAR && 
+				    ((Var) arg->inst)->type == type;
+		default: return false;
+	}
 	
+}
+	
+
+Ref exec_cmd(char* cmd, ref_list args){	
+
+	Ref r = get_cmd(cmd);
+	Cmd c = (Cmd) r->inst;
+
+	if (c == NULL) {
+		set_err(ENOTACMD, cmd);
+		return NULL;
+	}
+	
+	if ( c->n_args > args->length ){
+		set_err(EMISSARG, cmd );
+		return NULL;
+	}	
+
+	unsigned int i;
+	for (i = 0; i < c->n_args; i++){
+		if (cmptype_arg(c->types[i], args->list[i]) == false){
+			return NULL;
+		}
+	}
+
+
+	return c->fun(args);
+
+}	
+			
 		
-/* sym = args */	
-int exec_cmd(char* cmd){
-	/*TODO*/
-	printf("* TODO HERE EXECUTE CMD:  %s *\n",cmd);
-	return 0;
-}			
+		
 
 /***************************** EVALUATORS   **********************************/
 
@@ -251,13 +289,13 @@ int exec_instrution(void){
 			break;
 		default:;
 			/* Line is an internal command */
-			int ret_cmd = exec_cmd(an_token);
-			if (ret_cmd == -1) goto error;
+			ret = eval_cmd(an_token);
+			if (ret == NULL) goto error;
 			free(an_token);
 	}
 	
 	/* Print instruction output */
-	if (ret != NULL){
+	if (ret != NULL && ret != NO_REF){
 		print_ref(ret);
 		if (ret->name == NULL) drop_ref(ret);
 	}
@@ -275,6 +313,33 @@ error:
 
 
 
+/* sym = args */	
+Ref eval_cmd(char* cmd){
+
+	
+	ref_list args = new_ref_list();
+	if (args == NULL) return NULL;
+
+	do {
+		sym++;
+
+		Ref r = eval_expression();
+		if (r == NULL || push_ref(args, r) == NULL) goto error;
+
+		sym = jump_cclass(sym, SPACE);
+
+	} while ( *sym != ';' && *sym != '\0');
+
+	
+	Ref ret = exec_cmd(cmd, args);	
+	drop_ref_list(args, true);	
+	
+	return ret;
+
+error:
+	drop_ref_list(args, true);	
+	return NULL;
+}			
 
 
 
@@ -474,6 +539,9 @@ Ref eval_expression(void){
 		/* Vector */
 		r_result = eval_vector();
 
+	} else if (*sym == '\0' || *sym == ';'){
+
+		return NO_REF;
 	} else {
 		set_err(ESYNTAX,sym);
 		return NULL;

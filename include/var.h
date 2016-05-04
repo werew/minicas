@@ -6,7 +6,8 @@
 
 
 /* Types of variables handled by minicas */
-typedef enum { FLOAT, MATRIX } var_t;
+typedef enum { FLOAT = 10,  // Range < 10 reserved 
+	       MATRIX } var_t;
 
 /* Variable */
 typedef struct {
