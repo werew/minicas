@@ -41,3 +41,6 @@ minicas # Main executable name
 
 # Debug files
 *.dSYM/
+
+# Images generated
+*.gif
