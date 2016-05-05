@@ -1,4 +1,8 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <time.h>
 #include "matrix.h"
 #include "operation.h"
 #include "mod_matrix.h"
@@ -525,9 +529,132 @@ Ref rank_call(ref_list args){
 } 
 
 
-#include <stdio.h>
-Ref speedtest_cmd(ref_list args){
-	args++;
-	printf("Speedtest!\n");
-	return NULL;
+void plot(char* title, int* x_size, int* y_time, int n){
+	
+	printf("Generating chart for command: \"%s\"\n",title);
+
+	char set_title[100];	
+	snprintf(set_title,100,"set title \"Speedtest %s\"",title);
+
+	char * commands[] = {
+		set_title,
+    		"set terminal gif medium size 448,336", 
+    		"set ylabel \"c [clocks]\"",
+    		"set xlabel \"Matrix dimension\"",
+    		"set output \"chart.gif\"",
+    		"plot '-' with lines"};
+	
+
+	FILE * gnuplotPipe = popen ("gnuplot", "w");
+	if (gnuplotPipe == NULL) {
+    		perror("Cannot open gnuplot");
+    		return;
+ 	}
+
+	int i;
+	for (i=0; i < 6; i++) {
+		fprintf(gnuplotPipe, "%s \n", commands[i]);
+	}
+
+	for (i = 0; i < n ; i++) {
+		fprintf(gnuplotPipe, "%d %d\n", x_size[i], y_time[i]);
+	}
+
+	fprintf(gnuplotPipe, "e");
+	fclose(gnuplotPipe);
 }
+
+bool keepgoing = true;
+void stop_speedtest(int sig){
+
+	(void) sig; //Unused
+
+	puts("Terminating test...");
+	keepgoing = false;
+}
+
+Ref speedtest_cmd(ref_list args){
+
+	puts("Starting test...");
+
+	bool doplot = true; keepgoing = true; 
+
+	Fun f = (Fun) args->list[0]->inst;
+	int min = (int) (*(float*) ((Var)args->list[1]->inst)->val);
+	int max = (int) (*(float*) ((Var)args->list[2]->inst)->val);
+	int step = (int) (*(float*) ((Var)args->list[3]->inst)->val);
+
+	/* Optional parameter */
+	if (args->length > 4 && cmptype_ref(FLOAT, args->list[4])) {
+		int countdown = (int) (*(float*) ((Var)args->list[4]->inst)->val);
+		signal(SIGALRM, stop_speedtest);
+		alarm(countdown);
+	}
+	
+	
+	/* Points list */	
+	int* y_time = malloc (sizeof(int) * (max-min)/step);
+	int* x_size = malloc (sizeof(int) * (max-min)/step);
+	if (y_time == NULL || x_size == NULL){
+		free(x_size); free(y_time);
+		return NULL;
+	}
+
+	
+	int i,j;
+	for ( i = min, j=0; i <= max && keepgoing ; i += step, j++){
+		
+		Matrix m1 = identite(i), m2 = identite(i), ret = NULL;
+		if (m1 == NULL || m2 == NULL){ 
+			perror("error while generating matrices");
+			keepgoing = false; doplot = false;
+		}
+
+		/* Start test */
+		clock_t start = clock();
+
+		if (f->fun == mult_call) {
+			ret = multiplication(m1,m2);
+
+		} else if ( f->fun == sub_call) {
+			ret = soustraction(m1,m2);
+
+		} else if (f->fun == addition_call){
+			ret = addition(m1,m2);
+
+		} else if (f->fun == transpose_call){
+			ret = transpose(m1);	
+
+		} else if (f->fun == determinant_call){
+			determinant(m1);	
+
+		} else if (f->fun == invert_call){
+			ret = invert(m1);
+
+		} else if (f->fun == rank_call ){
+			rank(m1);
+		} else {
+			printf("Sorry...cannot test this function\n");
+			keepgoing = false; doplot = false;
+		}
+		
+		
+		/* Finish test */
+		clock_t end = clock();
+	
+		/* Store result */	
+		x_size[j] = i; y_time[j] = end-start;
+
+		
+		free(m1); free(m2); free(ret); //TODO drop
+	}
+
+	alarm(0); // Remove countdown
+
+	if (doplot == true) plot(args->list[0]->name, x_size, y_time, j);
+
+	free(x_size); free(y_time);
+
+	return NO_REF;
+}
+

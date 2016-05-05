@@ -6,7 +6,6 @@
 
 
 Matrix ref_list2vect(ref_list l); // Should this stay here?
-bool cmptype_arg(unsigned int type, const Ref arg);
 
 /* Internal calls */
 Ref declare_ref(char* name);

@@ -23,14 +23,9 @@ void drop_ref(Ref r){
 	free(r->name);
 	free(r);
 	*inst -= 1;
-	printf("-1 to %p, %d\n",inst, *inst);
-	fflush(stdout);
 
 	if (*inst > 0 ) return;
 	
-	printf("Drop %p\n",inst);
-	fflush(stdout);
-
 	switch (r->type) {
 		case VAR: drop_var(r->inst);
 			  break;
@@ -196,8 +191,6 @@ Ref get_reft(const char* name, ref_t type){
 void link_ref(Ref r, void* inst){
 	r->inst = inst;
 	(*(int*) inst)++;
-	printf("+1 to %p, %d\n",inst, (*(int*)inst));
-	fflush(stdout);
 }
 
 /**
@@ -277,6 +270,21 @@ void print_ref(Ref r){
 }
 
 
+bool cmptype_ref(unsigned int type, const Ref arg){
+
+	switch (type) {
+		case ALL: return true;
+		case FUN: 
+		case VAR:
+		case CMD: return arg->type == type;
+		case FLOAT: 
+		case MATRIX: return arg->type == VAR && 
+				    ((Var) arg->inst)->type == type;
+		default: return false;
+	}
+	
+}
+	
 
 	
 /* FNV-1a hash */

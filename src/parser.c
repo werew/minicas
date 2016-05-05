@@ -193,21 +193,7 @@ Ref exec_fun(char* name, ref_list args){
 	return ret;
 }
 
-bool cmptype_arg(unsigned int type, const Ref arg){
 
-	switch (type) {
-		case ALL: return true;
-		case FUN: 
-		case VAR:
-		case CMD: return arg->type == type;
-		case FLOAT: 
-		case MATRIX: return arg->type == VAR && 
-				    ((Var) arg->inst)->type == type;
-		default: return false;
-	}
-	
-}
-	
 
 Ref exec_cmd(char* cmd, ref_list args){	
 
@@ -227,7 +213,7 @@ Ref exec_cmd(char* cmd, ref_list args){
 
 	unsigned int i;
 	for (i = 0; i < c->n_args; i++){
-		if (cmptype_arg(c->types[i], args->list[i]) == false){
+		if (cmptype_ref(c->types[i], args->list[i]) == false){
 			return NULL;
 		}
 	}

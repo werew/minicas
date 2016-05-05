@@ -51,6 +51,7 @@ int search_ref(const ref_list l, const char* name);
 /* Various */
 unsigned int hash(const char* key);
 void print_ref(Ref r);
+bool cmptype_ref(unsigned int type, const Ref arg);
 
 #endif
 
