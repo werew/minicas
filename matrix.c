@@ -75,3 +75,9 @@ Matrix identite(int nb_cote)
 	}
 	return mx;
 }
+
+void dropMatrix(Matrix m)
+{
+	free(m->mat);
+	free(m);
+}
