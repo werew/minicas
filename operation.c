@@ -149,6 +149,24 @@ int PivotPartiel(Matrix m,int i)
 	return v==0?-1:p;	//TODO valeur par defaut
 }
 
+
+int Pivot(Matrix m,int i)
+{
+	if(i>m->nrows)
+	{
+		return -1;
+	}
+	int j;
+	for(j=i;j<m->nrows;j++)
+	{
+		if(getElt(m,j,i)!=0)
+		{
+			return j;
+		}
+	}
+	return -1;	//TODO valeur par defaut
+}
+
 void addmultiple(Matrix A,int i,int j,float c)
 {
 	int k;
@@ -172,7 +190,7 @@ void echangeLigne(Matrix m,int i,int j)
 
 Matrix echelonnage(Matrix m)
 {
-	Matrix P=triangulaire(m,NULL,NULL,NULL);
+	Matrix P=triangulaire(m,NULL,NULL,NULL,1);
 	int i;
 
 	for(i=0;i<P->nrows;i++)
@@ -186,7 +204,7 @@ Matrix echelonnage(Matrix m)
 	return P;
 }
 
-Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut)
+Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 {
 	Matrix P=copyMatrix(m);
 	int i,j;
@@ -196,7 +214,14 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut)
 	}
 	for(i=0;i<P->ncols-1;i++)
 	{
-		j=PivotPartiel(P,i);
+		if(fct_pivot==0)
+		{
+			j=Pivot(P,i);
+		}
+		else
+		{
+			j=PivotPartiel(P,i);
+		}
 		if(j==-1)
 		{
 			continue;
@@ -232,7 +257,7 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut)
 float determinant (Matrix m)
 {
 	float c=1;
-	Matrix P=triangulaire(m,&c,NULL,NULL);
+	Matrix P=triangulaire(m,&c,NULL,NULL,1);
 
 	int i;
 	for(i=0;i<P->ncols;i++)
@@ -367,7 +392,7 @@ void decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 	*U=newMatrix(A->nrows,A->ncols);
 	maillon m=newChaine();
 	int permut;
-	*U=triangulaire(A,NULL,&m,&permut);
+	*U=triangulaire(A,NULL,&m,&permut,0);
 	if(permut)
 	{
 		*P=identite(A->ncols);
