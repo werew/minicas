@@ -16,5 +16,6 @@ Matrix copyMatrix(Matrix m);
 void deleteMatrix(Matrix m);
 void displayMatrix(Matrix m);
 Matrix identite(int nb_cote);
+void dropMatrix(Matrix m);
 
 #endif
