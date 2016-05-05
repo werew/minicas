@@ -214,6 +214,7 @@ Ref exec_cmd(char* cmd, ref_list args){
 	unsigned int i;
 	for (i = 0; i < c->n_args; i++){
 		if (cmptype_ref(c->types[i], args->list[i]) == false){
+			set_err(ETYPE, "wrong type argument");
 			return NULL;
 		}
 	}
