@@ -5,6 +5,22 @@
 #include "operation.h"
 #include "matrix.h"
 
+maillon newChaine()
+{return NULL;}
+
+maillon push(maillon m,int i,int j,float x,int op)
+{
+	maillon n=(maillon)malloc(sizeof(struct s_maillon));
+	n->i=i;
+	n->j=j;
+	n->coef=x;
+	n->suiv=m;
+	n->op=op;
+	return n;
+}
+
+
+
 Matrix addition(Matrix a, Matrix b)
 {
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
@@ -114,6 +130,10 @@ Matrix fusionMat(Matrix A,Matrix B)
 
 int PivotPartiel(Matrix m,int i)
 {
+	if(i>m->nrows)
+	{
+		return -1;
+	}
 	int p=i;
 	float v=fabs(getElt(m,i,i));
 	int j;
@@ -152,35 +172,28 @@ void echangeLigne(Matrix m,int i,int j)
 
 Matrix echelonnage(Matrix m)
 {
-	Matrix P=copyMatrix(m);
-	int i,j;
-	float c=1;
+	Matrix P=triangulaire(m,NULL,NULL,NULL);
+	int i;
+
 	for(i=0;i<P->nrows;i++)
 	{
-		j=PivotPartiel(P,i);
-		if(j==-1)
+		if(getElt(P,i,i)!=0)
 		{
-			continue;
-		}
-		if(j!=i)
-		{
-			echangeLigne(P,i,j);
-			c=-c;
-		}
-		diviseLigne(P,i,getElt(P,i,i));	//TODO coordonée de getElt juste?
-
-		for(j=i+1;j<P->nrows;j++)
-		{
-			addmultiple(P,j,i,(-getElt(P,j,i)/getElt(P,i,i)));
+			diviseLigne(P,i,getElt(P,i,i));	//TODO coordonée de getElt juste?
+			setElt(P,i,i,1);
 		}
 	}
 	return P;
 }
 
-float triangulaire(Matrix m,Matrix P)
+Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut)
 {
+	Matrix P=copyMatrix(m);
 	int i,j;
-	float c=1;
+	if(permut!=NULL)
+	{
+		*permut=0;
+	}
 	for(i=0;i<P->ncols-1;i++)
 	{
 		j=PivotPartiel(P,i);
@@ -189,28 +202,44 @@ float triangulaire(Matrix m,Matrix P)
 			continue;
 		}
 		if(j!=i)
-		{
+		{	if(permut!=NULL)
+			{
+				*permut=1;
+			}
 			echangeLigne(P,i,j);
-			c=-c;
+			if(ch!=NULL)
+			{
+				*ch=push(*ch,i,j,0,0);
+			}
+			if(c!=NULL)
+			{
+				*c=-(*c);
+			}
 		}
-		for(j=i+1;j<P->ncols;j++)
+		for(j=i+1;j<P->nrows;j++)
 		{
-			addmultiple(P,j,i,(-getElt(P,j,i)/getElt(P,i,i)));
+			float coef=(-getElt(P,j,i)/getElt(P,i,i));
+			addmultiple(P,j,i,coef);
+			if(ch!=NULL)
+			{
+				*ch=push(*ch,j,i,coef,1);
+			}
 		}
 	}
-	return c;
+	return P;
 }
 
 float determinant (Matrix m)
 {
-	Matrix P=copyMatrix(m);
-	float c=triangulaire(m,P);
+	float c=1;
+	Matrix P=triangulaire(m,&c,NULL,NULL);
 
 	int i;
 	for(i=0;i<P->ncols;i++)
 	{
 		c*=getElt(P,i,i);
 	}
+	//TODO supprimer matrice intermediaire
 	return c;
 }
 
@@ -307,21 +336,6 @@ Matrix invert(Matrix m)
 	}
 }
 
-
-/*Matrix chercheMatrixMult(Matrix A,Matrix B,int i,int j)
-{
-	Matrix C=identite(a->nrows);
-	int a;
-	float total=0;
-	for(a=0;i<a->nrows;i++)
-	{
-		total+=getElt(A,a,i)*getElt(C,j,a);
-	}
-	float nv_coef=(total-getElt(B,j,i))/getElt(A,);
-	setElt(C,j,i,nv_coef);
-}*/
-
-
 int ligneZero(Matrix A,int l)
 {
 	int i;
@@ -344,4 +358,47 @@ int rank(Matrix A)
 		lz+=ligneZero(A,i);
 	}
 	return A->nrows-lz;
+}
+
+
+void decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
+{
+	*L=newMatrix(A->nrows,A->ncols);
+	*U=newMatrix(A->nrows,A->ncols);
+	maillon m=newChaine();
+	int permut;
+	*U=triangulaire(A,NULL,&m,&permut);
+	if(permut)
+	{
+		*P=identite(A->ncols);
+	}
+	else
+	{
+		*P=NULL;
+	}
+	Matrix id=identite(A->nrows);
+	Matrix E,tmp;
+	while(m!=NULL)
+	{
+		E=identite(A->nrows);
+		if(m->op==1)
+		{
+			setElt(E,m->i,m->j,m->coef);	//verifier valeur pour savoir si cest inversion de ligne ou comvinaison limeaire
+			tmp=multiplication(id,E);
+			dropMatrix(E);
+			dropMatrix(id);
+			id=tmp;
+
+		}
+		else
+		{
+			echangeLigne(*P,m->i,m->j);
+		}
+		maillon suiv=m->suiv;
+		free(m);
+		m=suiv;
+	}
+
+	*L=invert(id);
+	dropMatrix(id);
 }
