@@ -207,11 +207,8 @@ Matrix echelonnage(Matrix m)
 
 Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 {
-<<<<<<< HEAD:src/operation.c
-	m++; //Take out compiler error
-=======
 	Matrix P=copyMatrix(m);
->>>>>>> 26e703274163a706d3368b68cb2724a5808332a4:operation.c
+
 	int i,j;
 	if(permut!=NULL)
 	{
