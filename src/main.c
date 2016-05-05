@@ -26,11 +26,11 @@ int main(void){
 
     } else {
 
-       printf("prompt> ");
+       printf("minic@s> ");
        line=NULL;
        while (getline(&line, &n, f_in) != -1) {
 	   eval_input(line);
-           printf("prompt> ");
+           printf("minic@s> ");
            free(line); line=NULL;
         }
     }
