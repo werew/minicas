@@ -49,6 +49,9 @@ void load_mod_matrix(void){
 	load = set_fun("rank",rank_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function rank");
 
+	load = set_fun("decomposition",decomposition_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function decomposition");
+
 	/* Load commands */
 	static ref_t args_cmd[4] = { FUN, FLOAT, FLOAT, FLOAT };
 	load = set_cref("speedtest",speedtest_cmd,4,args_cmd);
@@ -529,6 +532,38 @@ Ref rank_call(ref_list args){
 } 
 
 
+
+
+
+Ref decomposition_call(ref_list args){
+	if (args->length != 1){
+		set_err(ETYPE, "too many arguments");
+		return NULL;	
+	}
+	
+	if (expect_Matrix(args->list[0]) == false) return NULL;
+	
+	Var var = (Var) args->list[0]->inst;
+	Matrix M = (Matrix) var->val;
+
+	Matrix LUP[3] = {NULL, NULL, NULL};
+	decomposition(M,&LUP[0],&LUP[1],&LUP[2]);
+	
+	int i;		
+	for ( i = 0; i < 3; i++){	
+		if (LUP[i] != NULL){
+			displayMatrix(LUP[i]);
+			dropMatrix(LUP[i]);
+		}
+	}
+		
+	return NO_REF;
+
+}
+
+
+
+/******************** COMMANDS ************************/
 void plot(char* title, int* x_size, int* y_time, int n){
 	
 	printf("Generating chart for command: \"%s\"\n",title);
