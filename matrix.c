@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-Matrix newMatrix(int nb_rows, int nb_columns)
+Matrix newMatrix(unsigned int nb_rows, unsigned int nb_columns)
 {
 	if(nb_rows==0 || nb_columns==0)
 	{
@@ -14,7 +14,7 @@ Matrix newMatrix(int nb_rows, int nb_columns)
 	{
 		return NULL;	//erreur
 	}
-	m->mat=(float*)calloc(nb_rows*nb_columns*sizeof(float));
+	m->mat=(float*)calloc(nb_rows*nb_columns,sizeof(float));
 	if(m->mat==NULL)
 	{
 		return NULL;	//erreur
@@ -24,17 +24,17 @@ Matrix newMatrix(int nb_rows, int nb_columns)
 	return m;
 }
 
-float getElt(Matrix m,int row,int column)
+float getElt(Matrix m,unsigned int row,unsigned int column)
 {
 	return (m->mat[column+row*m->ncols]);
 }
 
-void setElt(Matrix m,int row,int column,float val)
+void setElt(Matrix m,unsigned int row,unsigned int column,float val)
 {
 	m->mat[row*m->ncols+column]=val;
 }
 
-float* getAddr(Matrix m,int i,int j)
+float* getAddr(Matrix m,unsigned int i,unsigned int j)
 {
 	return (&(m->mat[i*m->ncols+j]));
 }
@@ -58,7 +58,7 @@ void displayMatrix(Matrix m)
 		printf("Erreur affichage Matrice\n");
 		return;
 	}
-	int i;
+	unsigned int i;
 	for(i=0;i<m->nrows*m->ncols;i++)
 	{
 		printf("%.3f	 ",m->mat[i]);
@@ -70,14 +70,14 @@ void displayMatrix(Matrix m)
 	printf("\n");
 }
 
-Matrix identite(int nb_cote)
+Matrix identite(unsigned int nb_cote)
 {
 	Matrix mx=newMatrix(nb_cote,nb_cote);
 	if(mx==NULL)
 	{
 		return NULL;	//TODO
 	}
-	int i,j;
+	unsigned int i,j;
 	for(i=0;i<nb_cote;i++)
 	{
 		for(j=0;j<nb_cote;j++)
