@@ -33,6 +33,6 @@ Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsi
 Matrix invert(Matrix m);
 int rank(Matrix A);
 int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P);
-Matrix noyau(Matrix m);
+int noyau(Matrix m,Matrix* base);
 
 #endif

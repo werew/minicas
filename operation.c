@@ -653,12 +653,12 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 }
 
 
-Matrix noyau(Matrix m)
+int noyau(Matrix m,Matrix* base)
 {
 	Matrix A=echelonnage(m);
 	if(A==NULL)
 	{
-		return NULL;	//TODO
+		return 0;	//TODO
 	}
 	unsigned int i,j,lz=0;
 	for(i=0;i<A->nrows;i++)
@@ -667,29 +667,34 @@ Matrix noyau(Matrix m)
 	}
 	if(lz==0)
 	{
+		*base=newMatrix(A->nrows,1);
 		dropMatrix(A);
-		return NULL;
+		if(*base==NULL)
+		{
+			return 0;
+		}
+		return 1;
 	}
-	Matrix base=newMatrix(A->nrows,lz);
+	*base=newMatrix(A->nrows,lz);
 	if(base==NULL)
 	{
 		dropMatrix(A);
-		return NULL;	//TODO
+		return 0;	//TODO
 	}
 	unsigned int pos_un;
 	unsigned int lnz=A->nrows-lz;
 	Matrix res,mat_int,sol_int;
 	for(i=0;i<lz;i++)
 	{
-		pos_un=base->nrows-i-1;
-		setElt(base,pos_un,i,1);
+		pos_un=(*base)->nrows-i-1;
+		setElt(*base,pos_un,i,1);
 
 		res=newMatrix(lnz,1);
 		if(res==NULL)
 		{
 			dropMatrix(A);
-			dropMatrix(base);
-			return NULL;	//TODO
+			dropMatrix(*base);
+			return 0;	//TODO
 		}
 		for(j=0;j<lz;j++)
 		{
@@ -699,27 +704,26 @@ Matrix noyau(Matrix m)
 		if(mat_int==NULL)
 		{
 			dropMatrix(A);
-			dropMatrix(base);
+			dropMatrix(*base);
 			dropMatrix(res);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 		sol_int=solve(mat_int,res);
 		if(sol_int==NULL)
 		{
 			dropMatrix(A);
-			dropMatrix(base);
+			dropMatrix(*base);
 			dropMatrix(res);
 			dropMatrix(mat_int);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 		for(j=0;j<lnz;j++)
 		{
-			setElt(base,j,i,getElt(sol_int,j,0));
+			setElt(*base,j,i,getElt(sol_int,j,0));
 		}
-		dropMatrix(A);
 		dropMatrix(res);
 		dropMatrix(mat_int);
 		dropMatrix(sol_int);
 	}
-	return base;
+	return 1;
 }
