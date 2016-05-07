@@ -29,9 +29,10 @@ float determinant(Matrix m);
 void remontee(Matrix A,Matrix X);
 Matrix solve(Matrix A,Matrix B);
 Matrix bienEchelonner(Matrix A);
-Matrix sliceMatrix(Matrix A,int i);
+Matrix sliceMatrix(Matrix A,int i1,int i2,int j1,int j2);
 Matrix invert(Matrix m);
 int rank(Matrix A);
 void decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P);
+Matrix noyau(Matrix m);
 
 #endif

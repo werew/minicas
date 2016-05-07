@@ -5,6 +5,8 @@
 #include "operation.h"
 #include "matrix.h"
 
+#define EPSILON 0.00001
+
 maillon newChaine()
 {return NULL;}
 
@@ -170,9 +172,18 @@ int Pivot(Matrix m,int i)
 void addmultiple(Matrix A,int i,int j,float c)
 {
 	int k;
+	float coef;
 	for(k=0;k<A->ncols;k++)
 	{
-		setElt(A,i,k,getElt(A,i,k)+c*getElt(A,j,k));
+		coef=getElt(A,i,k)+c*getElt(A,j,k);
+		if(coef<EPSILON && coef>(-EPSILON))
+		{
+			setElt(A,i,k,0);
+		}
+		else
+		{
+			setElt(A,i,k,coef);
+		}
 	}
 }
 
@@ -198,7 +209,10 @@ Matrix echelonnage(Matrix m)
 		if(getElt(P,i,i)!=0)
 		{
 			diviseLigne(P,i,getElt(P,i,i));	//TODO coordonée de getElt juste?
-			setElt(P,i,i,1);
+			if(getElt(P,i,i)!=0)
+			{
+				setElt(P,i,i,1);
+			}
 		}
 	}
 	return P;
@@ -293,7 +307,7 @@ Matrix solve(Matrix A, Matrix B)
 	Matrix D=echelonnage(C);
 	//remontee(D,X);
 	Matrix E=bienEchelonner(D);
-	return sliceMatrix(E,A->ncols);
+	return sliceMatrix(E,0,A->nrows-1,A->ncols,A->ncols);
 }
 
 Matrix expo(Matrix m,int p)
@@ -332,14 +346,14 @@ Matrix bienEchelonner(Matrix A)
 	return B;
 }
 
-Matrix sliceMatrix(Matrix A,int i)
+Matrix sliceMatrix(Matrix A,int i1,int i2,int j1,int j2)
 {
-	Matrix B=newMatrix(A->nrows,A->ncols-i);
+	Matrix B=newMatrix(i2-i1+1,j2-j1+1);
 
-	int j;
-	for(j=0;j<B->nrows;j++)
+	int k;
+	for(k=i1;k<=i2;k++)
 	{
-		memcpy(getAddr(B,j,0),getAddr(A,j,i),(A->ncols-i)*sizeof(float));
+		memcpy(getAddr(B,k-i1,0),getAddr(A,k,j1),(j2-j1+1)*sizeof(float));
 	}
 	return B;
 }
@@ -356,7 +370,7 @@ Matrix invert(Matrix m)
 		Matrix A=fusionMat(m,Id);
 		Matrix B=echelonnage(A);
 		Matrix C=bienEchelonner(B);
-		Matrix D=sliceMatrix(C,m->ncols);
+		Matrix D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);
 		return D;
 	}
 }
@@ -376,13 +390,15 @@ int ligneZero(Matrix A,int l)
 
 int rank(Matrix A)
 {
+	Matrix B=echelonnage(A);
+	displayMatrix(B);
 	int lz=0;
 	int i;
-	for(i=0;i<A->nrows;i++)
+	for(i=0;i<B->nrows;i++)
 	{
-		lz+=ligneZero(A,i);
+		lz+=ligneZero(B,i);
 	}
-	return A->nrows-lz;
+	return B->nrows-lz;
 }
 
 
@@ -426,4 +442,44 @@ void decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 
 	*L=invert(id);
 	dropMatrix(id);
+}
+
+
+Matrix noyau(Matrix m)
+{
+	Matrix A=echelonnage(m);
+	int i,j,lz=0;
+	for(i=0;i<A->nrows;i++)
+	{
+		lz+=ligneZero(A,i);
+	}
+	if(lz==0)
+	{
+		return NULL;
+	}
+	Matrix base=newMatrix(A->nrows,lz);
+	int pos_un;
+	int lnz=A->nrows-lz;
+	Matrix res,mat_int,sol_int;
+	for(i=0;i<lz;i++)
+	{
+		pos_un=base->nrows-i-1;
+		setElt(base,pos_un,i,1);
+
+		res=newMatrix(lnz,1);
+		for(j=0;j<lz;j++)
+		{
+			setElt(res,j,0,-getElt(A,j,pos_un));
+		}
+		mat_int=sliceMatrix(A,0,lnz-1,0,lnz-1);
+		sol_int=solve(mat_int,res);
+		for(j=0;j<lnz;j++)
+		{
+			setElt(base,j,i,getElt(sol_int,j,0));
+		}
+		dropMatrix(res);
+		dropMatrix(mat_int);
+		dropMatrix(sol_int);
+	}
+	return base;
 }
