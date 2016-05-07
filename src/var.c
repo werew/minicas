@@ -117,20 +117,3 @@ void print_var(Var v){
 	}
 }
 
-/**
- * Test the type of a variable
- * @param r The reference to check
- * @param type The expected type
- * @return true if the given reference is a Var of the
- * 	   expected type
- */
-bool v_isa(Ref r, var_t type){
-
-	if (r == NULL || r->type != VAR) return false;
-
-	Var var = (Var) r->inst;
-
-	if ( var->type != type ) return false;
-
-	return true;
-}

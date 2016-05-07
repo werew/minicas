@@ -26,7 +26,6 @@ Ref set_var(char* name, void* val, var_t type);
 Ref get_var(const char* name);
 
 void print_var(Var v);
-bool v_isa(Ref r, var_t type);
 
 #endif
 

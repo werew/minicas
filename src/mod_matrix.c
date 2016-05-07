@@ -66,9 +66,8 @@ void load_mod_matrix(void){
 
 
 /* Check if reference is a matrix */
-bool expect_Matrix(Ref r){
-	if (v_isa(r, MATRIX) == true) return true;
-	
+bool arg_isMatrix(Ref r){
+	if (cmptype_ref(MATRIX, r) == true) return true;
 	set_err(ETYPE, "argument was expected to be a Matrix");
 	return false;
 }
@@ -119,7 +118,7 @@ Ref transpose_call(ref_list args){
 		return NULL;	
 	}
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 
 	Matrix m = CAST_REF2MATRIX(args->list[0]);	
 
@@ -139,7 +138,7 @@ Ref transpose_call(ref_list args){
 /* Multiplies all the given matrices consecutively */	
 Ref mult_call(ref_list args){
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 		
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
@@ -150,7 +149,7 @@ Ref mult_call(ref_list args){
 	for (i = 1; i < args->length; i++){
 		
 		
-		if (expect_Matrix(args->list[i]) == false) goto error;
+		if (arg_isMatrix(args->list[i]) == false) goto error;
 		m = CAST_REF2MATRIX(args->list[i]);
 
 		if (m->nrows != mult->ncols) {
@@ -180,7 +179,7 @@ error:
 /* Addition of any number of matrices */
 Ref addition_call(ref_list args){
 
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 		
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
@@ -191,7 +190,7 @@ Ref addition_call(ref_list args){
 	for (i = 1; i < args->length; i++){
 		
 		
-		if (expect_Matrix(args->list[i]) == false) goto error;
+		if (arg_isMatrix(args->list[i]) == false) goto error;
 		m = CAST_REF2MATRIX(args->list[0]);
 
 		if (m->nrows != sum->nrows || m->ncols != sum->ncols) {
@@ -222,7 +221,7 @@ error:
 /* Subtraction of any number of matrices */
 Ref sub_call(ref_list args){
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 		
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
@@ -233,7 +232,7 @@ Ref sub_call(ref_list args){
 	for (i = 1; i < args->length; i++){
 		
 		
-		if (expect_Matrix(args->list[i]) == false) goto error;
+		if (arg_isMatrix(args->list[i]) == false) goto error;
 		m = CAST_REF2MATRIX(args->list[i]);
 
 		if (m->nrows != sub->nrows || m->ncols != sub->ncols) {
@@ -368,22 +367,19 @@ Ref expo_call(ref_list args){
 		return NULL;	
 	}
 	
-	Var arg1 = (Var) args->list[0]->inst;
-	Var arg2 = (Var) args->list[1]->inst;
-
 	Matrix m; float p;
 
-	if (v_isa(args->list[0], FLOAT) && 
-	    v_isa(args->list[1], MATRIX)) {
+	if (cmptype_ref(FLOAT,  args->list[0]) && 
+	    cmptype_ref(MATRIX, args->list[1]) ){
 
-		p = (*(float*) arg1->val);	
-		m = (Matrix) arg2->val;
+		p = *CAST_REF2FLOATP(args->list[0]);
+		m =  CAST_REF2MATRIX(args->list[1]);
 
-	} else if (v_isa(args->list[0], MATRIX) && 
-	     v_isa(args->list[1], FLOAT)) {
+	} else if (cmptype_ref(MATRIX, args->list[0]) && 
+		   cmptype_ref(FLOAT,  args->list[1]) ){
 
-		p = (*(float*) arg2->val);	
-		m = (Matrix) arg1->val;
+		m =  CAST_REF2MATRIX(args->list[0]);
+		p = *CAST_REF2FLOATP(args->list[1]);
 
 	} else {
 
@@ -411,7 +407,7 @@ Ref determinant_call(ref_list args){
 		return NULL;	
 	}
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 	
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
@@ -445,7 +441,7 @@ Ref invert_call(ref_list args){
 		return NULL;	
 	}
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 	
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
@@ -475,8 +471,8 @@ Ref solve_call(ref_list args){
 		return NULL;	
 	}
 
-	if (expect_Matrix(args->list[0]) == false ||
-	    expect_Matrix(args->list[1]) == false ) return NULL;
+	if (arg_isMatrix(args->list[0]) == false ||
+	    arg_isMatrix(args->list[1]) == false ) return NULL;
 
 	Matrix m1 = CAST_REF2MATRIX(args->list[0]);
 	Matrix m2 = CAST_REF2MATRIX(args->list[0]);
@@ -505,7 +501,7 @@ Ref rank_call(ref_list args){
 		return NULL;	
 	}
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 	
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
@@ -531,7 +527,7 @@ Ref decomposition_call(ref_list args){
 		return NULL;	
 	}
 	
-	if (expect_Matrix(args->list[0]) == false) return NULL;
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
 	
 	Matrix M = CAST_REF2MATRIX(args->list[0]);
 
