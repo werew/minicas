@@ -53,21 +53,16 @@ Matrix copyMatrix(Matrix m)
 
 void displayMatrix(Matrix m)
 {
-	if(m==NULL)
+	unsigned int i,j;
+	for(i = 0 ; i < m->nrows; i++)
 	{
-		printf("Erreur affichage Matrice\n");
-		return;
-	}
-	unsigned int i;
-	for(i=0;i<m->nrows*m->ncols;i++)
-	{
-		printf("%.3f	 ",m->mat[i]);
-		if((i+1)%m->ncols==0)
-		{
-			printf("\n");
+		printf("\t\t[");
+		for (j = 0; j < m->ncols; j++){
+			printf("%- 6.4g",getElt(m,i,j));
 		}
+		printf("]\n");
 	}
-	printf("\n");
+	printf("\n\n");
 }
 
 Matrix identite(unsigned int nb_cote)
