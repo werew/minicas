@@ -13,6 +13,10 @@ maillon newChaine()
 maillon push(maillon m,int i,int j,float x,int op)
 {
 	maillon n=(maillon)malloc(sizeof(struct s_maillon));
+	if(n==NULL)
+	{
+		return NULL;	//TODO
+	}
 	n->i=i;
 	n->j=j;
 	n->coef=x;
@@ -274,7 +278,10 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 			}
 			if(ch!=NULL)
 			{
-				*ch=push(*ch,i,j,0,0);
+				if((*ch=push(*ch,i,j,0,0))==NULL)
+				{
+					return NULL;	//TODO
+				}
 			}
 			if(c!=NULL)
 			{
@@ -290,7 +297,10 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 			}
 			if(ch!=NULL)
 			{
-				*ch=push(*ch,j,i,coef,1);
+				if((*ch=push(*ch,j,i,coef,1))==NULL)
+				{
+					return NULL;	//TODO
+				}
 			}
 		}
 	}
