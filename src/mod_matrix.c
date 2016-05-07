@@ -84,7 +84,7 @@ Ref matrix_call(ref_list args){
 	Matrix m = newMatrix(args->length, vect->ncols);
 	if (m == NULL) return NULL;
 
-	int i,j;
+	unsigned int i,j;
 	for (i = 0; i < m->nrows; i++){
 
 		var = (Var) args->list[i]->inst;
