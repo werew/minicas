@@ -54,6 +54,9 @@ void load_mod_matrix(void){
 	load = set_fun("decomposition",decomposition_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function decomposition");
 
+	load = set_fun("kernel",kernel_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function kernel");
+
 	/* Load commands */
 	static ref_t args_cmd[4] = { FUN, FLOAT, FLOAT, FLOAT };
 	load = set_cref("speedtest",speedtest_cmd,4,args_cmd);
@@ -519,8 +522,6 @@ Ref rank_call(ref_list args){
 
 
 
-
-
 Ref decomposition_call(ref_list args){
 	if (args->length != 1){
 		set_err(ETYPE, "too many arguments");
@@ -546,6 +547,42 @@ Ref decomposition_call(ref_list args){
 
 }
 
+
+Ref kernel_call(ref_list args){
+	if (args->length != 1){
+		set_err(ETYPE, "too many arguments");
+		return NULL;	
+	}
+	
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
+	
+	Matrix M = CAST_REF2MATRIX(args->list[0]);
+
+	if (M->nrows != M->ncols) {
+		set_err(ETYPE, "not a square Matrix");
+		return NULL;
+	}
+
+	Matrix K = noyau(M);
+	if ( K == NULL) return NULL;
+	
+	/* Print kernel */
+	unsigned int i,j;
+	printf("\n");
+	for(i = 0 ; i < K->nrows; i++)
+	{
+		printf("\t");
+		for (j = 0; j < K->ncols; j++){
+			printf("\t[%- 6.4g]",getElt(K,i,j));
+		}
+		printf("\n");
+	}
+	printf("\n\n");
+
+	return NO_REF;
+		
+			
+}
 
 
 /******************** COMMANDS ************************/

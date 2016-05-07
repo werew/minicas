@@ -19,6 +19,8 @@ Ref invert_call(ref_list args);
 Ref solve_call(ref_list args);
 Ref rank_call(ref_list args);
 Ref decomposition_call(ref_list args);
+Ref kernel_call(ref_list args);
+
 	
 
 
