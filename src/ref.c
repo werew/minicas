@@ -73,7 +73,7 @@ Ref new_ref(char* name, void* inst, ref_t type){
 	if (name == NULL) {
 		r->name = NULL;
 	} else {
-		r->name = malloc( strlen(name));
+		r->name = malloc(strlen(name)+1);
 		if (r->name == NULL) {
 			free(r);
 			return NULL;
