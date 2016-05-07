@@ -4,18 +4,17 @@
 typedef struct s_matrix
 {
 	float* mat;
-	int nrows;
-	int ncols;
+	unsigned int nrows;
+	unsigned int ncols;
 }*Matrix;
 
-Matrix newMatrix(int nb_rows, int nb_columns);
-float getElt(Matrix m,int row,int column);
-void setElt(Matrix m,int row,int column,float val);
-float* getAddr(Matrix m,int i,int j);
+Matrix newMatrix(unsigned int nb_rows, unsigned int nb_columns);
+float getElt(Matrix m,unsigned int row,unsigned int column);
+void setElt(Matrix m,unsigned int row,unsigned int column,float val);
+float* getAddr(Matrix m,unsigned int i,unsigned int j);
 Matrix copyMatrix(Matrix m);
-void deleteMatrix(Matrix m);
 void displayMatrix(Matrix m);
-Matrix identite(int nb_cote);
+Matrix identite(unsigned int nb_cote);
 void dropMatrix(Matrix m);
 
 #endif
