@@ -638,8 +638,7 @@ Ref speedtest_cmd(ref_list args){
 	
 	int i,j;
 	for ( i = min, j=0; i <= max && keepgoing ; i += step, j++){
-		printf("Loop %d ... %d\n",j,i);
-		fflush(stdout);	
+
 		Matrix m1 = identite(i), m2 = identite(i), ret = NULL;
 		if (m1 == NULL || m2 == NULL){ 
 			perror("error while generating matrices");

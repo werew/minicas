@@ -6,11 +6,22 @@
 #include "parser.h"
 #include "init.h"
 
-//int main(int argc, char **argv) { //TODO add -f option
-int main(void){
+int main(int argc, char **argv) {
+
+   FILE *f_in;
+   if (argc > 1){
+	f_in = fopen(argv[1],"r");
+   } else {
+	f_in = fdopen(0, "r");
+   }
+
+   if (f_in == NULL) {
+	perror("cannot open file");
+	exit(1);
+   }
+
    struct stat buf;
    
-   FILE *f_in = fdopen(0, "r");
    char *line;
    size_t n=0;
 
