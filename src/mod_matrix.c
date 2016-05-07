@@ -90,7 +90,7 @@ Ref matrix_call(ref_list args){
 		if ( var->type != MATRIX ) {
 			set_err(ETYPE, "the arguments of \"matrix\""
 				       " must be of type Matrix" );
-			free(m); //FIX
+			dropMatrix(m);
 			return NULL;
 		}
 	
@@ -104,7 +104,7 @@ Ref matrix_call(ref_list args){
     
 	/* Return a reference */
 	Ref r = new_vref(NULL, m, MATRIX);
-	if (r == NULL) free(m); //TODO FIX
+	if (r == NULL) dropMatrix(m);
 
 	return r;
 }
@@ -126,7 +126,7 @@ Ref transpose_call(ref_list args){
 	if (t == NULL) return NULL;
 
 	Ref r = new_vref(NULL, t, MATRIX);
-	if (r == NULL) free(t); //TODO FIX
+	if (r == NULL) dropMatrix(t);
 
 	return r;
 		
@@ -162,17 +162,17 @@ Ref mult_call(ref_list args){
 		Matrix tmp = multiplication(mult, m);
 		if (tmp == NULL ) goto error;
 
-		free(mult); //FIXME
+		dropMatrix(mult);
 		mult = tmp;
 	}
     
 	/* Return a reference */
 	Ref r = new_vref(NULL, mult, MATRIX);
-	if (r == NULL) free(mult); //TODO FIX
+	if (r == NULL) dropMatrix(mult);
 
 	return r;
 error:
-	free(mult); //TODO
+	dropMatrix(mult);
 	return NULL;
 }
 
@@ -205,17 +205,17 @@ Ref addition_call(ref_list args){
 		Matrix tmp = addition(sum, m);
 		if (tmp == NULL ) goto error;
 
-		free(sum); //FIXME
+		dropMatrix(sum);
 		sum = tmp;
 	}
     
 	/* Return a reference */
 	Ref r = new_vref(NULL, sum, MATRIX);
-	if (r == NULL) free(sum); //TODO FIX
+	if (r == NULL) dropMatrix(sum);
 
 	return r;
 error:
-	free(sum); //TODO
+	dropMatrix(sum);
 	return NULL;
 }
 
@@ -249,17 +249,17 @@ Ref sub_call(ref_list args){
 		Matrix tmp = soustraction(sub, m);
 		if (tmp == NULL ) goto error;
 
-		free(sub); //FIXME
+		dropMatrix(sub);
 		sub = tmp;
 	}
     
 	/* Return a reference */
 	Ref r = new_vref(NULL, sub, MATRIX);
-	if (r == NULL) free(sub); //TODO FIX
+	if (r == NULL) dropMatrix(sub);
 
 	return r;
 error:
-	free(sub); //TODO
+	dropMatrix(sub);
 	return NULL;
 }
 
@@ -298,7 +298,7 @@ Ref mult_scal_call(ref_list args){
 					tmp = multScal(*arg_f, ret_mat);
 					if (tmp == NULL) goto error;
 
-					free(ret_mat); //FIXME
+					dropMatrix(ret_mat);
 					ret_mat = tmp;	
 
 				} else {
@@ -319,7 +319,7 @@ Ref mult_scal_call(ref_list args){
 					tmp = multiplication(ret_mat, arg_m);
 					if (tmp == NULL ) goto error;
 
-					free(ret_mat); //FIXME
+					dropMatrix(ret_mat);
 					ret_mat = tmp;	
 
 				} else {
@@ -346,7 +346,7 @@ Ref mult_scal_call(ref_list args){
 
 	if (ret_matrix) {
 		r = new_vref(NULL, ret_mat, MATRIX);
-		if (r == NULL) free(ret_mat); //TODO FIX
+		if (r == NULL) dropMatrix(ret_mat);
 	} else {
 		r = new_vref(NULL, ret_flt, FLOAT);
 		if (r == NULL) free(ret_flt);
@@ -355,7 +355,7 @@ Ref mult_scal_call(ref_list args){
 	return r;
 
 error:
-	if (ret_matrix)	free(ret_mat); //TODO
+	if (ret_matrix)	dropMatrix(ret_mat);
 	else free(ret_flt); 
 	return NULL;
 }
@@ -399,7 +399,7 @@ Ref expo_call(ref_list args){
 	if (e == NULL) return NULL;
 
 	Ref r = new_vref(NULL, e, MATRIX);
-	if (r == NULL) free(e); //TODO FIX
+	if (r == NULL) dropMatrix(e);
 
 	return r;
 		
@@ -465,7 +465,7 @@ Ref invert_call(ref_list args){
 
 
 	Ref r = new_vref(NULL, inv, MATRIX);
-	if (r == NULL) free(inv); //TODO
+	if (r == NULL) dropMatrix(inv);
 
 	return r;
 		
@@ -500,7 +500,7 @@ Ref solve_call(ref_list args){
 	if (s == NULL) return NULL;
 
 	Ref r = new_vref(NULL, s, MATRIX);
-	if (r == NULL) free(s); //TODO FIX
+	if (r == NULL) dropMatrix(s);
 
 	return r;
 } 
@@ -681,7 +681,9 @@ Ref speedtest_cmd(ref_list args){
 		x_size[j] = i; y_time[j] = end-start;
 
 		
-		free(m1); free(m2); free(ret); //TODO drop
+		dropMatrix(m1);
+		dropMatrix(m2);
+		dropMatrix(ret);
 	}
 
 	alarm(0); // Remove countdown
