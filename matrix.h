@@ -13,7 +13,6 @@ float getElt(Matrix m,int row,int column);
 void setElt(Matrix m,int row,int column,float val);
 float* getAddr(Matrix m,int i,int j);
 Matrix copyMatrix(Matrix m);
-void deleteMatrix(Matrix m);
 void displayMatrix(Matrix m);
 Matrix identite(int nb_cote);
 void dropMatrix(Matrix m);

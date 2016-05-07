@@ -3,25 +3,24 @@
 #include <stdio.h>
 #include <string.h>
 
-void initMatrix(Matrix m)
-{
-	int i,j;
-	for(i=0;i<m->nrows;i++)
-	{
-		for(j=0;j<m->ncols;j++)
-		{
-			setElt(m,i,j,0);
-		}
-	}
-}
-
 Matrix newMatrix(int nb_rows, int nb_columns)
 {
+	if(nb_rows==0 || nb_columns==0)
+	{
+		return NULL; //erreur dimension
+	}
 	Matrix m=(Matrix)malloc(sizeof(struct s_matrix));
-	m->mat=(float*)malloc(nb_rows*nb_columns*sizeof(float));
+	if(m==NULL)
+	{
+		return NULL;	//erreur
+	}
+	m->mat=(float*)calloc(nb_rows*nb_columns*sizeof(float));
+	if(m->mat==NULL)
+	{
+		return NULL;	//erreur
+	}
 	m->nrows=nb_rows;
 	m->ncols=nb_columns;
-	initMatrix(m);
 	return m;
 }
 
@@ -47,11 +46,6 @@ Matrix copyMatrix(Matrix m)
 	return p;
 }
 
-void deleteMatrix(Matrix m)
-{
-	free(m->mat);
-	free(m);
-}
 
 void displayMatrix(Matrix m)
 {
