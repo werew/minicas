@@ -42,6 +42,10 @@ float* getAddr(Matrix m,int i,int j)
 Matrix copyMatrix(Matrix m)
 {
 	Matrix p=newMatrix(m->nrows,m->ncols);
+	if(p==NULL)
+	{
+		return NULL;	//TODO
+	}
 	memcpy(getAddr(p,0,0),getAddr(m,0,0),m->ncols*m->nrows*sizeof(float));
 	return p;
 }
@@ -51,7 +55,7 @@ void displayMatrix(Matrix m)
 {
 	if(m==NULL)
 	{
-		printf("Erreur Matrice\n");
+		printf("Erreur affichage Matrice\n");
 		return;
 	}
 	int i;
@@ -69,6 +73,10 @@ void displayMatrix(Matrix m)
 Matrix identite(int nb_cote)
 {
 	Matrix mx=newMatrix(nb_cote,nb_cote);
+	if(mx==NULL)
+	{
+		return NULL;	//TODO
+	}
 	int i,j;
 	for(i=0;i<nb_cote;i++)
 	{
