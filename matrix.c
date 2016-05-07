@@ -3,12 +3,25 @@
 #include <stdio.h>
 #include <string.h>
 
+void initMatrix(Matrix m)
+{
+	int i,j;
+	for(i=0;i<m->nrows;i++)
+	{
+		for(j=0;j<m->ncols;j++)
+		{
+			setElt(m,i,j,0);
+		}
+	}
+}
+
 Matrix newMatrix(int nb_rows, int nb_columns)
 {
 	Matrix m=(Matrix)malloc(sizeof(struct s_matrix));
 	m->mat=(float*)malloc(nb_rows*nb_columns*sizeof(float));
 	m->nrows=nb_rows;
 	m->ncols=nb_columns;
+	initMatrix(m);
 	return m;
 }
 
