@@ -9,6 +9,8 @@
 #include "ref_all.h"
 #include "error.h"
 
+#define CAST_REF2MATRIX(ref) ( (Matrix) ((Var) (ref)->inst)->val )
+#define CAST_REF2FLOATP(ref) ( (float*) ((Var) (ref)->inst)->val )
 
 /** Module loader  **/
 void load_mod_matrix(void){	
@@ -118,11 +120,10 @@ Ref transpose_call(ref_list args){
 	}
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
-	
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
-	Matrix t = transpose(m);
 
+	Matrix m = CAST_REF2MATRIX(args->list[0]);	
+
+	Matrix t = transpose(m);
 	if (t == NULL) return NULL;
 
 	Ref r = new_vref(NULL, t, MATRIX);
@@ -140,8 +141,7 @@ Ref mult_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 		
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
+	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
 	Matrix mult = copyMatrix(m);
 	if (mult == NULL) return NULL;
@@ -151,9 +151,8 @@ Ref mult_call(ref_list args){
 		
 		
 		if (expect_Matrix(args->list[i]) == false) goto error;
+		m = CAST_REF2MATRIX(args->list[i]);
 
-		var = (Var) args->list[i]->inst;
-		m = (Matrix) var->val;
 		if (m->nrows != mult->ncols) {
 			set_err(EMXDIM,"dimensions don't match");
 			goto error;
@@ -183,8 +182,7 @@ Ref addition_call(ref_list args){
 
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 		
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
+	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
 	Matrix sum = copyMatrix(m);
 	if (sum == NULL) return NULL;
@@ -194,9 +192,8 @@ Ref addition_call(ref_list args){
 		
 		
 		if (expect_Matrix(args->list[i]) == false) goto error;
+		m = CAST_REF2MATRIX(args->list[0]);
 
-		var = (Var) args->list[i]->inst;
-		m = (Matrix) var->val;
 		if (m->nrows != sum->nrows || m->ncols != sum->ncols) {
 			set_err(EMXDIM,"dimensions don't match");
 			goto error;
@@ -227,8 +224,7 @@ Ref sub_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 		
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
+	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
 	Matrix sub = copyMatrix(m);
 	if (sub == NULL) return NULL;
@@ -238,9 +234,8 @@ Ref sub_call(ref_list args){
 		
 		
 		if (expect_Matrix(args->list[i]) == false) goto error;
+		m = CAST_REF2MATRIX(args->list[i]);
 
-		var = (Var) args->list[i]->inst;
-		m = (Matrix) var->val;
 		if (m->nrows != sub->nrows || m->ncols != sub->ncols) {
 			set_err(EMXDIM,"dimensions don't match");
 			goto error;
@@ -271,6 +266,7 @@ Ref mult_scal_call(ref_list args){
 
 	float* ret_flt = malloc(sizeof (float));
 	if (ret_flt == NULL) return NULL;
+
 	*ret_flt = 1;
 
 	Matrix ret_mat= NULL;
@@ -417,8 +413,7 @@ Ref determinant_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 	
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
+	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
 	if (m->nrows != m->ncols) {
 		set_err(ETYPE, "not a square Matrix");
@@ -452,8 +447,7 @@ Ref invert_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 	
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
+	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
 	if (m->nrows != m->ncols) {
 		set_err(ETYPE, "not a square Matrix");
@@ -484,11 +478,8 @@ Ref solve_call(ref_list args){
 	if (expect_Matrix(args->list[0]) == false ||
 	    expect_Matrix(args->list[1]) == false ) return NULL;
 
-	Var arg1 = (Var) args->list[0]->inst;
-	Var arg2 = (Var) args->list[1]->inst;
-
-	Matrix m1 = (Matrix) arg1->val;
-	Matrix m2 = (Matrix) arg2->val;
+	Matrix m1 = CAST_REF2MATRIX(args->list[0]);
+	Matrix m2 = CAST_REF2MATRIX(args->list[0]);
 	
 	if (m1->nrows != m2->nrows ||
 	    m2->ncols > 1) {
@@ -516,8 +507,7 @@ Ref rank_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 	
-	Var var = (Var) args->list[0]->inst;
-	Matrix m = (Matrix) var->val;
+	Matrix m = CAST_REF2MATRIX(args->list[0]);
 
 	float* d = malloc(sizeof (float));	
 	if (d == NULL) return NULL;
@@ -543,8 +533,7 @@ Ref decomposition_call(ref_list args){
 	
 	if (expect_Matrix(args->list[0]) == false) return NULL;
 	
-	Var var = (Var) args->list[0]->inst;
-	Matrix M = (Matrix) var->val;
+	Matrix M = CAST_REF2MATRIX(args->list[0]);
 
 	Matrix LUP[3] = {NULL, NULL, NULL};
 	decomposition(M,&LUP[0],&LUP[1],&LUP[2]);
