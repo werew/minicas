@@ -6,45 +6,50 @@
 #include "parser.h"
 #include "init.h"
 
+
+void interpreter_loop(FILE* f_in){
+
+	struct stat buf; 
+	char *line;
+	size_t n=0;
+
+	if (!fstat(0, &buf) && S_ISREG(buf.st_mode)) {
+		// Output is a regular file
+		line=NULL;
+		while (getline(&line, &n, f_in) != -1) {
+			eval_input(line);
+			free(line); line=NULL;
+        	}
+
+    	} else {
+		// Output is probably a terminal
+		line=NULL;
+		printf("minic@s> ");
+		while (getline(&line, &n, f_in) != -1) {
+			eval_input(line);
+ 			printf("minic@s> ");
+ 			free(line); line=NULL;
+		}
+	}
+}
+
 int main(int argc, char **argv) {
 
-   FILE *f_in;
-   if (argc > 1){
-	f_in = fopen(argv[1],"r");
-   } else {
-	f_in = fdopen(0, "r");
-   }
+	// Open input 	
+	FILE *f_in;
+	f_in = (argc > 1)? fopen(argv[1],"r") : fdopen(0, "r");
+	if (f_in == NULL) {
+		perror("cannot open file");
+		exit(1);
+	}
+	
+	
+	/* Init environment */
+	init_env();
 
-   if (f_in == NULL) {
-	perror("cannot open file");
-	exit(1);
-   }
+	/* Launch interpreter */
+	interpreter_loop(f_in);
 
-   struct stat buf;
-   
-   char *line;
-   size_t n=0;
-
-   init_env();
-
-   if (!fstat(0, &buf) && S_ISREG(buf.st_mode)) {
-
-       line=NULL;
-       while (getline(&line, &n, f_in) != -1) {
-	   eval_input(line);
-           free(line); line=NULL;
-        }
-
-    } else {
-
-       printf("minic@s> ");
-       line=NULL;
-       while (getline(&line, &n, f_in) != -1) {
-	   eval_input(line);
-           printf("minic@s> ");
-           free(line); line=NULL;
-        }
-    }
-       
-   return 0;   
+      	 
+	return 0;   
 }
