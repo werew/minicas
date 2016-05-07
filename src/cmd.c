@@ -97,7 +97,9 @@ Ref get_cmd(const char* name){
 /**
  * Print a command
  */
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void print_cmd(Cmd c){
-	// TODO
 	c++; // Avoid warning
+	puts("command");
 }
+#pragma GCC diagnostic pop
