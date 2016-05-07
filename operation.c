@@ -36,6 +36,10 @@ Matrix addition(Matrix a, Matrix b)
 	else
 	{
 		Matrix c=newMatrix(a->nrows,a->ncols);
+		if(c==NULL)
+		{
+			return NULL;	//TODO
+		}
 		unsigned int i,j;
 		for(i=0;i<a->nrows;i++)
 		{
@@ -57,6 +61,10 @@ Matrix soustraction(Matrix a, Matrix b)
 	else
 	{
 		Matrix c=newMatrix(a->nrows,a->ncols);
+		if(NULL==c)
+		{
+			return NULL;	//TODO
+		}
 		unsigned int i,j;
 		for(i=0;i<a->nrows;i++)
 		{
@@ -76,6 +84,10 @@ Matrix multiplication(Matrix a,Matrix b)
 		return NULL;	//erreur dimension
 	}
 	Matrix c=newMatrix(a->nrows,b->ncols);
+	if(NULL==c)
+	{
+		return NULL;	//TODO
+	}
 	unsigned int i,j,k;
 	float total=0;
 
@@ -97,6 +109,10 @@ Matrix multiplication(Matrix a,Matrix b)
 Matrix transpose(Matrix m)
 {
 	Matrix P=newMatrix(m->ncols,m->nrows);
+	if(NULL==P)
+	{
+		return NULL;
+	}
 	unsigned int i,j;
 	for(i=0;i<m->nrows;i++)
 	{
@@ -112,6 +128,10 @@ Matrix transpose(Matrix m)
 Matrix mult_Scal(float a,Matrix m)
 {
 	Matrix P=newMatrix(m->nrows,m->ncols);
+	if(NULL==P)
+	{
+		return NULL;	//TODO
+	}
 	unsigned int i,j;
 	for(i=0;i<P->nrows;i++)
 	{
@@ -132,6 +152,10 @@ Matrix fusionMat(Matrix A,Matrix B)
 		return NULL;	//ereur dimension
 	}
 	Matrix C=newMatrix(A->nrows,A->ncols+B->ncols);
+	if(NULL==C)
+	{
+		return NULL;	//TODO
+	}
 	unsigned int i;
 	for(i=0;i<A->nrows;i++)
 	{
@@ -212,6 +236,10 @@ int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 		return 0;	//Erreur ligne
 	}
 	Matrix tmp=newMatrix(1,m->ncols);
+	if(tmp==NULL)
+	{
+		return 0;	//TODO
+	}
 	memcpy(getAddr(tmp,0,0),getAddr(m,i,0),m->ncols*sizeof(float));
 	memcpy(getAddr(m,i,0),getAddr(m,j,0),m->ncols*sizeof(float));
 	memcpy(getAddr(m,j,0),getAddr(tmp,0,0),m->ncols*sizeof(float));
@@ -437,6 +465,10 @@ Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsi
 		return NULL;	//TODO erreur indice plus grand que dimension matrice
 	}
 	Matrix B=newMatrix(i2-i1+1,j2-j1+1);
+	if(NULL==B)
+	{
+		return NULL;	//TODO
+	}
 
 	unsigned int k;
 	for(k=i1;k<=i2;k++)
@@ -517,7 +549,15 @@ int rank(Matrix A)
 int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 {
 	*L=newMatrix(A->nrows,A->ncols);
+	if(*L==NULL)
+	{
+		return 0;	//TODO
+	}
 	*U=newMatrix(A->nrows,A->ncols);
+	if(*U==NULL)
+	{
+		return 0;	//TODO
+	}
 	maillon m=newChaine();
 	int permut;
 	*U=triangulaire(A,NULL,&m,&permut,0);
@@ -598,6 +638,10 @@ Matrix noyau(Matrix m)
 		return NULL;
 	}
 	Matrix base=newMatrix(A->nrows,lz);
+	if(base==NULL)
+	{
+		return NULL;	//TODO
+	}
 	unsigned int pos_un;
 	unsigned int lnz=A->nrows-lz;
 	Matrix res,mat_int,sol_int;
@@ -607,6 +651,10 @@ Matrix noyau(Matrix m)
 		setElt(base,pos_un,i,1);
 
 		res=newMatrix(lnz,1);
+		if(res==NULL)
+		{
+			return NULL;	//TODO
+		}
 		for(j=0;j<lz;j++)
 		{
 			setElt(res,j,0,-getElt(A,j,pos_un));
