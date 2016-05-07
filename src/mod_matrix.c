@@ -564,7 +564,7 @@ Ref decomposition_call(ref_list args){
 
 
 /******************** COMMANDS ************************/
-void plot(char* title, int* x_size, int* y_time, int n){
+void plot(char* title, int* x_size, clock_t* y_time, int n){
 	
 	printf("Generating chart for command: \"%s\"\n",title);
 
@@ -592,7 +592,7 @@ void plot(char* title, int* x_size, int* y_time, int n){
 	}
 
 	for (i = 0; i < n ; i++) {
-		fprintf(gnuplotPipe, "%d %d\n", x_size[i], y_time[i]);
+		fprintf(gnuplotPipe, "%d %ld\n", x_size[i], y_time[i]);
 	}
 
 	fprintf(gnuplotPipe, "e");
@@ -628,8 +628,8 @@ Ref speedtest_cmd(ref_list args){
 	
 	
 	/* Points list */	
-	int* y_time = malloc (sizeof(int) * (max-min)/step);
-	int* x_size = malloc (sizeof(int) * (max-min)/step);
+	clock_t* y_time = malloc (sizeof(clock_t) * (max-min)/step + 1);
+	int* x_size = malloc (sizeof(int) * (max-min)/step + 1);
 	if (y_time == NULL || x_size == NULL){
 		free(x_size); free(y_time);
 		return NULL;
@@ -638,7 +638,8 @@ Ref speedtest_cmd(ref_list args){
 	
 	int i,j;
 	for ( i = min, j=0; i <= max && keepgoing ; i += step, j++){
-		
+		printf("Loop %d ... %d\n",j,i);
+		fflush(stdout);	
 		Matrix m1 = identite(i), m2 = identite(i), ret = NULL;
 		if (m1 == NULL || m2 == NULL){ 
 			perror("error while generating matrices");
