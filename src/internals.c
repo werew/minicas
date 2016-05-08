@@ -1,6 +1,7 @@
 #include "ref_all.h"
 #include "internals.h"
 #include "error.h"
+#include "parser.h"
 #include <stdlib.h>
 
 
@@ -55,13 +56,27 @@ Ref summ_call(ref_list args){
 		
 Ref compose_call(ref_list args){	
 	Ref r = NO_REF;
-	unsigned int i;
+	unsigned int i,j;
 	for (i = 0; i < args->length && r != NULL; i++){
-
+		
 		if (cmptype_ref(FUN, args->list[i]) == false) continue;
 		Fun f = (Fun) args->list[i]->inst;
 
-		r = f->fun(f->args);
+		ref_list fun_args = new_ref_list();
+		if (fun_args == NULL) return NULL;
+
+		for (j = i+1; j < args->length; j++){
+			if (cmptype_ref(FUN, args->list[j]) == true) break;
+			
+			if (push_ref(fun_args, args->list[j]) == NULL) {
+				free(fun_args->list); free(fun_args);
+				return NULL;
+			}
+	
+		}
+
+		r = exec_fun(f, fun_args, false);
+		free(fun_args->list); free(fun_args);
 	}
 
 	return r;
