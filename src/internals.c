@@ -13,6 +13,12 @@ void load_commands(void){
 	load = set_fun("eval_in",eval_in_call,NULL);
 	if (load == NULL) inst_err(ELOAD,"function eval_in");
 
+	load = set_fun("eval_ifeq",eval_ifeq_call,NULL);
+	if (load == NULL) inst_err(ELOAD,"function eval_ifeq");
+
+	load = set_fun("eval_ifneq",eval_ifneq_call,NULL);
+	if (load == NULL) inst_err(ELOAD,"function eval_ifneq");
+
 	load = set_cref("quit",quit_cmd,0,NULL);
 	if (load == NULL) inst_err(ELOAD,"command quit");
 
@@ -63,6 +69,40 @@ Ref eval_in_call(ref_list args){
 
 	return dst;
 }
+
+
+Ref eval_ifeq_call(ref_list args){ return eval_if_call(args, EQUAL); };
+Ref eval_ifneq_call(ref_list args){ return eval_if_call(args, NEQUAL); };
+
+Ref eval_if_call(ref_list args, Condition c){	
+	if (args->length < 3) {
+		set_err(EMISSARG, "this function needs at least 3 arguments");
+		return NULL;
+	}
+	
+	Ref a = args->list[0];
+	Ref b = args->list[1];
+	if (cmp_ref(a,b) == true) {
+		if (c == NEQUAL) return NO_REF;
+	} else {
+		if (c == EQUAL) return NO_REF;
+	}
+	
+	Ref r = NO_REF;
+	unsigned int i;
+	for (i = 2; i < args->length && r != NULL ; i++){
+
+		r = args->list[i];
+
+		if (cmptype_ref(FUN, r )== false) continue;
+		Fun f = (Fun) args->list[i]->inst;
+
+		r = f->fun(f->args);
+	}
+
+	return r;
+}
+
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 Ref quit_cmd(ref_list args){ // Respect general prototype
 	exit(0);

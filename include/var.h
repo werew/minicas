@@ -26,6 +26,7 @@ Ref set_var(char* name, void* val, var_t type);
 Ref get_var(const char* name);
 
 void print_var(Var v);
+bool cmp_var(Var a, Var b);
 
 #endif
 

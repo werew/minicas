@@ -291,7 +291,24 @@ bool cmptype_ref(unsigned int type, const Ref arg){
 	}
 	
 }
+
+bool cmp_ref(Ref a, Ref b){
 	
+	if (a == b) return true;
+	
+	if (a == NULL || b == NULL) return false;
+
+	if (cmptype_ref(a->type, b) == false) return false;
+
+	switch (a->type) {
+		case ALL: return true;
+		case FUN: 
+		case CMD: return a->inst == b->inst;
+		case VAR: return cmp_var(a->inst, b->inst);
+	}
+	
+	return false;
+}
 
 	
 /* FNV-1a hash */
