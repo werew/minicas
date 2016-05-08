@@ -126,7 +126,7 @@ Ref declare_ref(char* name){
  * contain any empty argument (NULL Ref ) in this case return
  * a new function with a new set of functions
  * 
- * @param name Name of the function
+ * @param f Function to execute
  * @param args List of arguments
  * @param force_funref A bool indicating if the returned reference must
  *	  be forced to be a function reference
@@ -134,22 +134,14 @@ Ref declare_ref(char* name){
  * 	   evaluated or a reference to a new function 
  * 	   with a new set of predefined arguments
  */
-Ref exec_fun(char* name, ref_list args, bool force_funref){
+Ref exec_fun(Fun f, ref_list args, bool force_funref){
 
-	Ref f_ref = get_fun(name);
-	if (f_ref == NULL) {
-		set_err(ENOTAFUN, name);
-		return NULL;
-	}
-
-	Fun f = (Fun) f_ref->inst;
-	
 	unsigned int i_args = 0; // Index user args
 	unsigned int i_preargs = 0; // Index predefined args
 	bool eval = !force_funref;
 	Ref call_arg , pre_arg;
 
-	// COmposition args (user+predefined)
+	// Composition args (user+predefined)
 	ref_list comp_args = new_ref_list();
 
 	if (f->args != NULL){
@@ -352,7 +344,13 @@ error:
  * @return The reference result of the function being evaluated, 
  *	   of NULL in case of error
  */
-Ref eval_fun(char* fun, bool force_funref){
+Ref eval_fun(char* fun_name, bool force_funref){
+
+	Ref f_ref = get_fun(fun_name);
+	if (f_ref == NULL) {
+		set_err(ENOTAFUN, fun_name);
+		return NULL;
+	}
 
 	ref_list args = new_ref_list();
 	if (args == NULL) return NULL;
@@ -381,7 +379,7 @@ Ref eval_fun(char* fun, bool force_funref){
 	   right next the expression */	
 	sym++;
 
-	Ref ret = exec_fun(fun, args, force_funref);	
+	Ref ret = exec_fun(f_ref->inst, args, force_funref);	
 	if (ret == NULL) goto error;
 	if (ret == NO_REF) return ret;
 

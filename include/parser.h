@@ -10,7 +10,7 @@ Matrix ref_list2vect(ref_list l); // Should this stay here?
 /* Internal calls */
 Ref declare_ref(char* name);
 Ref exec_cmd(char* cmd, ref_list args);
-Ref exec_fun(char* fun, ref_list args, bool force_funref);
+Ref exec_fun(Fun f, ref_list args, bool force_funref);
 
 /* Parse-helpers */
 int (*get_classtest(c_class class)) (int);
@@ -25,7 +25,7 @@ int exec_instrution(void);
 Ref eval_expression(bool force_funref);
 Ref eval_float(void);
 Ref eval_vector(void);
-Ref eval_fun(char* fun, bool force_funref);
+Ref eval_fun(char* fun_name, bool force_funref);
 Ref eval_cmd(char* cmd);
 
 #endif
