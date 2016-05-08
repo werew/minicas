@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
 	/* Launch interpreter */
 	interpreter_loop(f_in);
 	
+	fclose(f_in);	
 	drop_pool();
 
       	 
