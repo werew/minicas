@@ -55,6 +55,9 @@ void load_mod_matrix(void){
 	load = set_fun("kernel",kernel_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function kernel");
 
+	load = set_fun("nullspace",kernel_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function nullspace");
+
 	/* Load commands */
 	static ref_t args_cmd[4] = { FUN, FLOAT, FLOAT, FLOAT };
 	load = set_cref("speedtest",speedtest_cmd,4,args_cmd);
