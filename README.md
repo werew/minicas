@@ -55,9 +55,9 @@ internal module of minic@s
 summ(1,2,3); 
 
 # Compose functions 
-add_twice : @compose(@summ(a:0,2), @summ(a,2));
-add_twice(); # a = 4
-add_twice(); # a = 8 
+a : 1; b : 2; c : 3
+show_abc : @compose(@show(a), @show(b), @show(c));
+show_twice: @compose(@eval_in(tmp:0, _),_,@show(tmp, tmp));
 
 # Print/show reference
 show(a); 
@@ -65,7 +65,7 @@ show(a,b,c);
 
 # Functional assignement
 eval_in(a:0, 10); # a = 10
-eval_in(a, 1, b, 2, c, 3); # a = 10, b = 2, c = 3
+eval_in(a, 3, b, 1, c, 2); # a = 3, b = 2, c = 1
 eval_in(a:0, @mult_scal(10,10)); # a = 100
 
 # Evaluate condition
