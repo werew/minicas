@@ -49,6 +49,9 @@ void load_mod_matrix(void){
 	load = set_fun("rank",rank_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function rank");
 
+	load = set_fun("triangular",triangular_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function triangular");
+
 	load = set_fun("decomposition",decomposition_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function decomposition");
 
@@ -143,6 +146,27 @@ Ref transpose_call(ref_list args){
 			
 
 
+/* Triangularize one matrix */
+Ref triangular_call(ref_list args){
+	
+	if (args->length != 1){
+		set_err(ETYPE, "need one and only one argument");
+		return NULL;	
+	}
+	
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
+
+	Matrix m = CAST_REF2MATRIX(args->list[0]);	
+
+	Matrix t = triangulaire(m,NULL,NULL,NULL,PivotPartiel);
+	if (t == NULL) return NULL;
+
+	Ref r = new_vref(NULL, t, MATRIX);
+	if (r == NULL) dropMatrix(t);
+
+	return r;
+		
+} 
 
 /* Multiplies all the given matrices consecutively */	
 Ref mult_call(ref_list args){
