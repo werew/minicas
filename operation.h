@@ -24,7 +24,7 @@ int addmultiple(Matrix A,unsigned int i,unsigned int j,float c);
 int echangeLigne(Matrix m,unsigned int i,unsigned int j);
 int diviseLigne(Matrix A,unsigned int i,float c);
 Matrix echelonnage(Matrix m);
-Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot);
+Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int (*fct_pivot)(Matrix,unsigned int,unsigned int*));
 int determinant(Matrix m,float* c);
 void remontee(Matrix A,Matrix X);
 int solve(Matrix A, Matrix B,Matrix* F);
