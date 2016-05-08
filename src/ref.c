@@ -21,7 +21,7 @@ void drop_instance(void* inst, ref_t type){
 
 	int* ptrs = inst;
 
-	if (*ptrs > 0) {
+	if (*ptrs > 1) {
 		*ptrs -= 1;
 		return;
 	}
