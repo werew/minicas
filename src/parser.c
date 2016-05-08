@@ -513,8 +513,12 @@ Ref eval_expression(void){
 
 		sym = jump_cclass(sym, SPACE);
 
-		if (*sym == '('){ 
+		if (*sym == '('){ // Function call
 			r_result = eval_fun(word);
+
+		} else if (*sym == ':') { // Declaration
+			sym++;
+			r_result = declare_ref(word);	
 
 		} else {
 			r_result = get_ref(word);
