@@ -113,7 +113,13 @@ void print_fun(Fun f){
 	unsigned int i;
 	for (i = 0; i < f->args->length; i++){
 		printf("\t-- Arg %d --\n",i);
-		print_ref(f->args->list[i]);	
+
+		Ref arg = f->args->list[i];
+		if (arg != NO_REF && cmptype_ref(FUN, arg) == true ){
+			printf("\t@%s -> function\n", arg->name);
+		} else {
+			print_ref(arg);
+		}
 		printf("\n");
 	}
 }
