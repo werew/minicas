@@ -4,6 +4,7 @@
 #include <math.h>
 #include "operation.h"
 #include "matrix.h"
+#include "error.h"
 
 #define EPSILON 0.00001
 
@@ -31,6 +32,7 @@ Matrix addition(Matrix a, Matrix b)
 {
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//Erreur dimension
 	}
 	else
@@ -56,6 +58,7 @@ Matrix soustraction(Matrix a, Matrix b)
 {
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//erreur dimension
 	}
 	else
@@ -81,6 +84,7 @@ Matrix multiplication(Matrix a,Matrix b)
 {
 	if(a->ncols!=b->nrows)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//erreur dimension
 	}
 	Matrix c=newMatrix(a->nrows,b->ncols);
@@ -149,6 +153,7 @@ Matrix fusionMat(Matrix A,Matrix B)
 {
 	if(A->nrows!=B->nrows)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//ereur dimension
 	}
 	Matrix C=newMatrix(A->nrows,A->ncols+B->ncols);
@@ -348,22 +353,22 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 	return P;
 }
 
-float determinant (Matrix m)
+int determinant (Matrix m,float* c)
 {
-	float c=1;
-	Matrix P=triangulaire(m,&c,NULL,NULL,1);
+	*c=1;
+	Matrix P=triangulaire(m,c,NULL,NULL,1);
 	if(P==NULL)
 	{
-		//erreur
+		return 0;//erreur
 	}
 
 	unsigned int i;
 	for(i=0;i<P->ncols;i++)
 	{
-		c*=getElt(P,i,i);
+		*c=*c*getElt(P,i,i);
 	}
 	dropMatrix(P);
-	return c;
+	return 1;
 }
 
 /*void remontee(Matrix A,Matrix X)
@@ -385,9 +390,15 @@ int solve(Matrix A, Matrix B,Matrix* F)
 {
 	if(A->nrows!=B->nrows || B->ncols!=1)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return 0; //erreur dimension
 	}
-	if(determinant(A)==0)
+	float det;
+	if(determinant(A,&det)==0)
+	{
+		return 0;
+	}
+	if(det==0)
 	{
 		*F=NULL;
 		return 1;	//erreur matrix
@@ -512,7 +523,12 @@ Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsi
 
 int invert(Matrix m,Matrix* D)
 {
-	if(determinant(m)==0)
+	float det;
+	if(determinant(m,&det)==0)
+	{
+		return 0;
+	}
+	if(det==0)
 	{
 		*D=NULL;
 		return 1;
@@ -584,7 +600,6 @@ int rank(Matrix A)
 	{
 		return -1;	//erreur
 	}
-	displayMatrix(B);
 	unsigned int lz=0;
 	unsigned int i;
 	for(i=0;i<B->nrows;i++)
