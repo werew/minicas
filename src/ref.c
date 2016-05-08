@@ -10,21 +10,21 @@ ref_list ref_pool[N_RLIST];
 
 
 
-void drop_instance(Ref r){
+void drop_instance(void* inst, ref_t type){
 
-	int* ptrs = r->inst;
+	int* ptrs = inst;
 
 	if (*ptrs > 0) {
 		*ptrs -= 1;
 		return;
 	}
 
-	switch (r->type) {
-		case VAR: drop_var(r->inst);
+	switch (type) {
+		case VAR: drop_var(inst);
 			  break;
-		case FUN: drop_fun(r->inst);
+		case FUN: drop_fun(inst);
 			  break;
-		case CMD: drop_cmd(r->inst);
+		case CMD: drop_cmd(inst);
 		default: return;
 	}
 }
@@ -36,8 +36,7 @@ void drop_instance(Ref r){
 void drop_ref(Ref r){
 	if (r == NULL || r == NO_REF) return;
 
-	drop_instance(r);
-
+	drop_instance(r->inst, r->type);
 	free(r->name);
 	free(r);
 }
@@ -159,9 +158,14 @@ Ref push_ref(ref_list l, Ref r){
  *	 with future versions of this function
  */
 Ref update_ref(Ref r, void* inst, ref_t type){
-	drop_instance(r);
-	r->inst = inst;
+	
+	void* old_inst = r->inst;
+	ref_t old_type = r->type;
+
 	r->type = type;
+	link_ref(r, inst);
+
+	drop_instance(old_inst, old_type);
 
 	return r;
 }
