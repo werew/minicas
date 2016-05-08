@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
+
+/*
+ Fonction qui créé une nouvelle matrice et qui la renvoie
+*/
 Matrix newMatrix(unsigned int nb_rows, unsigned int nb_columns)
 {
 	if(nb_rows==0 || nb_columns==0)
@@ -24,11 +28,18 @@ Matrix newMatrix(unsigned int nb_rows, unsigned int nb_columns)
 	return m;
 }
 
+/*
+ Fonction qui renvoie l'élément a la row ligne et column colonne de la matrice m
+*/
 float getElt(Matrix m,unsigned int row,unsigned int column)
 {
 	return (m->mat[column+row*m->ncols]);
 }
 
+
+/*
+ Function qui met l'élément val à la ligne row et la colonne column de la matrice m
+*/
 void setElt(Matrix m,unsigned int row,unsigned int column,float val)
 {
 	if(row>m->nrows || column>m->ncols)
@@ -38,6 +49,10 @@ void setElt(Matrix m,unsigned int row,unsigned int column,float val)
 	m->mat[row*m->ncols+column]=val;
 }
 
+
+/*
+ Fonction qui renvoie l'adresse de l'élément a la ligne i et colonne j de la matrice m
+*/
 float* getAddr(Matrix m,unsigned int i,unsigned int j)
 {
 	if(i>m->nrows || j>m->ncols)
@@ -47,6 +62,11 @@ float* getAddr(Matrix m,unsigned int i,unsigned int j)
 	return (&(m->mat[i*m->ncols+j]));
 }
 
+
+/*
+ Fonction qui renvoie une nouvelle matrice qui est la copie de la matrice passé en argument
+ En cas d'erreur d'allocation la fonction renvoie NULL
+*/
 Matrix copyMatrix(Matrix m)
 {
 	Matrix p=newMatrix(m->nrows,m->ncols);
@@ -59,6 +79,10 @@ Matrix copyMatrix(Matrix m)
 }
 
 
+/*
+ Fonction qui affiche la matrice passé en argument
+ Si la variable m contient NULL on affiche un message d'erreur
+*/
 void displayMatrix(Matrix m)
 {
 	if(m==NULL)
@@ -78,6 +102,11 @@ void displayMatrix(Matrix m)
 	printf("\n");
 }
 
+
+/*
+ Fonction qui créé et renvoie une nouvelle matrice identité de dimension passé en argument
+ En cas d'erreur d'allocation la fonction renvoie NULL
+*/
 Matrix identite(unsigned int nb_cote)
 {
 	Matrix mx=newMatrix(nb_cote,nb_cote);
@@ -99,6 +128,10 @@ Matrix identite(unsigned int nb_cote)
 	return mx;
 }
 
+
+/*
+ Fonction qui supprime la matrice passé en argument pour éviter les fuites de mémoire
+*/
 void dropMatrix(Matrix m)
 {
 	free(m->mat);
