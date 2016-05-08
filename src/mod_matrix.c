@@ -663,13 +663,18 @@ Ref speedtest_cmd(ref_list args){
 	int min = (int) (*(float*) ((Var)args->list[1]->inst)->val);
 	int max = (int) (*(float*) ((Var)args->list[2]->inst)->val);
 	int step = (int) (*(float*) ((Var)args->list[3]->inst)->val);
+		
+	if ( min > max || step == 0) {
+		set_err(ENOVAL, "infinite tests are not allowed");
+		return NULL;
+	}
 
 	/* Optional parameter */
 	if (args->length > 4 && cmptype_ref(FLOAT, args->list[4])) {
 		int countdown = (int) (*(float*) ((Var)args->list[4]->inst)->val);
 		signal(SIGALRM, stop_speedtest);
 		alarm(countdown);
-	}
+	} 
 	
 	
 	/* Points list */	
@@ -728,7 +733,6 @@ Ref speedtest_cmd(ref_list args){
 	
 		/* Store result */	
 		x_size[j] = i; y_time[j] = end-start;
-
 		
 		dropMatrix(m1);
 		dropMatrix(m2);
