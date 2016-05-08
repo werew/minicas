@@ -6,6 +6,7 @@
 void load_commands(void);
 /* Functions */
 Ref compose_call(ref_list args);
+Ref eval_in_call(ref_list args);
 
 /* Commands */
 Ref quit_cmd(ref_list args);
