@@ -280,6 +280,10 @@ Matrix echelonnage(Matrix m)
 Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 {
 	Matrix P=copyMatrix(m);
+	if(P==NULL)
+	{
+		return NULL;	//TODO
+	}
 	unsigned int i,j;
 	int piv_trouv;
 	if(permut!=NULL)
@@ -425,14 +429,21 @@ Matrix solve(Matrix A, Matrix B)
 Matrix expo(Matrix m,unsigned int p)
 {
 	Matrix A=copyMatrix(m);
+	if(A==NULL)
+	{
+		return NULL;	//TODO
+	}
+	Matrix tmp=A;
 	unsigned int i;
 	for(i=1;i<p;i++)
 	{
+		tmp=A;
 		if((A=multiplication(A,m))==NULL)
 		{
-			dropMatrix(A);
+			dropMatrix(tmp);
 			return NULL;	//TODO erreur
 		}
+		dropMatrix(tmp);
 	}
 	return A;
 }
@@ -454,6 +465,10 @@ int diviseLigne(Matrix A,unsigned int i,float c)
 Matrix bienEchelonner(Matrix A)
 {
 	Matrix B=copyMatrix(A);
+	if(B==NULL)
+	{
+		return NULL;	//TODO
+	}
 
 	unsigned int i,j;
 	for(i=A->nrows-1;i>0;i--)
@@ -574,7 +589,9 @@ int rank(Matrix A)
 	{
 		lz+=ligneZero(B,i);
 	}
-	return B->nrows-lz;
+	int ligne=B->nrows;
+	dropMatrix(B);
+	return ligne-lz;
 }
 
 
@@ -725,5 +742,6 @@ int noyau(Matrix m,Matrix* base)
 		dropMatrix(mat_int);
 		dropMatrix(sol_int);
 	}
+	dropMatrix(A);
 	return 1;
 }
