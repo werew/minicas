@@ -8,7 +8,14 @@
 /* Global storage buffer */
 ref_list ref_pool[N_RLIST];
 
-
+void drop_pool(void){
+	unsigned int i;
+	for (i = 0; i < N_RLIST; i++){
+		if (ref_pool[i] != NULL){
+			drop_ref_list(ref_pool[i], false);
+		}
+	}
+}
 
 void drop_instance(void* inst, ref_t type){
 

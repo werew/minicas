@@ -145,6 +145,7 @@ Ref eval_if_call(ref_list args, Condition c){
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 Ref quit_cmd(ref_list args){ // Respect general prototype
+	drop_pool();
 	exit(0);
 }
 #pragma GCC diagnostic pop

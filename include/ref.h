@@ -48,6 +48,7 @@ void drop_ref_list(ref_list l, bool unnamed_only);
 Ref push_ref(ref_list l, Ref r);
 Ref update_ref(Ref rm, void* inst, ref_t type);
 int search_ref(const ref_list l, const char* name);
+void drop_pool(void);
 
 /* Various */
 unsigned int hash(const char* key);
