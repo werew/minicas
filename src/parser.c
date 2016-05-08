@@ -143,6 +143,7 @@ Ref exec_fun(Fun f, ref_list args, bool force_funref){
 
 	// Composition args (user+predefined)
 	ref_list comp_args = new_ref_list();
+	if (comp_args == NULL) return NULL;
 
 	if (f->args != NULL){
 
@@ -151,7 +152,8 @@ Ref exec_fun(Fun f, ref_list args, bool force_funref){
 
 			pre_arg = f->args->list[i_preargs];
 
-			if (pre_arg == NO_REF && i_args < args->length){
+			if (pre_arg == NO_REF && 
+			    args != NULL && i_args < args->length){
 
 				call_arg = args->list[i_args++];
 				eval = (call_arg == NO_REF)? false : eval;
@@ -165,7 +167,7 @@ Ref exec_fun(Fun f, ref_list args, bool force_funref){
 		}
 	}
 		
-	for (; i_args < args->length; i_args++){
+	for (; args != NULL && i_args < args->length; i_args++){
 
 		call_arg = args->list[i_args];
 		eval = (call_arg == NO_REF)? false : eval;
