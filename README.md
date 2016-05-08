@@ -2,6 +2,7 @@
 
 *@authors* V.Constans L.Coniglio
 
+https://github.com/lgcon/minicas
 
 Minicas is a simple, rudimental exemple of computer algebra system (CAS).
 
