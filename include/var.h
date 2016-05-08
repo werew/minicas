@@ -4,6 +4,8 @@
 #include "xtypes.h"
 #include "ref.h"
 
+#define CAST_REF2MATRIX(ref) ( (Matrix) ((Var) (ref)->inst)->val )
+#define CAST_REF2FLOATP(ref) ( (float*) ((Var) (ref)->inst)->val )
 
 /* Types of variables handled by minicas */
 typedef enum { FLOAT = 10,  // Range < 10 reserved 

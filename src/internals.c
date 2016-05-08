@@ -7,6 +7,9 @@
 void load_commands(void){
 	Ref load = NULL;
 	
+	load = set_fun("summ",summ_call,NULL);
+	if (load == NULL) inst_err(ELOAD,"function summ");
+
 	load = set_fun("compose",compose_call,NULL);
 	if (load == NULL) inst_err(ELOAD,"function compose");
 
@@ -31,6 +34,22 @@ void load_commands(void){
 
 }
 
+Ref summ_call(ref_list args){	
+	float* sum = malloc(sizeof(float));
+	unsigned int i;
+	for (i = 0; i < args->length; i++){
+		if (cmptype_ref(FLOAT, args->list[i]) == false){
+			set_err(ETYPE, "a float was expected");
+			free(sum);
+			return NULL;
+		}
+		
+		*sum += *CAST_REF2FLOATP(args->list[i]);
+	}
+	
+	return new_vref(NULL, sum, FLOAT);
+}
+		
 Ref compose_call(ref_list args){	
 	Ref r = NO_REF;
 	unsigned int i;

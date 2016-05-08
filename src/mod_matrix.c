@@ -9,8 +9,6 @@
 #include "ref_all.h"
 #include "error.h"
 
-#define CAST_REF2MATRIX(ref) ( (Matrix) ((Var) (ref)->inst)->val )
-#define CAST_REF2FLOATP(ref) ( (float*) ((Var) (ref)->inst)->val )
 
 /** Module loader  **/
 void load_mod_matrix(void){	
