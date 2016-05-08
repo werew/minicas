@@ -10,12 +10,11 @@
 void interpreter_loop(FILE* f_in){
 
 	struct stat buf; 
-	char *line;
+	char *line = NULL;
 	size_t n=0;
 
 	if (!fstat(0, &buf) && S_ISREG(buf.st_mode)) {
 		// Output is a regular file
-		line=NULL;
 		while (getline(&line, &n, f_in) != -1) {
 			eval_input(line);
 			free(line); line=NULL;
@@ -23,7 +22,6 @@ void interpreter_loop(FILE* f_in){
 
     	} else {
 		// Output is probably a terminal
-		line=NULL;
 		printf("minic@s> ");
 		while (getline(&line, &n, f_in) != -1) {
 			eval_input(line);
@@ -31,6 +29,7 @@ void interpreter_loop(FILE* f_in){
  			free(line); line=NULL;
 		}
 	}
+	free(line);
 }
 
 int main(int argc, char **argv) {
