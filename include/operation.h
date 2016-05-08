@@ -5,11 +5,12 @@
 
 typedef struct s_maillon
 {
-	int i,j;
-	float coef;
-	int op;
-	struct s_maillon* suiv;
+	int i,j;	//Ligne dont on va faire une combinaison linéaire ou un echange de ligne
+	float coef;	//Coefficient qu'on va mutliplier à une ligne en cas de combinaison linéaire
+	int op;		//Entier qui indique si l'opération est un echange de ligne ou une combinaison linéaire
+	struct s_maillon* suiv;		//Maillon suivant
 }*maillon;
+
 
 Matrix addition(Matrix a,Matrix b);
 Matrix soustraction(Matrix a,Matrix b);
