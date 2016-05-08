@@ -14,7 +14,7 @@ Ref eval_ifneq_call(ref_list args);
 
 /* Commands */
 Ref quit_cmd(ref_list args);
-Ref print__cmd(ref_list args);
+Ref print_fc(ref_list args);
 
 #endif
 
