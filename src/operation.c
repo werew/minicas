@@ -532,7 +532,7 @@ int solve(Matrix A, Matrix B,Matrix* F)
 	if(det==0)
 	{
 		//Determiannt vaut 0 donc il n'y a pas de solution
-		set_err(ENOVAL,"Matrix not inversible");
+		set_err(ENOVAL,"Matrix not inversible : no solutions");
 		*F=NULL;
 		return 0;
 	}
