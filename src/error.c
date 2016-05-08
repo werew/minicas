@@ -58,10 +58,10 @@ void print_error(void){
 			fprintf(stderr,"Bad dimensions: %s\n", err_arg);
 			break;
 		case ENOVAL:
-			fprintf(stderr,"No such a value: %s\n", err_arg);
+			fprintf(stderr,"No such value: %s\n", err_arg);
 			break;
 		case EMISSARG:
-			fprintf(stderr,"Argument missing for: %s\n", err_arg);
+			fprintf(stderr,"Argument missing: %s\n", err_arg);
 			break;
 		default: /* Not an error */
 			return;

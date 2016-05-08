@@ -81,6 +81,11 @@ bool arg_isMatrix(Ref r){
 
 /*  Creates a Matrix from a list of vectors of the same size */
 Ref matrix_call(ref_list args){
+	if (args->length < 1 ) {
+		set_err(EMISSARG, "need at least one argument to craft a matrix");
+		return NULL;
+	}
+
 	Var var = (Var) args->list[0]->inst;
 	Matrix vect = (Matrix) var->val;
 
@@ -117,7 +122,7 @@ Ref matrix_call(ref_list args){
 Ref transpose_call(ref_list args){
 	
 	if (args->length != 1){
-		set_err(ETYPE, "to many arguments");
+		set_err(ETYPE, "need one and only one argument");
 		return NULL;	
 	}
 	
@@ -182,6 +187,10 @@ error:
 /* Addition of any number of matrices */
 Ref addition_call(ref_list args){
 
+	if (args->length < 1 ) {
+		set_err(EMISSARG, "need at least one argument");
+		return NULL;
+	}
 	if (arg_isMatrix(args->list[0]) == false) return NULL;
 		
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
@@ -224,6 +233,11 @@ error:
 /* Subtraction of any number of matrices */
 Ref sub_call(ref_list args){
 	
+	if (args->length < 1 ) {
+		set_err(EMISSARG, "need at least one argument");
+		return NULL;
+	}
+
 	if (arg_isMatrix(args->list[0]) == false) return NULL;
 		
 	Matrix m = CAST_REF2MATRIX(args->list[0]);
@@ -264,6 +278,11 @@ error:
 /* Multiplicate any number of matrices and/or floats */
 Ref mult_scal_call(ref_list args){
 	
+	if (args->length < 1 ) {
+		set_err(EMISSARG, "need at least one argument");
+		return NULL;
+	}
+
 	bool ret_matrix = false;
 
 	float* ret_flt = malloc(sizeof (float));
