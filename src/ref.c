@@ -10,6 +10,24 @@ ref_list ref_pool[N_RLIST];
 
 
 
+void drop_instance(Ref r){
+
+	int* ptrs = r->inst;
+
+	if (*ptrs > 0) {
+		*ptrs -= 1;
+		return;
+	}
+
+	switch (r->type) {
+		case VAR: drop_var(r->inst);
+			  break;
+		case FUN: drop_fun(r->inst);
+			  break;
+		case CMD: drop_cmd(r->inst);
+		default: return;
+	}
+}
 
 /**
  * Drop a stored reference
@@ -18,23 +36,12 @@ ref_list ref_pool[N_RLIST];
 void drop_ref(Ref r){
 	if (r == NULL || r == NO_REF) return;
 
-	int* inst = r->inst;
+	drop_instance(r);
 
 	free(r->name);
 	free(r);
-	*inst -= 1;
-
-	if (*inst > 0 ) return;
-	
-	switch (r->type) {
-		case VAR: drop_var(r->inst);
-			  break;
-		case FUN: drop_fun(r->inst);
-			  break;
-		case CMD: drop_cmd(r->inst);
-		default:  break;
-	}
 }
+
 
 /**
  * Destroy a ref_list and all the references that it constains.
@@ -143,17 +150,19 @@ Ref push_ref(ref_list l, Ref r){
 	
 /**
  * Replace the reference at the given position of the ref_list with a new one
- * @param r The reference to insert
- * @param i The index representing a valid position of a reference to replace
- * @param l The list where to insert r
- * @return The newly inserted reference or NULL in case of error
+ * @param r The reference to update
+ * @param inst The new instance of the reference
+ * @param type The new type of the reference 
+ * @return The updated reference or NULL in case of error
  * @note At the moment the function doesn't imply any possible return of NULL
  *	 howover this return value needs to be considered for compatibility
  *	 with future versions of this function
  */
-Ref replace_ref_at(ref_list l, unsigned int i, Ref r){
-	drop_ref(l->list[i]);
-	l->list[i] = r;
+Ref update_ref(Ref r, void* inst, ref_t type){
+	drop_instance(r);
+	r->inst = inst;
+	r->type = type;
+
 	return r;
 }
 
@@ -209,31 +218,25 @@ Ref set_ref(char* name, void* inst, ref_t type){
 		if (ref_pool[h] == NULL) return NULL;
 	}	
 		
-	/**
- 	 * FIXME TODO when replacing a reference do not change the address
-  	 * allocating a new reference, rather change the contents 
- 	 * of the old one 
-	 */
-	Ref r = new_ref(name, inst, type);
-	if (r == NULL) return NULL;
+	Ref r;
+	int i = search_ref(ref_pool[h], name);
 
-	int i;	
-	if ( (i = search_ref(ref_pool[h], name)) == -1){
+	if ( i == -1){
+		/* New reference */
+		r = new_ref(name, inst, type);
+		if (r == NULL) return NULL;
 
-		if (push_ref(ref_pool[h], r) == NULL) 
-			goto e_r_lost;
+		if (push_ref(ref_pool[h], r) == NULL) {
+			drop_ref(r);
+			return NULL;
+		}
 
 	} else {
-		
-		if (replace_ref_at(ref_pool[h], i, r) == NULL)  /* XXX HERE */
-			goto e_r_lost;
+		/* Update content of existing reference */	
+		r = update_ref(ref_pool[h]->list[i], inst, type);
 	}
 	
 	return r;
-
-e_r_lost:
-	drop_ref(r);
-	return NULL;
 }
 
 
