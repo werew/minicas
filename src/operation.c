@@ -245,6 +245,8 @@ int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 	memcpy(getAddr(m,i,0),getAddr(m,j,0),m->ncols*sizeof(float));
 	memcpy(getAddr(m,j,0),getAddr(tmp,0,0),m->ncols*sizeof(float));
 
+	dropMatrix(tmp);
+
 	return 1;
 }
 
@@ -264,6 +266,7 @@ Matrix echelonnage(Matrix m)
 		{
 			if(diviseLigne(P,i,getElt(P,i,i))==0)
 			{
+				dropMatrix(P);
 				return NULL; //erreur
 			}
 			if(getElt(P,i,i)!=0)
@@ -278,7 +281,10 @@ Matrix echelonnage(Matrix m)
 Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 {
 	Matrix P=copyMatrix(m);
-
+	if(P==NULL)
+	{
+		return NULL;	//TODO
+	}
 	unsigned int i,j;
 	int piv_trouv;
 
@@ -307,12 +313,14 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 			}
 			if(echangeLigne(P,i,j)==0)
 			{
+				dropMatrix(P);
 				return NULL;
 			}
 			if(ch!=NULL)
 			{
 				if((*ch=push(*ch,i,j,0,0))==NULL)
 				{
+					dropMatrix(P);
 					return NULL;	//TODO
 				}
 			}
@@ -326,12 +334,14 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 			float coef=(-getElt(P,j,i)/getElt(P,i,i));
 			if(addmultiple(P,j,i,coef)==0)
 			{
+				dropMatrix(P);
 				return NULL;
 			}
 			if(ch!=NULL)
 			{
 				if((*ch=push(*ch,j,i,coef,1))==NULL)
 				{
+					dropMatrix(P);
 					return NULL;	//TODO
 				}
 			}
@@ -391,16 +401,23 @@ Matrix solve(Matrix A, Matrix B)
 	Matrix D=echelonnage(C);
 	if(D==NULL)
 	{
+		
+		dropMatrix(C);
 		return NULL; //TODO Erreur
 	}
 	Matrix E=bienEchelonner(D);
 	if(E==NULL)
 	{
+		dropMatrix(C);
+		dropMatrix(D);
 		return NULL;	//TODO erreur
 	}
 	Matrix F=sliceMatrix(E,0,A->nrows-1,A->ncols,A->ncols);
 	if(F==0)
 	{
+		dropMatrix(C);
+		dropMatrix(D);
+		dropMatrix(E);
 		return NULL; //TODO erreur
 	}
 
@@ -414,13 +431,21 @@ Matrix solve(Matrix A, Matrix B)
 Matrix expo(Matrix m,unsigned int p)
 {
 	Matrix A=copyMatrix(m);
+	if(A==NULL)
+	{
+		return NULL;	//TODO
+	}
+	Matrix tmp=A;
 	unsigned int i;
 	for(i=1;i<p;i++)
 	{
+		tmp=A;
 		if((A=multiplication(A,m))==NULL)
 		{
+			dropMatrix(tmp);
 			return NULL;	//TODO erreur
 		}
+		dropMatrix(tmp);
 	}
 	return A;
 }
@@ -442,6 +467,10 @@ int diviseLigne(Matrix A,unsigned int i,float c)
 Matrix bienEchelonner(Matrix A)
 {
 	Matrix B=copyMatrix(A);
+	if(B==NULL)
+	{
+		return NULL;	//TODO
+	}
 
 	unsigned int i,j;
 	for(i=A->nrows-1;i>0;i--)
@@ -450,6 +479,7 @@ Matrix bienEchelonner(Matrix A)
 		{
 			if(addmultiple(B,j,i,-getElt(B,j,i))==0)
 			{
+				dropMatrix(B);
 				return NULL; //erreur
 			}
 		}
@@ -498,23 +528,39 @@ Matrix invert(Matrix m)
 		Matrix A=fusionMat(m,Id);
 		if(A==NULL)
 		{
+			dropMatrix(Id);
 			return NULL;	//TODO
 		}
 		Matrix B=echelonnage(A);
 		if(B==NULL)
 		{
+			dropMatrix(Id);
+			dropMatrix(A);
 			return NULL;	//TODO
 		}
 		Matrix C=bienEchelonner(B);
 		if(C==NULL)
 		{
+			dropMatrix(Id);
+			dropMatrix(A);
+			dropMatrix(B);
 			return NULL;	//TODO
 		}
 		Matrix D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);
 		if(D==NULL)
 		{
+			dropMatrix(Id);
+			dropMatrix(A);
+			dropMatrix(B);
+			dropMatrix(C);
 			return NULL;	//TODO
 		}
+
+		dropMatrix(Id);
+		dropMatrix(A);
+		dropMatrix(B);
+		dropMatrix(C);
+
 		return D;
 	}
 }
@@ -546,22 +592,14 @@ int rank(Matrix A)
 	{
 		lz+=ligneZero(B,i);
 	}
-	return B->nrows-lz;
+	int ligne=B->nrows;
+	dropMatrix(B);
+	return ligne-lz;
 }
 
 
 int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 {
-	*L=newMatrix(A->nrows,A->ncols);
-	if(*L==NULL)
-	{
-		return 0;	//TODO
-	}
-	*U=newMatrix(A->nrows,A->ncols);
-	if(*U==NULL)
-	{
-		return 0;	//TODO
-	}
 	maillon m=newChaine();
 	int permut;
 	*U=triangulaire(A,NULL,&m,&permut,0);
@@ -580,6 +618,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 	Matrix id=identite(A->nrows);
 	if(id==NULL)
 	{
+		dropMatrix(*U);
 		return 0;	//TODO
 	}
 	Matrix E,tmp;
@@ -588,6 +627,8 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 		E=identite(A->nrows);
 		if(E==NULL)
 		{
+			dropMatrix(*U);
+			dropMatrix(id);
 			return 0;	//TODO
 		}
 		if(m->op==1)
@@ -596,6 +637,9 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 			tmp=multiplication(id,E);
 			if(tmp==NULL)
 			{
+				dropMatrix(*U);
+				dropMatrix(id);
+				dropMatrix(E);
 				return 0;	//TODO
 			}
 			dropMatrix(E);
@@ -607,8 +651,12 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 		{
 			if(echangeLigne(*P,m->i,m->j)==0)
 			{
+				dropMatrix(*U);
+				dropMatrix(id);
+				dropMatrix(E);
 				return 0;	//TODO
 			}
+			dropMatrix(E);
 		}
 		maillon suiv=m->suiv;
 		free(m);
@@ -625,12 +673,12 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 }
 
 
-Matrix noyau(Matrix m)
+int noyau(Matrix m,Matrix* base)
 {
 	Matrix A=echelonnage(m);
 	if(A==NULL)
 	{
-		return NULL;	//TODO
+		return 0;	//TODO
 	}
 	unsigned int i,j,lz=0;
 	for(i=0;i<A->nrows;i++)
@@ -639,25 +687,34 @@ Matrix noyau(Matrix m)
 	}
 	if(lz==0)
 	{
-		return NULL;
+		*base=newMatrix(A->nrows,1);
+		dropMatrix(A);
+		if(*base==NULL)
+		{
+			return 0;
+		}
+		return 1;
 	}
-	Matrix base=newMatrix(A->nrows,lz);
+	*base=newMatrix(A->nrows,lz);
 	if(base==NULL)
 	{
-		return NULL;	//TODO
+		dropMatrix(A);
+		return 0;	//TODO
 	}
 	unsigned int pos_un;
 	unsigned int lnz=A->nrows-lz;
 	Matrix res,mat_int,sol_int;
 	for(i=0;i<lz;i++)
 	{
-		pos_un=base->nrows-i-1;
-		setElt(base,pos_un,i,1);
+		pos_un=(*base)->nrows-i-1;
+		setElt(*base,pos_un,i,1);
 
 		res=newMatrix(lnz,1);
 		if(res==NULL)
 		{
-			return NULL;	//TODO
+			dropMatrix(A);
+			dropMatrix(*base);
+			return 0;	//TODO
 		}
 		for(j=0;j<lz;j++)
 		{
@@ -666,20 +723,28 @@ Matrix noyau(Matrix m)
 		mat_int=sliceMatrix(A,0,lnz-1,0,lnz-1);
 		if(mat_int==NULL)
 		{
-			return NULL;	//TODO
+			dropMatrix(A);
+			dropMatrix(*base);
+			dropMatrix(res);
+			return 0;	//TODO
 		}
 		sol_int=solve(mat_int,res);
 		if(sol_int==NULL)
 		{
-			return NULL;	//TODO
+			dropMatrix(A);
+			dropMatrix(*base);
+			dropMatrix(res);
+			dropMatrix(mat_int);
+			return 0;	//TODO
 		}
 		for(j=0;j<lnz;j++)
 		{
-			setElt(base,j,i,getElt(sol_int,j,0));
+			setElt(*base,j,i,getElt(sol_int,j,0));
 		}
 		dropMatrix(res);
 		dropMatrix(mat_int);
 		dropMatrix(sol_int);
 	}
-	return base;
+	dropMatrix(A);
+	return 1;
 }

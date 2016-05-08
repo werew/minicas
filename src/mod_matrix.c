@@ -580,8 +580,8 @@ Ref kernel_call(ref_list args){
 		return NULL;
 	}
 
-	Matrix K = noyau(M);
-	if ( K == NULL) return NULL;
+	Matrix K;
+	if ( noyau(M, &K) == 0 ) return NULL;
 	
 	/* Print kernel */
 	unsigned int i,j;
