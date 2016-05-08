@@ -532,8 +532,9 @@ int solve(Matrix A, Matrix B,Matrix* F)
 	if(det==0)
 	{
 		//Determiannt vaut 0 donc il n'y a pas de solution
+		set_err(ENOVAL,"Matrix not inversible");
 		*F=NULL;
-		return 1;
+		return 0;
 	}
 	//On fusionne la matrice A avec la matrice identité pour bien l'échelonner et trouvé la soltion du système linéaire
 	Matrix C=fusionMat(A,B);
@@ -639,8 +640,10 @@ int invert(Matrix m,Matrix* D)
 	if(det==0)
 	{
 		//Si le determinant est nul alors la matrice n'est pas inversible
+		
+		set_err(ENOVAL,"Matrix not inversible");
 		*D=NULL;
-		return 1;
+		return 0;
 	}
 	else
 	{
