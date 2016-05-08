@@ -4,7 +4,7 @@
 #include <math.h>
 #include "operation.h"
 #include "matrix.h"
-//#include "error.h"
+#include "error.h"
 
 #define EPSILON 0.00001
 
@@ -43,7 +43,7 @@ Matrix addition(Matrix a, Matrix b)
 	/* Si la dimension des deux matrices n'est pas la même*/
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
 	{
-		//set_err(EMXDIM,"Dimension error");
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//Erreur dimension
 	}
 	else
@@ -73,7 +73,7 @@ Matrix soustraction(Matrix a, Matrix b)
 	/* Si la dimension des deux matrices n'est pas la même*/
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
 	{
-		//set_err(EMXDIM,"Dimension error");
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//Erreur dimension
 	}
 	else
@@ -105,7 +105,7 @@ Matrix multiplication(Matrix a,Matrix b)
 	 on ne peux pas faire la multiplication*/
 	if(a->ncols!=b->nrows)
 	{
-		//set_err(EMXDIM,"Dimension error");
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//Erreur dimension
 	}
 	Matrix c=newMatrix(a->nrows,b->ncols);
@@ -211,7 +211,7 @@ Matrix fusionMat(Matrix A,Matrix B)
 	/* Si le nombre de ligne de A et B n'est pas égale, on ne peux pas fusionner ces deux matrices*/
 	if(A->nrows!=B->nrows)
 	{
-		//set_err(EMXDIM,"Dimension error");
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//ereur dimension
 	}
 	Matrix C=newMatrix(A->nrows,A->ncols+B->ncols);
@@ -520,7 +520,7 @@ int solve(Matrix A, Matrix B,Matrix* F)
 {
 	if(A->nrows!=B->nrows || B->ncols!=1)
 	{
-		//set_err(EMXDIM,"Dimension error");
+		set_err(EMXDIM,"Dimension error");
 		return 0; //erreur dimension
 	}
 	float det;
