@@ -269,15 +269,15 @@ int exec_instrution(void){
 			/* Line is a function call */
 			ret = eval_fun(an_token,false);
 			if (ret == NULL) goto error;
-			free(an_token);
 			break;
 		default:;
 			/* Line is an internal command */
 			ret = eval_cmd(an_token);
 			if (ret == NULL) goto error;
-			free(an_token);
 	}
 	
+	free(an_token);
+
 	/* Print instruction output */
 	if (ret != NULL){
 		print_ref(ret);
