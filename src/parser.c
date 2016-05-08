@@ -366,7 +366,10 @@ Ref eval_fun(char* fun_name, bool force_funref){
 			Ref r = eval_expression(false);
 			if (r == NULL || push_ref(args, r) == NULL) goto error;
 
+			sym = jump_cclass(sym, SPACE);
+
 		} while ( *sym == ',');
+
 
 		/* Check for a valid end-of-function */
 		if (*sym != ')'){
