@@ -103,7 +103,7 @@ char* pop_word(void){
 Ref declare_ref(char* name){
 
 	/* Evaluate expression */
-	Ref e_r = eval_expression();
+	Ref e_r = eval_expression(false);
 	if (e_r == NULL || e_r == NO_REF) return e_r;
 	
 	/* Store a renamed copy of e_r */
@@ -128,11 +128,13 @@ Ref declare_ref(char* name){
  * 
  * @param name Name of the function
  * @param args List of arguments
+ * @param force_funref A bool indicating if the returned reference must
+ *	  be forced to be a function reference
  * @return A reference to the result of the function being 
  * 	   evaluated or a reference to a new function 
  * 	   with a new set of predefined arguments
  */
-Ref exec_fun(char* name, ref_list args){
+Ref exec_fun(char* name, ref_list args, bool force_funref){
 
 	Ref f_ref = get_fun(name);
 	if (f_ref == NULL) {
@@ -144,7 +146,7 @@ Ref exec_fun(char* name, ref_list args){
 	
 	unsigned int i_args = 0; // Index user args
 	unsigned int i_preargs = 0; // Index predefined args
-	bool eval = true;
+	bool eval = !force_funref;
 	Ref call_arg , pre_arg;
 
 	// COmposition args (user+predefined)
@@ -271,7 +273,7 @@ int exec_instrution(void){
 			break;
 		case '(':
 			/* Line is a function call */
-			ret = eval_fun(an_token);
+			ret = eval_fun(an_token,false);
 			if (ret == NULL) goto error;
 			free(an_token);
 			break;
@@ -313,7 +315,7 @@ Ref eval_cmd(char* cmd){
 
 	while ( *sym != ';' && *sym != '\0'){
 
-		Ref r = eval_expression();
+		Ref r = eval_expression(false);
 		if (r == NULL || push_ref(args, r) == NULL) goto error;
 
 		sym = jump_cclass(sym, SPACE);
@@ -345,33 +347,41 @@ error:
  *	fun1( a, b, c ) 	# a, b and c must be declared
  * 	fun1 ( fun2(b, 12), c, fun3(fun4(a)) );
  * @param fun Name of the called function
+ * @param force_funref A bool indicating if the returned reference must
+ *	  be forced to be a function reference
  * @return The reference result of the function being evaluated, 
  *	   of NULL in case of error
  */
-Ref eval_fun(char* fun){
+Ref eval_fun(char* fun, bool force_funref){
 
 	ref_list args = new_ref_list();
 	if (args == NULL) return NULL;
+	
+	char* tmp = jump_cclass(sym+1, SPACE);
+	if (*tmp != ')'){	
+		/* Function has arguments */
+		do {
+			sym++;
 
-	do {
-		sym++;
+			Ref r = eval_expression(false);
+			if (r == NULL || push_ref(args, r) == NULL) goto error;
 
-		Ref r = eval_expression();
-		if (r == NULL || push_ref(args, r) == NULL) goto error;
+		} while ( *sym == ',');
 
-	} while ( *sym == ',');
-
-	/* Check for a valid end-of-function */
-	if (*sym != ')'){
-		set_err(ESYNTAX,sym);
-		goto error;
-	} 
+		/* Check for a valid end-of-function */
+		if (*sym != ')'){
+			set_err(ESYNTAX,sym);
+			goto error;
+		} 
+	} else {
+		sym = tmp;
+	}
 
 	/* By convention move to the char 
 	   right next the expression */	
 	sym++;
 
-	Ref ret = exec_fun(fun, args);	
+	Ref ret = exec_fun(fun, args, force_funref);	
 	if (ret == NULL) goto error;
 	if (ret == NO_REF) return ret;
 
@@ -413,7 +423,7 @@ Ref eval_vector(void){
 	do {
 		sym++;
 
-		Ref r = eval_expression();
+		Ref r = eval_expression(false);
 		if (r == NULL || push_ref(elts, r) == NULL) goto error;
 
 		if (r == NO_REF || r->type != VAR || 
@@ -495,9 +505,12 @@ Ref eval_float(){
  *	- variable
  *	- numeric value
  *
+ * @param force_funref If the expression is a function call, this value
+ * 	  indicates if the returned reference must be forced to be a function 
+ *	  reference
  * An expression could be a variable, a function, a numerical value or a vector
  */
-Ref eval_expression(void){
+Ref eval_expression(bool force_funref){
 	
 
 	/* Jump all the blank characters */	
@@ -514,7 +527,7 @@ Ref eval_expression(void){
 		sym = jump_cclass(sym, SPACE);
 
 		if (*sym == '('){ // Function call
-			r_result = eval_fun(word);
+			r_result = eval_fun(word, force_funref);
 
 		} else if (*sym == ':') { // Declaration
 			sym++;
@@ -539,6 +552,9 @@ Ref eval_expression(void){
 		sym++;
 		return NO_REF; 
 
+	} else if (*sym == '@'){
+		sym++;
+		r_result = eval_expression(true);
 	} else {
 		set_err(ESYNTAX,sym);
 		return NULL;
