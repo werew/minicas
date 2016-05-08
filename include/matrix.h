@@ -3,10 +3,11 @@
 
 typedef struct s_matrix
 {
-	float* mat;
-	unsigned int nrows;
-	unsigned int ncols;
+	float* mat;	//Tableau à une dimension pour stocker les matrices
+	unsigned int nrows;	//Nombre de ligne de la matrice
+	unsigned int ncols;	//Nombre de colonne de la matrice
 }*Matrix;
+
 
 Matrix newMatrix(unsigned int nb_rows, unsigned int nb_columns);
 float getElt(Matrix m,unsigned int row,unsigned int column);

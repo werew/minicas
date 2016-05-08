@@ -11,7 +11,7 @@ Matrix newMatrix(unsigned int nb_rows, unsigned int nb_columns)
 {
 	if(nb_rows==0 || nb_columns==0)
 	{
-		return NULL; //erreur dimension
+		return NULL; //erreur 
 	}
 	Matrix m=(Matrix)malloc(sizeof(struct s_matrix));
 	if(m==NULL)
@@ -72,7 +72,7 @@ Matrix copyMatrix(Matrix m)
 	Matrix p=newMatrix(m->nrows,m->ncols);
 	if(p==NULL)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	memcpy(getAddr(p,0,0),getAddr(m,0,0),m->ncols*m->nrows*sizeof(float));
 	return p;
@@ -107,7 +107,7 @@ Matrix identite(unsigned int nb_cote)
 	Matrix mx=newMatrix(nb_cote,nb_cote);
 	if(mx==NULL)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	unsigned int i,j;
 	for(i=0;i<nb_cote;i++)

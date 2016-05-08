@@ -12,6 +12,8 @@ typedef struct s_maillon
 }*maillon;
 
 
+maillon newChaine();
+maillon push(maillon m,unsigned int i,unsigned int j,float x,int op);
 Matrix addition(Matrix a,Matrix b);
 Matrix soustraction(Matrix a,Matrix b);
 Matrix multiplication(Matrix a,Matrix b);
@@ -27,11 +29,11 @@ int diviseLigne(Matrix A,unsigned int i,float c);
 Matrix echelonnage(Matrix m);
 Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int (*fct_pivot)(Matrix,unsigned int,unsigned int*));
 int determinant(Matrix m,float* c);
-void remontee(Matrix A,Matrix X);
 int solve(Matrix A, Matrix B,Matrix* F);
 Matrix bienEchelonner(Matrix A);
 Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsigned int j2);
 int invert(Matrix m,Matrix* D);
+int ligneZero(Matrix A,unsigned int l);
 int rank(Matrix A);
 int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P);
 int noyau(Matrix m,Matrix* base);
