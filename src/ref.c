@@ -279,6 +279,8 @@ void print_ref(Ref r){
 
 bool cmptype_ref(unsigned int type, const Ref arg){
 
+	if (arg == NULL || arg == NO_REF) return false;
+
 	switch (type) {
 		case ALL: return true;
 		case FUN: 
@@ -296,7 +298,8 @@ bool cmp_ref(Ref a, Ref b){
 	
 	if (a == b) return true;
 	
-	if (a == NULL || b == NULL) return false;
+	if (a == NULL || b == NULL || 
+	    a == NO_REF || b == NO_REF ) return false;
 
 	if (cmptype_ref(a->type, b) == false) return false;
 
