@@ -35,6 +35,9 @@ void load_commands(void){
 
 }
 
+
+
+/* Sum of any number of floats */
 Ref summ_call(ref_list args){	
 
 	float* sum = malloc(sizeof(float));
@@ -53,7 +56,12 @@ Ref summ_call(ref_list args){
 	
 	return new_vref(NULL, sum, FLOAT);
 }
-		
+	
+
+/* Executes arguments that are function references 
+ * and feed them as argument the non-function references
+ * next to them 
+ */
 Ref compose_call(ref_list args){	
 	Ref r = NO_REF;
 	unsigned int i,j;
@@ -83,6 +91,10 @@ Ref compose_call(ref_list args){
 }
 
 
+/* Functional assignement
+ * @note: function reference are not assigned but 
+ *	  directly evaluated
+ */
 Ref eval_in_call(ref_list args){	
 	Ref dst = NO_REF, src = NO_REF;
 	unsigned int i;
@@ -110,6 +122,10 @@ Ref eval_in_call(ref_list args){
 	return dst;
 }
 
+
+
+
+/* Eval on condition */
 
 Ref eval_ifeq_call(ref_list args){ return eval_if_call(args, EQUAL); };
 Ref eval_ifneq_call(ref_list args){ return eval_if_call(args, NEQUAL); };
@@ -143,6 +159,7 @@ Ref eval_if_call(ref_list args, Condition c){
 	return r;
 }
 
+/* Quit the program */
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 Ref quit_cmd(ref_list args){ // Respect general prototype
 	drop_pool();
@@ -150,6 +167,8 @@ Ref quit_cmd(ref_list args){ // Respect general prototype
 }
 #pragma GCC diagnostic pop
 
+
+/* Print one or more references */
 Ref print_fc(ref_list args){
 	unsigned int i;
 	for (i = 0; i < args->length; i++){

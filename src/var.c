@@ -125,7 +125,7 @@ void print_var(Var v){
 bool cmp_var(Var a, Var b){
 	if (a->type != b->type) return false;
 	switch (a->type){
-		case MATRIX: /* TODO add function cmp_matrix */
+		case MATRIX: /* future implementation: add function cmp_matrix */
 			break;
 
 		case FLOAT: return (*(float*)a->val) == (*(float*)b->val);
