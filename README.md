@@ -94,6 +94,12 @@ m3_cube : expo(m3, 3);
 # Matrix transposition
 m1 : transpose(m1);
 
+# Triangular matrix
+triangular(m1);
+
+# Echelon 
+echelon(m1)
+
 # Matrix inversion
 m4 : invert(m1)
 
