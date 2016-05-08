@@ -31,11 +31,19 @@ float getElt(Matrix m,unsigned int row,unsigned int column)
 
 void setElt(Matrix m,unsigned int row,unsigned int column,float val)
 {
+	if(row>m->nrows || column>m->ncols)
+	{
+		return;
+	}
 	m->mat[row*m->ncols+column]=val;
 }
 
 float* getAddr(Matrix m,unsigned int i,unsigned int j)
 {
+	if(i>m->nrows || j>m->ncols)
+	{
+		return NULL;
+	}
 	return (&(m->mat[i*m->ncols+j]));
 }
 
