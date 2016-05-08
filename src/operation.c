@@ -54,9 +54,9 @@ Matrix addition(Matrix a, Matrix b)
 			return NULL;
 		}
 		unsigned int i,j;
-		for(i=0;i<a->nrows;i++)
+		for(i=0;i<c->nrows;i++)
 		{
-			for(j=0;j<a->ncols;j++)
+			for(j=0;j<c->ncols;j++)
 			{
 				setElt(c,i,j,(getElt(a,i,j)+getElt(b,i,j)));
 			}
@@ -84,9 +84,9 @@ Matrix soustraction(Matrix a, Matrix b)
 			return NULL;
 		}
 		unsigned int i,j;
-		for(i=0;i<a->nrows;i++)
+		for(i=0;i<c->nrows;i++)
 		{
-			for(j=0;j<a->ncols;j++)
+			for(j=0;j<c->ncols;j++)
 			{
 				setElt(c,i,j,(getElt(a,i,j)-getElt(b,i,j)));
 			}
@@ -118,7 +118,7 @@ Matrix multiplication(Matrix a,Matrix b)
 
 	for(i=0;i<a->nrows;i++)
 	{
-		for(j=0;j<a->ncols;j++)
+		for(j=0;j<b->ncols;j++)
 		{
 			total=0;
 			for(k=0;k<b->nrows;k++)
