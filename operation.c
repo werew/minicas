@@ -24,7 +24,7 @@ maillon push(maillon m,unsigned int i,unsigned int j,float x,int op)
 	maillon n=(maillon)malloc(sizeof(struct s_maillon));
 	if(n==NULL)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	n->i=i;
 	n->j=j;
@@ -51,7 +51,7 @@ Matrix addition(Matrix a, Matrix b)
 		Matrix c=newMatrix(a->nrows,a->ncols);
 		if(c==NULL)
 		{
-			return NULL;	//TODO
+			return NULL;
 		}
 		unsigned int i,j;
 		for(i=0;i<a->nrows;i++)
@@ -81,7 +81,7 @@ Matrix soustraction(Matrix a, Matrix b)
 		Matrix c=newMatrix(a->nrows,a->ncols);
 		if(NULL==c)
 		{
-			return NULL;	//TODO
+			return NULL;
 		}
 		unsigned int i,j;
 		for(i=0;i<a->nrows;i++)
@@ -111,7 +111,7 @@ Matrix multiplication(Matrix a,Matrix b)
 	Matrix c=newMatrix(a->nrows,b->ncols);
 	if(NULL==c)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	unsigned int i,j,k;
 	float total=0;
@@ -130,6 +130,34 @@ Matrix multiplication(Matrix a,Matrix b)
 	}
 	return c;
 }
+
+
+/*
+ Fonction qui renvoie une nouvelle matrice qui est l'élévation a puissance p une matrice m
+*/
+Matrix expo(Matrix m,unsigned int p)
+{
+	Matrix A=copyMatrix(m);
+	if(A==NULL)
+	{
+		return NULL;
+	}
+	Matrix tmp=A;
+	unsigned int i;
+	for(i=1;i<p;i++)
+	{
+		tmp=A;
+		if((A=multiplication(A,m))==NULL)
+		{
+			dropMatrix(tmp);
+			return NULL;	//erreur
+		}
+		dropMatrix(tmp);
+	}
+	return A;
+}
+
+
 
 /*
  Renvoie une nouvelle matrice qui est la transposé de la matrice passé en argument
@@ -161,7 +189,7 @@ Matrix multScal(float a,Matrix m)
 	Matrix P=newMatrix(m->nrows,m->ncols);
 	if(NULL==P)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	unsigned int i,j;
 	for(i=0;i<P->nrows;i++)
@@ -189,7 +217,7 @@ Matrix fusionMat(Matrix A,Matrix B)
 	Matrix C=newMatrix(A->nrows,A->ncols+B->ncols);
 	if(NULL==C)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	unsigned int i;
 	for(i=0;i<A->nrows;i++)
@@ -301,7 +329,7 @@ int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 	Matrix tmp=newMatrix(1,m->ncols);
 	if(tmp==NULL)
 	{
-		return 0;	//TODO
+		return 0;
 	}
 	memcpy(getAddr(tmp,0,0),getAddr(m,i,0),m->ncols*sizeof(float));		//Place la ligne i dans une matrice temporaire
 	memcpy(getAddr(m,i,0),getAddr(m,j,0),m->ncols*sizeof(float));		//Place la ligne j dans i
@@ -311,6 +339,27 @@ int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 
 	return 1;
 }
+
+
+/*
+ Divise tout les élément d'une ligne i d'une matrice A par un coefficient c
+ La fonction retourne 0 si la division échoue et 1 si la division a fonctionné
+*/
+int diviseLigne(Matrix A,unsigned int i,float c)
+{
+	if(c==0)
+	{
+		//Empeche la division par 0
+		return 0;	//erreur
+	}
+	unsigned int j;
+	for(j=0;j<A->ncols;j++)
+	{
+		setElt(A,i,j,getElt(A,i,j)/c);
+	}
+	return 1;
+}
+
 
 
 /*
@@ -360,7 +409,7 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int (*fct_pivot)(M
 	Matrix P=copyMatrix(m);
 	if(P==NULL)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 	unsigned int i,j;
 	int piv_trouv;
@@ -398,7 +447,7 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int (*fct_pivot)(M
 				if((*ch=push(*ch,i,j,0,0))==NULL)	//Adjonction a la liste de l'échange de ligne  effectué
 				{
 					dropMatrix(P);
-					return NULL;	//TODO
+					return NULL;
 				}
 			}
 			if(c!=NULL)
@@ -425,13 +474,15 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int (*fct_pivot)(M
 				if((*ch=push(*ch,j,i,coef,1))==NULL)
 				{
 					dropMatrix(P);
-					return NULL;	//TODO
+					return NULL;
 				}
 			}
 		}
 	}
 	return P;
 }
+
+
 
 
 /*
@@ -487,20 +538,13 @@ int solve(Matrix A, Matrix B,Matrix* F)
 	Matrix C=fusionMat(A,B);
 	if(C==NULL)
 	{
-		return 0;	//TODO erreur
+		return 0;	//erreur
 	}
-/*	Matrix D=echelonnage(C);
-	if(D==NULL)
-	{
-		dropMatrix(C);
-		return 0; //TODO Erreur
-	}*/
 	Matrix E=bienEchelonner(C);
 	if(E==NULL)
 	{
 		dropMatrix(C);
-	//	dropMatrix(D);
-		return 0;	//TODO erreur
+		return 0;	//erreur
 	}
 	
 	//On récupère ce qui était la matric identité au début, ceci est la solution
@@ -508,63 +552,16 @@ int solve(Matrix A, Matrix B,Matrix* F)
 	if(F==0)
 	{
 		dropMatrix(C);
-	//	dropMatrix(D);
 		dropMatrix(E);
-		return 0; //TODO erreur
+		return 0; //erreur
 	}
 
 	dropMatrix(C);
-//	dropMatrix(D);
 	dropMatrix(E);
 
 	return 1;
 }
 
-
-/*
- Fonction qui renvoie une nouvelle matrice qui est l'élévation a puissance p une matrice m
-*/
-Matrix expo(Matrix m,unsigned int p)
-{
-	Matrix A=copyMatrix(m);
-	if(A==NULL)
-	{
-		return NULL;	//TODO
-	}
-	Matrix tmp=A;
-	unsigned int i;
-	for(i=1;i<p;i++)
-	{
-		tmp=A;
-		if((A=multiplication(A,m))==NULL)
-		{
-			dropMatrix(tmp);
-			return NULL;	//TODO erreur
-		}
-		dropMatrix(tmp);
-	}
-	return A;
-}
-
-
-/*
- Divise tout les élément d'une ligne i d'une matrice A par un coefficient c
- La fonction retourne 0 si la division échoue et 1 si la division a fonctionné
-*/
-int diviseLigne(Matrix A,unsigned int i,float c)
-{
-	if(c==0)
-	{
-		//Empeche la division par 0
-		return 0;	//TODO erreur
-	}
-	unsigned int j;
-	for(j=0;j<A->ncols;j++)
-	{
-		setElt(A,i,j,getElt(A,i,j)/c);
-	}
-	return 1;
-}
 
 
 /*
@@ -576,7 +573,7 @@ Matrix bienEchelonner(Matrix A)
 	Matrix B=echelonnage(A);	//Echelonne la matrice
 	if(B==NULL)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 
 	unsigned int i,j;
@@ -606,16 +603,16 @@ Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsi
 {
 	if(i1>i2 || j1>j2)
 	{
-		return NULL;	//TODO erreur indice
+		return NULL;	//erreur indice
 	}
 	if(i1>A->nrows || i2>A->nrows || j1>A->ncols || j2>A->ncols)
 	{
-		return NULL;	//TODO erreur indice plus grand que dimension matrice
+		return NULL;	//erreur indice plus grand que dimension matrice
 	}
 	Matrix B=newMatrix(i2-i1+1,j2-j1+1);
 	if(NULL==B)
 	{
-		return NULL;	//TODO
+		return NULL;
 	}
 
 	unsigned int k;
@@ -649,20 +646,20 @@ int invert(Matrix m,Matrix* D)
 		Matrix Id=identite(m->ncols);
 		if(Id==NULL)
 		{
-			return 0;	//TODO erreur
+			return 0;	//erreur
 		}
 		Matrix A=fusionMat(m,Id);
 		if(A==NULL)
 		{
 			dropMatrix(Id);
-			return 0;	//TODO
+			return 0;
 		}
 		Matrix C=bienEchelonner(A);	//Echelonnage de la matrice fusionné
 		if(C==NULL)
 		{
 			dropMatrix(Id);
 			dropMatrix(A);
-			return 0;	//TODO
+			return 0;
 		}
 		*D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);	//On récupère la matrice qui était au début la matrice identité et qui est maintenant l'inverse de m
 		if(D==NULL)
@@ -670,7 +667,7 @@ int invert(Matrix m,Matrix* D)
 			dropMatrix(Id);
 			dropMatrix(A);
 			dropMatrix(C);
-			return 0;	//TODO
+			return 0;
 		}
 
 		dropMatrix(Id);
@@ -749,7 +746,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 	if(id==NULL)
 	{
 		dropMatrix(*U);
-		return 0;	//TODO
+		return 0;
 	}
 	Matrix E,tmp;
 	//On dépile la liste chainée pour générer les matrices élémentaire qui seriront à trouver L et U
@@ -760,7 +757,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 		{
 			dropMatrix(*U);
 			dropMatrix(id);
-			return 0;	//TODO
+			return 0;
 		}
 		if(m->op==1)	//Si l'opération est une combinaison linéaire
 		{
@@ -771,7 +768,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 				dropMatrix(*U);
 				dropMatrix(id);
 				dropMatrix(E);
-				return 0;	//TODO
+				return 0;
 			}
 			dropMatrix(E);
 			dropMatrix(id);
@@ -786,7 +783,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 				dropMatrix(*U);
 				dropMatrix(id);
 				dropMatrix(E);
-				return 0;	//TODO
+				return 0;
 			}
 			dropMatrix(E);
 		}
@@ -800,7 +797,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 	invert(id,L); //L est l'inverse de la multiplication des matrices intermédiaire
 	if(*L==NULL)
 	{
-		return 0;	//TODO
+		return 0;
 	}
 	dropMatrix(id);
 	return 1;
@@ -816,7 +813,7 @@ int noyau(Matrix m,Matrix* base)
 	Matrix A=echelonnage(m);	//Echelonnage de la matrice
 	if(A==NULL)
 	{
-		return 0;	//TODO
+		return 0;
 	}
 	unsigned int i,j,lz=0;
 
@@ -842,7 +839,7 @@ int noyau(Matrix m,Matrix* base)
 	if(base==NULL)
 	{
 		dropMatrix(A);
-		return 0;	//TODO
+		return 0;
 	}
 	unsigned int pos_un;
 	unsigned int lnz=A->nrows-lz;
@@ -860,7 +857,7 @@ int noyau(Matrix m,Matrix* base)
 		{
 			dropMatrix(A);
 			dropMatrix(*base);
-			return 0;	//TODO
+			return 0;
 		}
 
 		/*On génère une matrice qui sera la solution d'un système linéaire et dont les coefficients
@@ -877,7 +874,7 @@ int noyau(Matrix m,Matrix* base)
 			dropMatrix(A);
 			dropMatrix(*base);
 			dropMatrix(res);
-			return 0;	//TODO
+			return 0;
 		}
 
 		//Resolution du système pour trouver le reste du vecteur
@@ -888,7 +885,7 @@ int noyau(Matrix m,Matrix* base)
 			dropMatrix(*base);
 			dropMatrix(res);
 			dropMatrix(mat_int);
-			return 0;	//TODO
+			return 0;
 		}
 
 		//Recopie des solutions dans la matrice qui représente la base du noyau
