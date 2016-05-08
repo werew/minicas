@@ -381,49 +381,50 @@ float determinant (Matrix m)
 	}
 }*/
 
-Matrix solve(Matrix A, Matrix B)
+int solve(Matrix A, Matrix B,Matrix* F)
 {
 	if(A->nrows!=B->nrows || B->ncols!=1)
 	{
-		return NULL; //erreur dimension
+		return 0; //erreur dimension
 	}
 	if(determinant(A)==0)
 	{
-		return NULL;	//erreur matrix
+		*F=NULL;
+		return 1;	//erreur matrix
 	}
 	Matrix C=fusionMat(A,B);
 	if(C==NULL)
 	{
-		return NULL;	//TODO erreur
+		return 0;	//TODO erreur
 	}
 	Matrix D=echelonnage(C);
 	if(D==NULL)
 	{
 		
 		dropMatrix(C);
-		return NULL; //TODO Erreur
+		return 0; //TODO Erreur
 	}
 	Matrix E=bienEchelonner(D);
 	if(E==NULL)
 	{
 		dropMatrix(C);
 		dropMatrix(D);
-		return NULL;	//TODO erreur
+		return 0;	//TODO erreur
 	}
-	Matrix F=sliceMatrix(E,0,A->nrows-1,A->ncols,A->ncols);
+	*F=sliceMatrix(E,0,A->nrows-1,A->ncols,A->ncols);
 	if(F==0)
 	{
 		dropMatrix(C);
 		dropMatrix(D);
 		dropMatrix(E);
-		return NULL; //TODO erreur
+		return 0; //TODO erreur
 	}
 
 	dropMatrix(C);
 	dropMatrix(D);
 	dropMatrix(E);
 
-	return F;
+	return 1;
 }
 
 Matrix expo(Matrix m,unsigned int p)
@@ -509,31 +510,32 @@ Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsi
 	return B;
 }
 
-Matrix invert(Matrix m)
+int invert(Matrix m,Matrix* D)
 {
 	if(determinant(m)==0)
 	{
-		return NULL;
+		*D=NULL;
+		return 1;
 	}
 	else
 	{
 		Matrix Id=identite(m->ncols);
 		if(Id==NULL)
 		{
-			return NULL;	//TODO erreur
+			return 0;	//TODO erreur
 		}
 		Matrix A=fusionMat(m,Id);
 		if(A==NULL)
 		{
 			dropMatrix(Id);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 		Matrix B=echelonnage(A);
 		if(B==NULL)
 		{
 			dropMatrix(Id);
 			dropMatrix(A);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 		Matrix C=bienEchelonner(B);
 		if(C==NULL)
@@ -541,16 +543,16 @@ Matrix invert(Matrix m)
 			dropMatrix(Id);
 			dropMatrix(A);
 			dropMatrix(B);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
-		Matrix D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);
+		*D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);
 		if(D==NULL)
 		{
 			dropMatrix(Id);
 			dropMatrix(A);
 			dropMatrix(B);
 			dropMatrix(C);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 
 		dropMatrix(Id);
@@ -558,7 +560,7 @@ Matrix invert(Matrix m)
 		dropMatrix(B);
 		dropMatrix(C);
 
-		return D;
+		return 1;
 	}
 }
 
@@ -660,7 +662,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 		m=suiv;
 	}
 
-	*L=invert(id);
+	invert(id,L);
 	if(*L==NULL)
 	{
 		return 0;	//TODO
@@ -725,7 +727,7 @@ int noyau(Matrix m,Matrix* base)
 			dropMatrix(res);
 			return 0;	//TODO
 		}
-		sol_int=solve(mat_int,res);
+		solve(mat_int,res,&sol_int);
 		if(sol_int==NULL)
 		{
 			dropMatrix(A);
