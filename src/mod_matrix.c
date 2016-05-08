@@ -52,6 +52,9 @@ void load_mod_matrix(void){
 	load = set_fun("triangular",triangular_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function triangular");
 
+	load = set_fun("echelon",echelon_call,NULL);
+	if (load == NULL) inst_err(ELOAD, "function echelon");
+
 	load = set_fun("decomposition",decomposition_call,NULL);
 	if (load == NULL) inst_err(ELOAD, "function decomposition");
 
@@ -168,6 +171,27 @@ Ref triangular_call(ref_list args){
 		
 } 
 
+/* Echelon  one matrix */
+Ref echelon_call(ref_list args){
+	
+	if (args->length != 1){
+		set_err(ETYPE, "need one and only one argument");
+		return NULL;	
+	}
+	
+	if (arg_isMatrix(args->list[0]) == false) return NULL;
+
+	Matrix m = CAST_REF2MATRIX(args->list[0]);	
+
+	Matrix t = echelonnage(m);
+	if (t == NULL) return NULL;
+
+	Ref r = new_vref(NULL, t, MATRIX);
+	if (r == NULL) dropMatrix(t);
+
+	return r;
+		
+} 
 /* Multiplies all the given matrices consecutively */	
 Ref mult_call(ref_list args){
 	
