@@ -35,7 +35,10 @@ void load_commands(void){
 }
 
 Ref summ_call(ref_list args){	
+
 	float* sum = malloc(sizeof(float));
+	*sum = 0;
+
 	unsigned int i;
 	for (i = 0; i < args->length; i++){
 		if (cmptype_ref(FLOAT, args->list[i]) == false){
