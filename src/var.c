@@ -14,8 +14,13 @@
  */
 void drop_var(Var v){
 	if (v == NULL) return;
+	
+	switch (v->type){
+		case FLOAT: free(v->val);
+			break;
+		case MATRIX: dropMatrix(v->val);
+	}
 
-	free(v->val);
 	free(v);
 }
 

@@ -383,7 +383,10 @@ Ref eval_fun(char* fun_name, bool force_funref){
 
 	Ref ret = exec_fun(f_ref->inst, args, force_funref);	
 	if (ret == NULL) goto error;
-	if (ret == NO_REF) return ret;
+	if (ret == NO_REF) {
+		drop_ref_list(args,true);
+		return ret;
+	}
 
 	if (ret->type != FUN) drop_ref_list(args, true);	
 	
