@@ -8,9 +8,17 @@
 
 #define EPSILON 0.00001
 
+/**
+ Créer une nouvelle liste chainée qui va servir à empiler les combinaisons
+ linéaires lors de la triangularisation
+*/
 maillon newChaine()
 {return NULL;}
 
+
+/**
+ Empile la combinaison linéaire dans la liste chainée (ajout en tête)
+*/
 maillon push(maillon m,unsigned int i,unsigned int j,float x,int op)
 {
 	maillon n=(maillon)malloc(sizeof(struct s_maillon));
@@ -27,11 +35,15 @@ maillon push(maillon m,unsigned int i,unsigned int j,float x,int op)
 }
 
 
-
+/**
+ Renvoie une nouvelle matrice qui est la somme des deux matrices passé en argument
+*/
 Matrix addition(Matrix a, Matrix b)
 {
+	/* Si la dimension des deux matrices n'est pas la même*/
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//Erreur dimension
 	}
 	else
@@ -53,11 +65,16 @@ Matrix addition(Matrix a, Matrix b)
 	}
 }
 
+/*
+ Renvoie une nouvelle matrice qui est la différence des deux matrices passé en argument
+*/
 Matrix soustraction(Matrix a, Matrix b)
 {
+	/* Si la dimension des deux matrices n'est pas la même*/
 	if(a->ncols!=b->ncols||a->nrows!=b->nrows)
 	{
-		return NULL;	//erreur dimension
+		set_err(EMXDIM,"Dimension error");
+		return NULL;	//Erreur dimension
 	}
 	else
 	{
@@ -78,11 +95,18 @@ Matrix soustraction(Matrix a, Matrix b)
 	}
 }
 
+
+/*
+ Renvoie une nouvelle matrice qui est le produit des deux matrices passé en argument (dans l'ordre A*B)
+*/
 Matrix multiplication(Matrix a,Matrix b)
 {
+	/* Si le nombre de colonne de la matrice A n'est pas égale au nombre de ligne de la matrice B
+	 on ne peux pas faire la multiplication*/
 	if(a->ncols!=b->nrows)
 	{
-		return NULL;	//erreur dimension
+		set_err(EMXDIM,"Dimension error");
+		return NULL;	//Erreur dimension
 	}
 	Matrix c=newMatrix(a->nrows,b->ncols);
 	if(NULL==c)
@@ -107,6 +131,9 @@ Matrix multiplication(Matrix a,Matrix b)
 	return c;
 }
 
+/*
+ Renvoie une nouvelle matrice qui est la transposé de la matrice passé en argument
+*/
 Matrix transpose(Matrix m)
 {
 	Matrix P=newMatrix(m->ncols,m->nrows);
@@ -126,6 +153,9 @@ Matrix transpose(Matrix m)
 }
 
 
+/*
+ Renvoie une nouvelle matrice qui est la multiplication par un scalaire d'une matrice
+*/
 Matrix multScal(float a,Matrix m)
 {
 	Matrix P=newMatrix(m->nrows,m->ncols);
@@ -145,11 +175,15 @@ Matrix multScal(float a,Matrix m)
 }
 
 
-
+/*
+ Renvoie une nouvelle matrice qui est la fusion de A et B. La matrice B est placé à "droite" de la matrice A.
+*/
 Matrix fusionMat(Matrix A,Matrix B)
 {
+	/* Si le nombre de ligne de A et B n'est pas égale, on ne peux pas fusionner ces deux matrices*/
 	if(A->nrows!=B->nrows)
 	{
+		set_err(EMXDIM,"Dimension error");
 		return NULL;	//ereur dimension
 	}
 	Matrix C=newMatrix(A->nrows,A->ncols+B->ncols);
@@ -166,9 +200,17 @@ Matrix fusionMat(Matrix A,Matrix B)
 	return C;
 }
 
-
+/*
+ Trouve le pivot le plus grand pour une colonne donnée.
+ On renvoie le pivot par effet de bord grace au pointeur passé en argument (p)
+ Code retour:
+ 0 : Indice de ligne supérieur au nombre de ligne de la matrice
+ 1 : Pivot trouvé
+ 2 : Si il n'a pas trouvé de pivot (tout la colonne est remplie de 0
+*/
 int PivotPartiel(Matrix m,unsigned int i,unsigned int *p)
 {
+	/* Si l'indice est plus grand que le nombre de ligne*/
 	if(i>m->nrows)
 	{
 		return 0;
@@ -185,10 +227,18 @@ int PivotPartiel(Matrix m,unsigned int i,unsigned int *p)
 			v=tmp;
 		}
 	}
-	return v==0?0:1;
+	return v==0?2:1;
 }
 
 
+/*
+ Trouve le premier pivot (donc non nul) pour une colonne donnée.
+ On renvoie le pivot par effet de bord grace au pointeur passé en argument (p)
+ Code retour:
+ 0 : Indice de ligne supérieur au nombre de ligne de la matrice
+ 1 : Pivot trouvé
+ 2 : Si il n'a pas trouvé de pivot (tout la colonne est remplie de 0
+*/
 int Pivot(Matrix m,unsigned int i,unsigned int* p)
 {
 	if(i>m->nrows)
@@ -204,9 +254,15 @@ int Pivot(Matrix m,unsigned int i,unsigned int* p)
 			return 1;
 		}
 	}
-	return 0;
+	return 2;
 }
 
+
+/*
+ Fait une combinaison linéaire entre la ligne i et j avec un coefficient c. (i=i+c*j)
+ La ligne est modifié directement dans la matrice, on ne fait pas de copie. La matrice est donc modifié par effet de bord.
+ La fonction renvoie 0 si les indices passé en arguement (i et j) sont plus grands que les dimensions de la matrice.
+*/
 int addmultiple(Matrix A,unsigned int i,unsigned int j,float c)
 {
 	if(i>A->nrows || j>A->nrows)
@@ -220,6 +276,7 @@ int addmultiple(Matrix A,unsigned int i,unsigned int j,float c)
 		coef=getElt(A,i,k)+c*getElt(A,j,k);
 		if(coef<EPSILON && coef>(-EPSILON))
 		{
+			//Si le coef est très proche de zéro, ce qui est dut aux imprécisions, on met 0 dans la matrice
 			setElt(A,i,k,0);
 		}
 		else
@@ -230,6 +287,11 @@ int addmultiple(Matrix A,unsigned int i,unsigned int j,float c)
 	return 1;
 }
 
+
+/*
+ Echange les i et j dans la matrice. Modifie la matrice directement par effet de bord.
+ La fonction renvoie 0 en cas d'erreur d'allocation ou si les indices i et j sont supérieurs au nombre de ligne de la matrice
+*/
 int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 {
 	if(i>m->nrows || j>m->nrows)
@@ -241,9 +303,9 @@ int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 	{
 		return 0;	//TODO
 	}
-	memcpy(getAddr(tmp,0,0),getAddr(m,i,0),m->ncols*sizeof(float));
-	memcpy(getAddr(m,i,0),getAddr(m,j,0),m->ncols*sizeof(float));
-	memcpy(getAddr(m,j,0),getAddr(tmp,0,0),m->ncols*sizeof(float));
+	memcpy(getAddr(tmp,0,0),getAddr(m,i,0),m->ncols*sizeof(float));		//Place la ligne i dans une matrice temporaire
+	memcpy(getAddr(m,i,0),getAddr(m,j,0),m->ncols*sizeof(float));		//Place la ligne j dans i
+	memcpy(getAddr(m,j,0),getAddr(tmp,0,0),m->ncols*sizeof(float));		//Place la ligne temporaire dans la ligne j
 
 	dropMatrix(tmp);
 
@@ -251,9 +313,13 @@ int echangeLigne(Matrix m,unsigned int i,unsigned int j)
 }
 
 
+/*
+ Renvoie une nouvelle matrice qui est la matrice passé en paramètre mais échelonné.
+ La fonction renvoie la matrice si cela c'est bein déroulé et NULL si l'allocation la division de la ligne a echoué
+*/
 Matrix echelonnage(Matrix m)
 {
-	Matrix P=triangulaire(m,NULL,NULL,NULL,1);
+	Matrix P=triangulaire(m,NULL,NULL,NULL,PivotPartiel);	//Triangularise d'abord la matrice
 	if(P==NULL)
 	{
 		return NULL;
@@ -264,12 +330,12 @@ Matrix echelonnage(Matrix m)
 	{
 		if(getElt(P,i,i)!=0)
 		{
-			if(diviseLigne(P,i,getElt(P,i,i))==0)
+			if(diviseLigne(P,i,getElt(P,i,i))==0)	//Divise la ligne pour avoir un 1 en premier élément non nul sur la ligne
 			{
-				dropMatrix(P);
+				dropMatrix(P);	//Suppression de la matrice en cas d'erreur
 				return NULL; //erreur
 			}
-			if(getElt(P,i,i)!=0)
+			if(getElt(P,i,i)!=0)	//Si la division ne donne pas exactement 1 à cause des imprécision, on met 1 "manuellement"
 			{
 				setElt(P,i,i,1);
 			}
@@ -278,7 +344,16 @@ Matrix echelonnage(Matrix m)
 	return P;
 }
 
-Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
+
+/*
+ Renvoie une nouvelle matrice qui est la matrice passé en argument mais triangularisé
+ Param:
+ m : matrice a echelonner
+ c : pointeur pour stocker le nombre d'échange de ligne pour calculer le determinant
+ ch : Liste chainée des combinaison linéaire effectué pour triangulariser la matrice
+ La fonction renvoie la matrice en cas de réussite et NULL en cas d'échec
+*/
+Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int (*fct_pivot)(Matrix,unsigned int,unsigned int*))
 {
 	Matrix P=copyMatrix(m);
 	if(P==NULL)
@@ -292,17 +367,11 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 	{
 		*permut=0;
 	}
-	for(i=0;i<P->ncols-1;i++)
+	for(i=0;i<P->nrows-1;i++)
 	{
-		if(fct_pivot==0)
-		{
-			piv_trouv=Pivot(P,i,&j);
-		}
-		else
-		{
-			piv_trouv=PivotPartiel(P,i,&j);
-		}
-		if(piv_trouv==0)
+		piv_trouv=fct_pivot(P,i,&j);
+		
+		if(piv_trouv==2)
 		{
 			continue;
 		}
@@ -350,22 +419,22 @@ Matrix triangulaire(Matrix m,float* c,maillon* ch,int* permut,int fct_pivot)
 	return P;
 }
 
-float determinant (Matrix m)
+int determinant (Matrix m,float* c)
 {
-	float c=1;
-	Matrix P=triangulaire(m,&c,NULL,NULL,1);
+	*c=1;
+	Matrix P=triangulaire(m,c,NULL,NULL,PivotPartiel);
 	if(P==NULL)
 	{
-		//erreur
+		return 0;//erreur
 	}
 
 	unsigned int i;
 	for(i=0;i<P->ncols;i++)
 	{
-		c*=getElt(P,i,i);
+		*c=*c*getElt(P,i,i);
 	}
 	dropMatrix(P);
-	return c;
+	return 1;
 }
 
 /*void remontee(Matrix A,Matrix X)
@@ -383,49 +452,56 @@ float determinant (Matrix m)
 	}
 }*/
 
-Matrix solve(Matrix A, Matrix B)
+int solve(Matrix A, Matrix B,Matrix* F)
 {
 	if(A->nrows!=B->nrows || B->ncols!=1)
 	{
-		return NULL; //erreur dimension
+		set_err(EMXDIM,"Dimension error");
+		return 0; //erreur dimension
 	}
-	if(determinant(A)==0)
+	float det;
+	if(determinant(A,&det)==0)
 	{
-		return NULL;	//erreur matrix
+		return 0;
+	}
+	if(det==0)
+	{
+		*F=NULL;
+		return 1;	//erreur matrix
 	}
 	Matrix C=fusionMat(A,B);
 	if(C==NULL)
 	{
-		return NULL;	//TODO erreur
+		return 0;	//TODO erreur
 	}
 	Matrix D=echelonnage(C);
 	if(D==NULL)
 	{
 		
 		dropMatrix(C);
-		return NULL; //TODO Erreur
+		return 0; //TODO Erreur
 	}
 	Matrix E=bienEchelonner(D);
 	if(E==NULL)
 	{
 		dropMatrix(C);
 		dropMatrix(D);
-		return NULL;	//TODO erreur
+		return 0;	//TODO erreur
 	}
-	Matrix F=sliceMatrix(E,0,A->nrows-1,A->ncols,A->ncols);
+	*F=sliceMatrix(E,0,A->nrows-1,A->ncols,A->ncols);
 	if(F==0)
 	{
 		dropMatrix(C);
 		dropMatrix(D);
 		dropMatrix(E);
-		return NULL; //TODO erreur
+		return 0; //TODO erreur
 	}
 
 	dropMatrix(C);
 	dropMatrix(D);
 	dropMatrix(E);
 
-	return F;
+	return 1;
 }
 
 Matrix expo(Matrix m,unsigned int p)
@@ -511,32 +587,37 @@ Matrix sliceMatrix(Matrix A,unsigned int i1,unsigned int i2,unsigned int j1,unsi
 	return B;
 }
 
-Matrix invert(Matrix m)
+int invert(Matrix m,Matrix* D)
 {
-	if(determinant(m)==0)
-	{	
-		set_err(ENOVAL, "matrix doesn't admit inverse");
-		return NULL;
+	float det;
+	if(determinant(m,&det)==0)
+	{
+		return 0;
+	}
+	if(det==0)
+	{
+		*D=NULL;
+		return 1;
 	}
 	else
 	{
 		Matrix Id=identite(m->ncols);
 		if(Id==NULL)
 		{
-			return NULL;	//TODO erreur
+			return 0;	//TODO erreur
 		}
 		Matrix A=fusionMat(m,Id);
 		if(A==NULL)
 		{
 			dropMatrix(Id);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 		Matrix B=echelonnage(A);
 		if(B==NULL)
 		{
 			dropMatrix(Id);
 			dropMatrix(A);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 		Matrix C=bienEchelonner(B);
 		if(C==NULL)
@@ -544,16 +625,16 @@ Matrix invert(Matrix m)
 			dropMatrix(Id);
 			dropMatrix(A);
 			dropMatrix(B);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
-		Matrix D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);
+		*D=sliceMatrix(C,0,C->nrows-1,m->ncols,C->ncols-1);
 		if(D==NULL)
 		{
 			dropMatrix(Id);
 			dropMatrix(A);
 			dropMatrix(B);
 			dropMatrix(C);
-			return NULL;	//TODO
+			return 0;	//TODO
 		}
 
 		dropMatrix(Id);
@@ -561,7 +642,7 @@ Matrix invert(Matrix m)
 		dropMatrix(B);
 		dropMatrix(C);
 
-		return D;
+		return 1;
 	}
 }
 
@@ -585,7 +666,6 @@ int rank(Matrix A)
 	{
 		return -1;	//erreur
 	}
-	displayMatrix(B);
 	unsigned int lz=0;
 	unsigned int i;
 	for(i=0;i<B->nrows;i++)
@@ -602,7 +682,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 {
 	maillon m=newChaine();
 	int permut;
-	*U=triangulaire(A,NULL,&m,&permut,0);
+	*U=triangulaire(A,NULL,&m,&permut,Pivot);
 	if(*U==NULL)
 	{
 		return 0;
@@ -663,7 +743,7 @@ int decomposition(Matrix A,Matrix* L, Matrix* U,Matrix* P)
 		m=suiv;
 	}
 
-	*L=invert(id);
+	invert(id,L);
 	if(*L==NULL)
 	{
 		return 0;	//TODO
@@ -728,7 +808,7 @@ int noyau(Matrix m,Matrix* base)
 			dropMatrix(res);
 			return 0;	//TODO
 		}
-		sol_int=solve(mat_int,res);
+		solve(mat_int,res,&sol_int);
 		if(sol_int==NULL)
 		{
 			dropMatrix(A);

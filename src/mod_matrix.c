@@ -438,8 +438,11 @@ Ref determinant_call(ref_list args){
 	
 	float* d = malloc(sizeof (float));	
 	if (d == NULL) return NULL;
-	*d = determinant(m);
 
+	if ( determinant(m, d) == false){
+		free(d);
+		return NULL;
+	}
 
 	Ref r = new_vref(NULL, d, FLOAT);
 	if (r == NULL) free(d);
@@ -470,8 +473,8 @@ Ref invert_call(ref_list args){
 		return NULL;
 	}
 
-	Matrix inv = invert(m);
-	if (inv == NULL) return NULL;
+	Matrix inv = NULL;
+	if ( invert(m, &inv) == false) return NULL;
 
 
 	Ref r = new_vref(NULL, inv, MATRIX);
@@ -503,8 +506,8 @@ Ref solve_call(ref_list args){
 		return NULL;
 	}
 	
-	Matrix s = solve(m1, m2);
-	if (s == NULL) return NULL;
+	Matrix s = NULL;
+	if (solve(m1, m2, &s) == false) return NULL;
 
 	Ref r = new_vref(NULL, s, MATRIX);
 	if (r == NULL) dropMatrix(s);
@@ -682,8 +685,9 @@ Ref speedtest_cmd(ref_list args){
 		   Note: they don't need to be initialized 
 		*/
 		Matrix m1 = newMatrix(i,i), m2 = newMatrix(i,i), ret = NULL;
-		if (m1 == NULL || m2 == NULL){ 
-			perror("error while generating matrices");
+		float* f1 = malloc(sizeof(float));
+		if (m1 == NULL || m2 == NULL || f1 == NULL){ 
+			perror("");
 			keepgoing = false; doplot = false;
 		}
 
@@ -703,10 +707,10 @@ Ref speedtest_cmd(ref_list args){
 			ret = transpose(m1);	
 
 		} else if (f->fun == determinant_call){
-			determinant(m1);	
+			determinant(m1, f1);	
 
 		} else if (f->fun == invert_call){
-			ret = invert(m1);
+			invert(m1,&ret);
 
 		} else if (f->fun == rank_call ){
 			rank(m1);
@@ -726,6 +730,7 @@ Ref speedtest_cmd(ref_list args){
 		dropMatrix(m1);
 		dropMatrix(m2);
 		dropMatrix(ret);
+		free(f1);
 	}
 
 	alarm(0); // Remove countdown
