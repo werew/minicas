@@ -501,9 +501,9 @@ Ref solve_call(ref_list args){
 	    arg_isMatrix(args->list[1]) == false ) return NULL;
 
 	Matrix m1 = CAST_REF2MATRIX(args->list[0]);
-	Matrix m2 = CAST_REF2MATRIX(args->list[0]);
+	Matrix m2 = CAST_REF2MATRIX(args->list[1]);
 	
-	if (m1->nrows != m2->nrows ||
+	if (m1->ncols != m2->nrows ||
 	    m2->ncols > 1) {
 		set_err(EMXDIM, "not a valid system");
 		return NULL;
