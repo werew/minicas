@@ -116,7 +116,8 @@ void print_fun(Fun f){
 
 		Ref arg = f->args->list[i];
 		if (arg != NO_REF && cmptype_ref(FUN, arg) == true ){
-			printf("\t@%s -> function\n", arg->name);
+			printf("\t@%s -> function\n", 
+			(arg->name)? arg->name : "_anon_");
 		} else {
 			print_ref(arg);
 		}
