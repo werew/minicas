@@ -128,7 +128,8 @@ Matrix identite(unsigned int nb_cote)
  Fonction qui supprime la matrice passé en argument pour éviter les fuites de mémoire
 */
 void dropMatrix(Matrix m)
-{
+{	
+	if (m == NULL) return;
 	free(m->mat);
 	free(m);
 }
