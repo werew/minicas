@@ -22,7 +22,7 @@ summ(3, summ(2,1));
 ```
 
 Declarations
-```pyhon
+```python
 # Declare a variable
 my_float: 3;
 my_matrix: [1,2,3];
@@ -39,7 +39,7 @@ p : print;
 ```
 
 Force function referencing
-```
+```python
 # Is the same as: summ(2,_) with the only difference that
 # it can be called without any parameter
 plus_two : @summ(2);
